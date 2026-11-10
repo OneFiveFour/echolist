@@ -22,7 +22,8 @@ internal class AuthRepositoryImpl(
 
         val request = auth.v1.LoginRequest(
             username = username,
-            password = password
+            password = password,
+            device_name = deviceSessionName()
         )
 
         return client.call(
@@ -58,6 +59,11 @@ internal class AuthRepositoryImpl(
             requestSerializer = { auth.v1.RefreshTokenRequest.ADAPTER.encode(it) },
             responseDeserializer = { auth.v1.RefreshTokenResponse.ADAPTER.decode(it) }
         ).map { response ->
+            // Persist the rotated refresh token first, before publishing access.
+            // Empty is accepted for compatibility with older backend deployments.
+            if (response.refresh_token.isNotEmpty()) {
+                secureStorage.put(StorageKeys.REFRESH_TOKEN, response.refresh_token)
+            }
             secureStorage.put(StorageKeys.ACCESS_TOKEN, response.access_token)
             response.access_token
         }

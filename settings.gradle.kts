@@ -34,6 +34,6 @@ plugins {
 }
 
 include(":app", ":apps:android", ":apps:desktop", ":apps:web")
-include(":features:browser", ":features:tasklist", ":features:note", ":features:login", ":features:tasksettings")
+include(":features:tasknotifications", ":features:browser", ":features:tasklist", ":features:note", ":features:login", ":features:tasksettings")
 include(":core:designsystem", ":core:files", ":core:database", ":core:networking", ":core:protocol")
 include(":core:session", ":core:tasks", ":core:recurrence", ":core:notifications")

@@ -1,5 +1,7 @@
 plugins { id("echolist.compose.library") }
 kotlin.sourceSets.getByName("commonMain").dependencies {
+    api(libs.kotlinx.datetime)
+    implementation(libs.compose.materialIconsExtended)
     api(libs.koin.core)
     implementation(libs.koin.compose)
     api(libs.kotlinx.coroutines.core)
@@ -13,3 +15,4 @@ compose.resources {
     publicResClass = true
     packageOfResClass = "net.onefivefour.echolist.core.designsystem.resources"
 }
+kotlin.sourceSets.getByName("jvmMain").dependencies { implementation(libs.icu4j) }

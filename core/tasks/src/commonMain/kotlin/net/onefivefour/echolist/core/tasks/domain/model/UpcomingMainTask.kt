@@ -6,5 +6,7 @@ data class UpcomingMainTask(
     val taskId: String,
     val title: String,
     val dueDate: LocalDate,
-    val taskListId: String
+    val taskListId: String,
+    /** Null when an older backend omits the optional field. */
+    val isRecurring: Boolean? = null
 )

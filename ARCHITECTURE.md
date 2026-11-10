@@ -16,6 +16,7 @@ features/
   note/             Note editor, cache access and offline synchronization
   login/            Login form and validation
   tasksettings/     Due date, recurrence form and notification preferences
+  tasknotifications/ Upcoming dated MainTasks and device-local notification toggles
 core/
   designsystem/     Theme, fonts, shared UI components and icons
   files/            Paths, directory-change notifications, desktop storage paths
@@ -48,7 +49,7 @@ platform apps -> app -> features -> core
 platform apps ------------------> core (platform integration only)
 ```
 
-- Features never depend on other features. They expose `BrowserFeature`, `TaskListFeature`, `NoteFeature`, `LoginFeature`, `TaskSettingsFeature` and their Koin modules.
+- Features never depend on other features. They expose `BrowserFeature`, `TaskListFeature`, `NoteFeature`, `LoginFeature`, `TaskSettingsFeature`, `TaskNotificationsFeature` and their Koin modules.
 - The app owns routes and navigation; features receive values, event callbacks or a typed result stream/sink.
 - Core modules never depend on features or the app. Core-to-core dependencies form a directed acyclic graph.
 - `ui` depends on domain contracts, not data implementations. `data` implements domain contracts; `di` connects both.
@@ -70,11 +71,29 @@ Notification code calls `TaskCompletionHandler`; `core:tasks` supplies its imple
 
 ## Navigation and results
 
-`app` defines `BrowserRoute`, `EditNoteRoute`, `EditTaskListRoute` and `MainTaskSettingsRoute`. The browser route preserves the former serialized HomeRoute name for saved-state compatibility.
+`app` defines `BrowserRoute`, `EditNoteRoute`, `EditTaskListRoute`, `MainTaskSettingsRoute` and `TaskNotificationsRoute`. The browser route preserves the former serialized HomeRoute name for saved-state compatibility.
 
 Every task-list navigation entry has a persistent `editorId`. The app's `TaskSettingsChannels` ViewModel owns one queue per editor, surviving configuration changes. Settings send `TaskSettingsChanges` to the calling editor's sink. This supports unsaved task IDs, queues results while the editor is covered, and isolates two editors of the same task. Popping an editor or logging out closes its queue; a late permission response cannot recreate it. The former application-wide result bus exists only as a local test fixture.
 
-The upcoming screen listing MainTasks with a due date is intentionally not implemented. It can use `core:tasks` contracts and shared recurrence/notification infrastructure and open tasksettings through the app. It must not depend on `features:tasklist`. The shared `TaskListRepository.listUpcomingMainTasks(fromDate)` query returns task summaries with `taskListId` and a typed `LocalDate`, using an inclusive UTC calendar-date cutoff. The backend excludes completed tasks. Callers supply the date explicitly; the data layer preserves the server's order and fails the whole query on invalid due dates.
+The Task Notifications screen is a separate feature reached from the browser's bell button.
+It lists open MainTasks with a due date strictly after today's UTC calendar date, whether
+recurring or one-time. It uses `TaskListRepository.listUpcomingMainTasks(fromDate)` in
+`core:tasks`, backed by `TaskListService/ListUpcomingMainTasks`, with tomorrow's UTC date
+as the inclusive cutoff. The API excludes completed and undated tasks; the repository
+preserves server order and fails the whole query on invalid due dates. There is no folder
+traversal or per-task-list fetch for this screen. The UI displays each task's next due date
+as the shared design-system pill with localized relative time and urgency colors, and sorts
+tasks by due date ascending, preserving server order for equal dates. Tasklist uses the same
+pill and platform formatters. The upcoming response supplies the optional `is_recurring`
+flag, which is preserved in the shared domain model and drives the pill's recurrence icon.
+A missing flag from an older backend remains unknown and does not display the icon.
+
+The screen reads and writes device-local preferences through `NotificationCoordinator`
+and requests the existing notification synchronization after enabling a task. Disabled
+upcoming tasks remain visible so notifications can be enabled again. This screen's future
+cutoff does not change reminder synchronization, which also handles overdue tasks for
+offline catch-up. A future upcoming-tasks screen can reuse the same `core:tasks` query
+and open tasksettings through the app without depending on `features:tasklist`.
 
 ## Device reminders
 
@@ -110,6 +129,7 @@ jvmTest
 :features:note:assemble
 :features:login:assemble
 :features:tasksettings:assemble
+:features:tasknotifications:assemble
 :features:note:jvmTest
 :core:database:jsBrowserTest
 :core:database:wasmJsBrowserTest
