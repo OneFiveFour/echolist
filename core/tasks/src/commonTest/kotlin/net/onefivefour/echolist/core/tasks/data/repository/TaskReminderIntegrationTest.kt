@@ -21,6 +21,27 @@ import tasks.v1.GetTaskListResponse
 import tasks.v1.UpdateTaskListResponse
 
 class TaskReminderIntegrationTest : FunSpec({
+    test("Done completes an overdue one-time task without delivering its reminder again") {
+        val fixture = TaskReminderFixture()
+        val task = tasks.v1.MainTask(id = "task", description = "Task", due_date = "2020-01-01")
+        val list = tasks.v1.TaskList(id = "list", title = "List", tasks = listOf(task))
+        val completedList = list.copy(tasks = listOf(task.copy(is_done = true)))
+        fixture.source.getTaskListResult = Result.success(GetTaskListResponse(task_list = list))
+        fixture.source.updateTaskListResult = Result.success(UpdateTaskListResponse(task_list = completedList))
+        fixture.coordinator.refreshSession()
+        fixture.coordinator.schedule("task", "list", "Title", "Task", task.due_date)
+        fixture.shown.size shouldBe 1
+
+        completeRecurringTaskFromNotification(
+            fixture.repository, fixture.scheduler, "list", "task", expectedDueDate = task.due_date
+        ).getOrThrow()
+
+        fixture.source.lastUpdateRequest!!.tasks.single().is_done shouldBe true
+        fixture.state.reminders.single().active shouldBe false
+        fixture.coordinator.restore()
+        fixture.shown.size shouldBe 1
+    }
+
     test("persistent device preferences override server defaults and stale editor snapshots") {
         val fixture = TaskReminderFixture()
         fixture.coordinator.refreshSession()
@@ -84,6 +105,7 @@ class TaskReminderIntegrationTest : FunSpec({
 private class TaskReminderFixture {
     var state = ReminderState()
     val scheduled = mutableMapOf<String, Reminder>()
+    val shown = mutableListOf<Reminder>()
     val coordinator = NotificationCoordinator(
         object : ReminderStore {
             override suspend fun read() = state
@@ -99,7 +121,10 @@ private class TaskReminderFixture {
                 scheduled.remove(reminder.key)
             }
             override suspend fun dismiss(reminder: Reminder) = Unit
-            override suspend fun show(reminder: Reminder) = true
+            override suspend fun show(reminder: Reminder): Boolean {
+                shown.add(reminder)
+                return true
+            }
         },
         object : NotificationPermissionChecker {
             override suspend fun isGranted() = true
