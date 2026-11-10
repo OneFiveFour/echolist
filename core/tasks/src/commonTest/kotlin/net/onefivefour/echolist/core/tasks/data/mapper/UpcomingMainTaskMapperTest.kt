@@ -29,6 +29,21 @@ class UpcomingMainTaskMapperTest : FunSpec({
         )
     }
 
+    test("preserves recurring, one-time and missing recurrence flags from the wire response") {
+        listOf(true, false, null).forEach { isRecurring ->
+            val proto = ProtoUpcomingMainTask(
+                task_id = "task",
+                title = "Task",
+                tasklist_id = "list-1",
+                due_date = "2028-02-29",
+                is_recurring = isRecurring
+            )
+            val decoded = ProtoUpcomingMainTask.ADAPTER.decode(ProtoUpcomingMainTask.ADAPTER.encode(proto))
+
+            TaskListMapper.toDomain(decoded).isRecurring shouldBe isRecurring
+        }
+    }
+
     test("maps an empty response to an empty list") {
         TaskListMapper.toDomain(ListUpcomingMainTasksResponse()) shouldBe emptyList()
     }

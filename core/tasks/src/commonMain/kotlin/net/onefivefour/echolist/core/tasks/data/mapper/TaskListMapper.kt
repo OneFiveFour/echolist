@@ -83,7 +83,8 @@ internal object TaskListMapper {
             taskId = proto.task_id,
             title = proto.title,
             dueDate = dueDate,
-            taskListId = proto.tasklist_id
+            taskListId = proto.tasklist_id,
+            isRecurring = proto.is_recurring
         )
     }
 
