@@ -107,6 +107,13 @@ Android uses one inexact AlarmManager alarm per account/task, identified by a UR
 
 Android notification actions enqueue unique persistent work constrained to network availability. Account and occurrence checks prevent late actions or retries from completing a different user or the next recurring occurrence. User notification/channel permissions remain authoritative. OS notification posting and database writes cannot form a single transaction: deterministic notification tags and `setOnlyAlertOnce` limit duplicate visible alerts in the small crash window after posting and before saving history.
 
+Tapping an Android reminder opens its task list through an explicit activity PendingIntent.
+The notification module owns the account/list payload; the Android launcher handles cold
+starts and new intents, retaining unconsumed navigation across recreation and login.
+The app checks the current account before navigating and reuses an existing task-list editor
+when possible. This does not invoke completion; the separate Done action still enqueues
+the existing completion worker. These internal links do not register a public URI handler.
+
 Desktop and browser targets perform the shared reconciliation and local-midnight checks while the application is running, with catch-up after reopening. They do not gain Android-style background execution when the desktop process or browser tab is closed. Browser persistence currently assumes one active app instance per origin. No first-install wizard is included in this change.
 
 ## Platform and persistence boundaries

@@ -83,6 +83,14 @@ internal class AndroidReminderPlatform(private val context: Context) : ReminderP
             done,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
+        val openPending = TaskListNotificationIntent.create(context, reminder)?.let { intent ->
+            PendingIntent.getActivity(
+                context,
+                0,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+        }
         val publicVersion = NotificationCompat.Builder(context, CHANNEL)
             .setSmallIcon(android.R.drawable.ic_dialog_info).setContentTitle("EchoList")
             .setContentText("You have a task reminder").build()
@@ -93,6 +101,7 @@ internal class AndroidReminderPlatform(private val context: Context) : ReminderP
             .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setContentTitle(reminder.title.take(100)).setContentText(reminder.body.take(300))
             .setVisibility(NotificationCompat.VISIBILITY_PRIVATE).setPublicVersion(publicVersion)
+            .setContentIntent(openPending)
             .setAutoCancel(true).setOnlyAlertOnce(sameOccurrence).setGroup("echolist_task_reminders")
             .addExtras(Bundle().apply { putString(DUE_MARKER, reminder.dueDate) })
             .addAction(android.R.drawable.checkbox_on_background, "Done", donePending).build()

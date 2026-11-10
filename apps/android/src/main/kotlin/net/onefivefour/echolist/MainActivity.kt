@@ -25,6 +25,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import net.onefivefour.echolist.core.notifications.data.PermissionResultBridge
+import net.onefivefour.echolist.core.notifications.data.TaskListNotificationIntent
+import net.onefivefour.echolist.core.notifications.domain.TaskListNotificationTarget
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import org.koin.android.ext.android.inject
 
@@ -35,6 +37,7 @@ class MainActivity : ComponentActivity() {
     private var showRationaleDialog by mutableStateOf(false)
     private var showSettingsDialog by mutableStateOf(false)
     private var awaitingSettingsReturn by mutableStateOf(false)
+    private var notificationTarget by mutableStateOf<TaskListNotificationTarget?>(null)
 
     private val notificationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -59,6 +62,13 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        notificationTarget = if (savedInstanceState == null) {
+            TaskListNotificationIntent.target(intent)
+        } else {
+            val accountId = savedInstanceState.getString(STATE_NOTIFICATION_ACCOUNT)
+            val taskListId = savedInstanceState.getString(STATE_NOTIFICATION_TASK_LIST)
+            if (accountId != null && taskListId != null) TaskListNotificationTarget(accountId, taskListId) else null
+        }
 
         setContent {
             val systemBarStyle = if (isSystemInDarkTheme()) {
@@ -82,7 +92,10 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            App()
+            App(
+                notificationTarget = notificationTarget,
+                onNotificationTargetConsumed = { notificationTarget = null }
+            )
 
             EchoListTheme {
                 // Rationale dialog — explains why notifications are needed
@@ -115,6 +128,20 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        notificationTarget = TaskListNotificationIntent.target(intent)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        notificationTarget?.let {
+            outState.putString(STATE_NOTIFICATION_ACCOUNT, it.accountId)
+            outState.putString(STATE_NOTIFICATION_TASK_LIST, it.taskListId)
+        }
+        super.onSaveInstanceState(outState)
     }
 
     override fun onResume() {
@@ -181,6 +208,11 @@ class MainActivity : ComponentActivity() {
             putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
         }
         startActivity(intent)
+    }
+
+    private companion object {
+        const val STATE_NOTIFICATION_ACCOUNT = "notification_account"
+        const val STATE_NOTIFICATION_TASK_LIST = "notification_task_list"
     }
 }
 

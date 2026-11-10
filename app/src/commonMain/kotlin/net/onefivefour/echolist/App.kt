@@ -24,6 +24,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import kotlinx.coroutines.launch
 import net.onefivefour.echolist.core.notifications.domain.NotificationCoordinator
+import net.onefivefour.echolist.core.notifications.domain.NotificationAccountProvider
+import net.onefivefour.echolist.core.notifications.domain.TaskListNotificationTarget
+import net.onefivefour.echolist.ui.navigation.openNotificationTaskList
 import net.onefivefour.echolist.core.notifications.domain.ReminderBackgroundScheduler
 import org.koin.compose.koinInject
 import androidx.compose.runtime.getValue
@@ -59,7 +62,10 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun App() {
+fun App(
+    notificationTarget: TaskListNotificationTarget? = null,
+    onNotificationTargetConsumed: () -> Unit = {}
+) {
     EchoListTheme {
         GradientBackground {
             val authViewModel = koinViewModel<AuthViewModel>()
@@ -85,7 +91,7 @@ fun App() {
             when (authState) {
                 AuthState.Loading -> Unit
                 AuthState.Unauthenticated -> UnauthenticatedApp(authViewModel)
-                AuthState.Authenticated -> AuthenticatedApp()
+                AuthState.Authenticated -> AuthenticatedApp(notificationTarget, onNotificationTargetConsumed)
             }
         }
     }
@@ -97,8 +103,18 @@ private fun UnauthenticatedApp(authViewModel: AuthViewModel) {
 }
 
 @Composable
-private fun AuthenticatedApp() {
+private fun AuthenticatedApp(
+    notificationTarget: TaskListNotificationTarget?,
+    onNotificationTargetConsumed: () -> Unit
+) {
     val backStack = rememberNavBackStack(echoListSavedStateConfig, BrowserRoute())
+    val account = koinInject<NotificationAccountProvider>()
+    LaunchedEffect(notificationTarget) {
+        if (notificationTarget != null) {
+            backStack.openNotificationTaskList(notificationTarget, account.currentAccountId())
+            onNotificationTargetConsumed()
+        }
+    }
     val canNavigateBack = backStack.size > 1
     val settingsChannels = koinViewModel<TaskSettingsChannels>()
     val editorIds = backStack.filterIsInstance<EditTaskListRoute>().map { it.editorId }.toSet()
