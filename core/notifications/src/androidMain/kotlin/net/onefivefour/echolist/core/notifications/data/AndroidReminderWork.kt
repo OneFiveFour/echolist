@@ -1,6 +1,7 @@
 package net.onefivefour.echolist.core.notifications.data
 
 import android.content.Context
+import android.util.Log
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -122,6 +123,7 @@ class ReminderRefreshWorker(context: Context, parameters: WorkerParameters) : Co
 
 class ReminderCompletionWorker(context: Context, parameters: WorkerParameters) : CoroutineWorker(context, parameters) {
     override suspend fun doWork(): Result {
+        Log.i("EchoListReminders", "Task completion worker started (attempt $runAttemptCount)")
         return try {
             val account = inputData.getString("account") ?: return Result.failure()
             val task = inputData.getString("task") ?: return Result.failure()
@@ -129,15 +131,25 @@ class ReminderCompletionWorker(context: Context, parameters: WorkerParameters) :
             val date = inputData.getString("date") ?: return Result.failure()
             val koin = GlobalContext.get()
             if (!koin.get<NotificationCoordinator>().isCurrentOccurrence(account, task, date)) {
-                Result.success()
-            } else if (koin.get<TaskCompletionHandler>().completeOccurrence(list, task, date).isSuccess) {
+                Log.i("EchoListReminders", "Task completion skipped: account or occurrence changed")
                 Result.success()
             } else {
-                Result.retry()
+                val outcome = koin.get<TaskCompletionHandler>().completeOccurrence(list, task, date)
+                if (outcome.isSuccess) {
+                    Log.i("EchoListReminders", "Task completion handler succeeded")
+                    Result.success()
+                } else {
+                    Log.w(
+                        "EchoListReminders",
+                        "Task completion failed; retrying (${outcome.exceptionOrNull()?.javaClass?.simpleName})"
+                    )
+                    Result.retry()
+                }
             }
         } catch (error: CancellationException) {
             throw error
-        } catch (_: Exception) {
+        } catch (error: Exception) {
+            Log.w("EchoListReminders", "Task completion worker failed; retrying (${error.javaClass.simpleName})")
             Result.retry()
         }
     }
