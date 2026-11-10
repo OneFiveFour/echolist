@@ -13,6 +13,5 @@ kotlin.sourceSets.getByName("commonMain").dependencies {
     implementation(libs.kotlinx.datetime)
     implementation(libs.compose.materialIconsExtended)
 }
-kotlin.sourceSets.getByName("jvmMain").dependencies { implementation(libs.icu4j) }
 
 compose.resources { packageOfResClass = "net.onefivefour.echolist.feature.tasklist.resources" }
