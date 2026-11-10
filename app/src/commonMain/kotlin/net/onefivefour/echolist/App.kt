@@ -3,6 +3,8 @@ package net.onefivefour.echolist
 import net.onefivefour.echolist.feature.tasklist.ui.TaskListFeature
 
 import net.onefivefour.echolist.feature.tasksettings.ui.TaskSettingsFeature
+import net.onefivefour.echolist.feature.tasknotifications.ui.TaskNotificationsFeature
+import net.onefivefour.echolist.ui.navigation.TaskNotificationsRoute
 import net.onefivefour.echolist.core.tasks.domain.model.TaskSettingsChanges
 
 import net.onefivefour.echolist.feature.note.ui.NoteFeature
@@ -184,8 +186,13 @@ private fun AuthenticatedNavDisplay(
                     },
                     onOpenFolder = { backStack.add(BrowserRoute(it)) },
                     onOpenNote = { backStack.add(EditNoteRoute(route.parentDir, it)) },
-                    onOpenTaskList = { backStack.add(EditTaskListRoute(route.parentDir, it)) }
+                    onOpenTaskList = { backStack.add(EditTaskListRoute(route.parentDir, it)) },
+                    onOpenTaskNotifications = { backStack.add(TaskNotificationsRoute) }
                 )
+            }
+
+            entry<TaskNotificationsRoute> {
+                TaskNotificationsFeature()
             }
 
             entry<EditNoteRoute> { route ->

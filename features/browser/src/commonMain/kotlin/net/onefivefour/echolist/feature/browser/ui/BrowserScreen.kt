@@ -32,6 +32,7 @@ internal fun BrowserScreen(
     uiState: BrowserUiState,
     onBreadcrumbClick: (path: String) -> Unit,
     onRefresh: () -> Unit = {},
+    onOpenTaskNotifications: () -> Unit = {},
     onFolderClick: (path: String) -> Unit = {},
     onNoteClick: (noteId: String) -> Unit = {},
     onTaskClick: (taskListId: String) -> Unit = {},
@@ -128,7 +129,8 @@ internal fun BrowserScreen(
         Spacer(modifier = Modifier.height(EchoListTheme.dimensions.xxl))
 
         BottomNavigation(
-            createItemCallbacks = createItemCallbacks
+            createItemCallbacks = createItemCallbacks,
+            onOpenTaskNotifications = onOpenTaskNotifications
         )
 
         CreateFolderDialog(

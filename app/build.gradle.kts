@@ -7,6 +7,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(project(":features:browser"))
+            implementation(project(":features:tasknotifications"))
             implementation(project(":features:login"))
             implementation(project(":features:note"))
             implementation(project(":features:tasklist"))

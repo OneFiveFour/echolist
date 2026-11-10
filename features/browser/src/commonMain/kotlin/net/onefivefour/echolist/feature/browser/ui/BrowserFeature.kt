@@ -14,7 +14,8 @@ fun BrowserFeature(
     onReplaceFolder: (String) -> Unit,
     onOpenFolder: (String) -> Unit,
     onOpenNote: (String?) -> Unit,
-    onOpenTaskList: (String?) -> Unit
+    onOpenTaskList: (String?) -> Unit,
+    onOpenTaskNotifications: () -> Unit
 ) {
     val browserViewModel =
         koinViewModel<BrowserViewModel>(key = parentDir) { parametersOf(parentDir) }
@@ -64,6 +65,7 @@ fun BrowserFeature(
         onFolderClick = onOpenFolder,
         onNoteClick = { onOpenNote(it) },
         onTaskClick = { onOpenTaskList(it) },
+        onOpenTaskNotifications = onOpenTaskNotifications,
         onDeleteCurrentFolderClick = browserViewModel::onDeleteCurrentFolderClick,
         onRenameCurrentFolderClick = renameFolderViewModel::showDialog,
         onFolderNameChange = createFolderViewModel::onNameChange,

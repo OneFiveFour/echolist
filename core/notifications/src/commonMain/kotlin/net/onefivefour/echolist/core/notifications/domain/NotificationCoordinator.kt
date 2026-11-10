@@ -10,7 +10,6 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
 
-/** Serializes editor changes, delivery, session changes and background reconciliation. */
 class NotificationCoordinator(
     private val store: ReminderStore,
     private val platform: ReminderPlatform,
