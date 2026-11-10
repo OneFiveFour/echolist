@@ -14,6 +14,7 @@ import net.onefivefour.echolist.core.notifications.domain.ReminderState
 import net.onefivefour.echolist.core.notifications.domain.ReminderStore
 import net.onefivefour.echolist.core.tasks.data.source.network.FakeTaskListRemoteDataSource
 import net.onefivefour.echolist.core.tasks.domain.completeRecurringTaskFromNotification
+import net.onefivefour.echolist.core.tasks.domain.previewTaskNotification
 import net.onefivefour.echolist.core.tasks.domain.model.MainTask
 import net.onefivefour.echolist.core.tasks.domain.model.UpdateTaskListParams
 import net.onefivefour.echolist.data.FakeDirectoryChangeNotifier
@@ -21,6 +22,67 @@ import tasks.v1.GetTaskListResponse
 import tasks.v1.UpdateTaskListResponse
 
 class TaskReminderIntegrationTest : FunSpec({
+    test("preview resolves both one-time and recurring dated tasks before any reminder sync") {
+        listOf("", "FREQ=DAILY").forEach { recurrence ->
+            val fixture = TaskReminderFixture()
+            val task = tasks.v1.MainTask(
+                id = "task", description = "Preview me", due_date = "2095-01-01", recurrence = recurrence
+            )
+            fixture.source.getTaskListResult = Result.success(
+                GetTaskListResponse(task_list = tasks.v1.TaskList(id = "list", tasks = listOf(task)))
+            )
+            fixture.coordinator.refreshSession()
+            fixture.state.reminders shouldBe emptyList()
+
+            previewTaskNotification(fixture.repository, fixture.coordinator, "list", "task") shouldBe true
+
+            fixture.shown.single().let {
+                it.body shouldBe "Preview me"
+                it.taskId shouldBe "task"
+                it.taskListId shouldBe "list"
+                it.dueDate shouldBe "2095-01-01"
+            }
+            fixture.coordinator.isCurrentOccurrence("account", "task", "2095-01-01") shouldBe true
+            fixture.state.reminders.single().deliveredDates shouldBe emptySet()
+            fixture.source.lastUpcomingRequest shouldBe null
+            fixture.coordinator.restore()
+            fixture.scheduled.values.single().dueDate shouldBe "2095-01-01"
+        }
+    }
+
+    test("preview rejects undated completed and invalid-date tasks regardless of recurrence") {
+        listOf("", "FREQ=DAILY").forEach { recurrence ->
+            listOf("" to false, "invalid" to false, "2095-01-01" to true).forEach { (date, done) ->
+                val fixture = TaskReminderFixture()
+                fixture.source.getTaskListResult = Result.success(
+                    GetTaskListResponse(
+                        task_list = tasks.v1.TaskList(
+                            id = "list",
+                            tasks = listOf(tasks.v1.MainTask(
+                                id = "task", due_date = date, is_done = done, recurrence = recurrence
+                            ))
+                        )
+                    )
+                )
+                fixture.coordinator.refreshSession()
+                previewTaskNotification(fixture.repository, fixture.coordinator, "list", "task") shouldBe false
+                fixture.shown shouldBe emptyList()
+                fixture.state.reminders shouldBe emptyList()
+            }
+        }
+    }
+
+    test("one-time preview Done completes the real task even without a prior sync record") {
+        val fixture = TaskReminderFixture()
+        fixture.coordinator.refreshSession()
+        previewTaskNotification(fixture.repository, fixture.coordinator, "list", "task") shouldBe true
+        fixture.coordinator.isCurrentOccurrence("account", "task", "2095-01-01") shouldBe true
+        completeRecurringTaskFromNotification(
+            fixture.repository, fixture.scheduler, "list", "task", expectedDueDate = "2095-01-01"
+        ).getOrThrow()
+        fixture.source.lastUpdateRequest!!.tasks.single().is_done shouldBe true
+    }
+
     test("Done completes an overdue one-time task without delivering its reminder again") {
         val fixture = TaskReminderFixture()
         val task = tasks.v1.MainTask(id = "task", description = "Task", due_date = "2020-01-01")

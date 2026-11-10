@@ -16,7 +16,7 @@ fun TaskListFeature(
     parentDir: String,
     taskListId: String?,
     settingsResults: Flow<TaskSettingsChanges>,
-    onOpenSettings: (TaskSettingsChanges) -> Unit,
+    onOpenSettings: (String?, TaskSettingsChanges) -> Unit,
     onNavigateBack: () -> Unit
 ) {
     val resolvedTaskListId = taskListId?.takeIf { it.isNotBlank() }
@@ -55,6 +55,7 @@ fun TaskListFeature(
                 currentIsNotificationEnabled ->
             viewModel.onSettingsNavigationStarted()
             onOpenSettings(
+                viewModel.taskListId,
                 TaskSettingsChanges(mainTaskId, currentDueDate, currentRecurrence, currentIsNotificationEnabled)
             )
         },

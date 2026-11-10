@@ -157,20 +157,53 @@ class NotificationCoordinator(
     suspend fun restore(): Unit = mutex.withLock { restoreLocked() }
 
     /**
-     * Preview the stored reminder through normal platform delivery, including its actions.
+     * Preview a reminder through normal platform delivery, including its actions.
      * Only debug launchers expose this operation. It ignores timing/deduplication without
      * changing occurrence history or cancelling the real alarm.
      */
-    suspend fun preview(taskId: String): Boolean = mutex.withLock {
-        if (pendingMutations != 0) return@withLock false
-        val account = accounts.currentAccountId() ?: return@withLock false
-        val state = store.read()
-        if (state.activeAccount != account) return@withLock false
-        val reminder = state.reminders.firstOrNull {
-            it.accountId == account && it.taskId == taskId && it.active
-        } ?: return@withLock false
-        if (state.preferences[reminder.key] == false || !permission.isGranted()) return@withLock false
-        platform.show(reminder)
+    suspend fun preview(
+        taskId: String,
+        resolve: (suspend () -> Result<UpcomingReminder?>)? = null
+    ): Boolean {
+        val snapshot = mutex.withLock {
+            if (pendingMutations != 0) return false
+            val state = store.read()
+            if (state.activeAccount == null || state.activeAccount != accounts.currentAccountId()) return false
+            state
+        }
+        // Network access runs outside the coordinator lock. Reject stale responses below.
+        val task = if (resolve != null) {
+            resolve().getOrElse {
+                if (it is CancellationException) throw it
+                return false
+            } ?: return false
+        } else {
+            null
+        }
+        return mutex.withLock {
+            val state = store.read()
+            val account = accounts.currentAccountId() ?: return@withLock false
+            if (pendingMutations != 0 || state.revision != snapshot.revision ||
+                state.activeAccount != snapshot.activeAccount || state.activeAccount != account
+            ) return@withLock false
+            if (state.preferences[reminderKey(account, taskId)] == false || !permission.isGranted()) {
+                return@withLock false
+            }
+            val records = state.reminders.toMutableList()
+            if (task != null) {
+                if (task.taskId != taskId || task.taskListId.isBlank()) return@withLock false
+                merge(records, account, task)
+            }
+            val reminder = records.firstOrNull {
+                it.accountId == account && it.taskId == taskId && it.active
+            } ?: return@withLock false
+            if (task != null) {
+                // Done validates its occurrence against this metadata, even before the first sync.
+                // Keep delivered dates and all other tasks; do not consume the real reminder.
+                store.write(state.copy(reminders = records, revision = state.revision + 1))
+            }
+            platform.show(reminder)
+        }
     }
 
     suspend fun deliver(account: String, taskId: String, dueDate: String): Unit = mutex.withLock {

@@ -7,13 +7,14 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import net.onefivefour.echolist.core.notifications.domain.NotificationCoordinator
+import net.onefivefour.echolist.core.tasks.domain.previewTaskNotification
 import org.koin.android.ext.android.get
 
 /** Compiled only into the debug APK; release never receives a long-press handler. */
-internal fun ComponentActivity.debugReminderAction(): ((String) -> Unit)? = { taskId ->
+internal fun ComponentActivity.debugReminderAction(): ((String, String) -> Unit)? = { taskListId, taskId ->
     lifecycleScope.launch {
         val shown = try {
-            get<NotificationCoordinator>().preview(taskId)
+            previewTaskNotification(get(), get<NotificationCoordinator>(), taskListId, taskId)
         } catch (error: CancellationException) {
             throw error
         } catch (error: Exception) {

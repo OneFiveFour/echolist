@@ -10,6 +10,42 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 
 class NotificationCoordinatorTest : FunSpec({
+    test("resolved previews preserve history for already delivered occurrences") {
+        val fixture = ReminderFixture()
+        fixture.coordinator.synchronize { Result.success(listOf(fixture.task("2026-10-20"))) }
+        fixture.coordinator.preview("task") { Result.success(fixture.task("2026-10-20")) } shouldBe true
+        fixture.store.state.reminders.single().deliveredDates shouldBe setOf("2026-10-20")
+        fixture.platform.shown.size shouldBe 2
+    }
+
+    test("resolved previews reject session and preference changes during the fetch") {
+        val fixture = ReminderFixture()
+        fixture.coordinator.refreshSession()
+        fixture.coordinator.preview("task") {
+            fixture.coordinator.setEnabled("task", false)
+            Result.success(fixture.task("2026-10-23"))
+        } shouldBe false
+        fixture.coordinator.preview("task") {
+            fixture.account = "other-account"
+            Result.success(fixture.task("2026-10-23"))
+        } shouldBe false
+        fixture.platform.shown.size shouldBe 0
+        fixture.store.state.reminders shouldBe emptyList()
+    }
+
+    test("failed or missing resolved tasks never fall back to stale stored reminders") {
+        val fixture = ReminderFixture()
+        fixture.coordinator.synchronize { Result.success(listOf(fixture.task("2026-10-23"))) }
+        val state = fixture.store.state
+        fixture.coordinator.preview("task") { Result.success(null) } shouldBe false
+        fixture.coordinator.preview("task") { Result.failure(Exception("offline")) } shouldBe false
+        shouldThrow<CancellationException> {
+            fixture.coordinator.preview("task") { Result.failure(CancellationException("cancel")) }
+        }
+        fixture.platform.shown.size shouldBe 0
+        fixture.store.state shouldBe state
+    }
+
     test("preview delivers future reminders repeatedly without changing history or alarms") {
         val fixture = ReminderFixture()
         fixture.coordinator.synchronize { Result.success(listOf(fixture.task("2026-10-23"))) }

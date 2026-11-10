@@ -65,7 +65,7 @@ import org.jetbrains.compose.resources.stringResource
 fun App(
     notificationTarget: TaskListNotificationTarget? = null,
     onNotificationTargetConsumed: () -> Unit = {},
-    onDebugReminder: ((String) -> Unit)? = null
+    onDebugReminder: ((String, String) -> Unit)? = null
 ) {
     EchoListTheme {
         GradientBackground {
@@ -109,7 +109,7 @@ private fun UnauthenticatedApp(authViewModel: AuthViewModel) {
 private fun AuthenticatedApp(
     notificationTarget: TaskListNotificationTarget?,
     onNotificationTargetConsumed: () -> Unit,
-    onDebugReminder: ((String) -> Unit)?
+    onDebugReminder: ((String, String) -> Unit)?
 ) {
     val backStack = rememberNavBackStack(echoListSavedStateConfig, BrowserRoute())
     val account = koinInject<NotificationAccountProvider>()
@@ -161,7 +161,7 @@ private fun AuthenticatedNavDisplay(
     backStack: NavBackStack<NavKey>,
     canNavigateBack: Boolean,
     settingsChannels: TaskSettingsChannels,
-    onDebugReminder: ((String) -> Unit)?
+    onDebugReminder: ((String, String) -> Unit)?
 ) {
     NavDisplay(
         modifier = Modifier
@@ -226,14 +226,15 @@ private fun AuthenticatedNavDisplay(
                     parentDir = route.parentDir,
                     taskListId = route.taskListId,
                     settingsResults = settingsChannels.resultsFor(route.editorId),
-                    onOpenSettings = { initial ->
+                    onOpenSettings = { taskListId, initial ->
                         backStack.add(
                             MainTaskSettingsRoute(
                                 mainTaskId = initial.mainTaskId,
                                 currentDueDate = initial.dueDate,
                                 currentRecurrence = initial.recurrence,
                                 currentIsNotificationEnabled = initial.isNotificationEnabled,
-                                editorId = route.editorId
+                                editorId = route.editorId,
+                                taskListId = taskListId
                             )
                         )
                     },
@@ -249,7 +250,13 @@ private fun AuthenticatedNavDisplay(
                         route.currentRecurrence,
                         route.currentIsNotificationEnabled
                     ),
-                    onDebugReminder = onDebugReminder?.let { trigger -> { trigger(route.mainTaskId) } },
+                    onDebugReminder = onDebugReminder?.let { trigger ->
+                        val editor = backStack.filterIsInstance<EditTaskListRoute>()
+                            .lastOrNull { it.editorId == route.editorId }
+                        (route.taskListId ?: editor?.taskListId)?.let { listId ->
+                            { trigger(listId, route.mainTaskId) }
+                        }
+                    },
                     onResult = settingsChannels.sinkFor(
                         route.editorId.ifBlank {
                             backStack.filterIsInstance<EditTaskListRoute>().lastOrNull()?.editorId.orEmpty()

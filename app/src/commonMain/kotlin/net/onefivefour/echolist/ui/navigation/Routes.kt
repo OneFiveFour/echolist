@@ -37,7 +37,8 @@ data class MainTaskSettingsRoute(
     val currentDueDate: String = "",
     val currentRecurrence: String = "",
     val currentIsNotificationEnabled: Boolean = true,
-    val editorId: String = ""
+    val editorId: String = "",
+    val taskListId: String? = null
 ) : NavKey
 
 val navKeySerializersModule = SerializersModule {

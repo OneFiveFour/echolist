@@ -115,7 +115,11 @@ when possible. This does not invoke completion; the separate Done action still e
 the existing completion worker. These internal links do not register a public URI handler.
 
 Android debug builds additionally wire a long press on the task settings' "Erinnern" label
-to a coordinator preview of the stored active reminder. It uses the same platform delivery
+to a coordinator preview of the saved task, fetched directly from its owning task list.
+Any open MainTask with a valid due date is eligible, with or without recurrence and even
+before its first upcoming-task synchronization. The coordinator records its current
+occurrence metadata so Done can validate the action; session/revision checks reject stale
+fetches. It uses the same platform delivery
 and actions, bypassing only due-date timing and delivery deduplication without changing
 history or scheduled alarms. Account, permission and enabled-preference checks still apply.
 The Android release source set supplies no callback, so release has no long-press gesture
