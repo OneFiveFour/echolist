@@ -8,6 +8,7 @@ import io.kotest.property.arbitrary.arbitrary
 import io.kotest.property.arbitrary.int
 import io.kotest.property.arbitrary.string
 import io.kotest.property.checkAll
+import net.onefivefour.echolist.core.networking.data.error.NetworkException
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -181,7 +182,7 @@ class AuthInterceptorPropertyTest : FunSpec({
 
                 val authEventBus = AuthEventBus()
                 val repo = fakeAuthRepository(storage) {
-                    Result.failure(Exception("refresh failed"))
+                    Result.failure(NetworkException.ClientError(401, "refresh rejected"))
                 }
 
                 val client = HttpClient(mockEngine) {
@@ -207,4 +208,71 @@ class AuthInterceptorPropertyTest : FunSpec({
             }
         }
     }
+    test("transient refresh failures preserve tokens without another login") {
+        for (failure in listOf(
+            NetworkException.NetworkError("offline"),
+            NetworkException.TimeoutError("timeout"),
+            NetworkException.ServerError(503, "unavailable")
+        )) {
+            val storage = FakeSecureStorage()
+            storage.put(StorageKeys.ACCESS_TOKEN, "expired-access")
+            storage.put(StorageKeys.REFRESH_TOKEN, "valid-refresh")
+            val repo = fakeAuthRepository(storage) { Result.failure(failure) }
+            val client = HttpClient(MockEngine {
+                respond("unauthorized", HttpStatusCode.Unauthorized)
+            }) {
+                install(AuthInterceptor) {
+                    authRepository = repo
+                    authEventBus = AuthEventBus()
+                }
+            }
+            try {
+                client.get("http://localhost/notes.v1.NoteService/ListNotes")
+                storage.get(StorageKeys.ACCESS_TOKEN) shouldBe "expired-access"
+                storage.get(StorageKeys.REFRESH_TOKEN) shouldBe "valid-refresh"
+            } finally {
+                client.close()
+            }
+        }
+    }
+
+    test("concurrent unauthorized requests share a successful refresh") {
+        val storage = FakeSecureStorage()
+        storage.put(StorageKeys.ACCESS_TOKEN, "expired")
+        val bothStarted = kotlinx.coroutines.CompletableDeferred<Unit>()
+        var initialRequests = 0
+        var refreshCount = 0
+        val repo = fakeAuthRepository(storage) {
+            refreshCount++
+            storage.put(StorageKeys.ACCESS_TOKEN, "renewed")
+            Result.success("renewed")
+        }
+        val client = HttpClient(MockEngine { request ->
+            if (request.headers[HttpHeaders.Authorization] == "Bearer expired") {
+                initialRequests++
+                if (initialRequests == 2) bothStarted.complete(Unit)
+                bothStarted.await()
+                respond("unauthorized", HttpStatusCode.Unauthorized)
+            } else {
+                respond("ok", HttpStatusCode.OK)
+            }
+        }) {
+            install(AuthInterceptor) {
+                authRepository = repo
+                authEventBus = AuthEventBus()
+            }
+        }
+        try {
+            kotlinx.coroutines.coroutineScope {
+                val first = async { client.get("http://localhost/notes.v1.NoteService/ListNotes") }
+                val second = async { client.get("http://localhost/notes.v1.NoteService/ListNotes") }
+                first.await().status shouldBe HttpStatusCode.OK
+                second.await().status shouldBe HttpStatusCode.OK
+            }
+            refreshCount shouldBe 1
+        } finally {
+            client.close()
+        }
+    }
+
 })
