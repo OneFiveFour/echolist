@@ -10,6 +10,74 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 
 class NotificationCoordinatorTest : FunSpec({
+    test("preview delivers future reminders repeatedly without changing history or alarms") {
+        val fixture = ReminderFixture()
+        fixture.coordinator.synchronize { Result.success(listOf(fixture.task("2026-10-23"))) }
+        val state = fixture.store.state
+        val scheduled = fixture.platform.scheduled.toMap()
+        fixture.coordinator.preview("task") shouldBe true
+        fixture.coordinator.preview("task") shouldBe true
+        fixture.platform.shown shouldBe listOf(state.reminders.single(), state.reminders.single())
+        fixture.store.state shouldBe state
+        fixture.platform.scheduled shouldBe scheduled
+        fixture.instant = Instant.parse("2026-10-23T12:00:00Z")
+        fixture.coordinator.restore()
+        fixture.platform.shown.size shouldBe 3
+        fixture.store.state.reminders.single().deliveredDates shouldBe setOf("2026-10-23")
+    }
+
+    test("preview can redisplay an already delivered occurrence with its original action metadata") {
+        val fixture = ReminderFixture()
+        fixture.coordinator.synchronize { Result.success(listOf(fixture.task("2026-10-20"))) }
+        val state = fixture.store.state
+        fixture.coordinator.preview("task") shouldBe true
+        fixture.platform.shown.last().let {
+            it.accountId shouldBe "account"
+            it.taskListId shouldBe "list"
+            it.taskId shouldBe "task"
+            it.dueDate shouldBe "2026-10-20"
+        }
+        fixture.store.state shouldBe state
+    }
+
+    test("preview respects permission and disabled reminders") {
+        val fixture = ReminderFixture()
+        fixture.coordinator.synchronize { Result.success(listOf(fixture.task("2026-10-23"))) }
+        fixture.permission = false
+        fixture.coordinator.preview("task") shouldBe false
+        fixture.permission = true
+        fixture.coordinator.setEnabled("task", false)
+        fixture.coordinator.preview("task") shouldBe false
+        fixture.platform.shown.size shouldBe 0
+    }
+
+    test("preview rejects missing tasks inactive reminders and mismatched sessions") {
+        val fixture = ReminderFixture()
+        fixture.coordinator.synchronize { Result.success(listOf(fixture.task("2026-10-23"))) }
+        fixture.coordinator.preview("unsaved-task") shouldBe false
+        fixture.account = "other-account"
+        fixture.coordinator.preview("task") shouldBe false
+        fixture.account = null
+        fixture.coordinator.preview("task") shouldBe false
+        fixture.account = "account"
+        fixture.coordinator.cancel("task")
+        fixture.coordinator.preview("task") shouldBe false
+        fixture.platform.shown.size shouldBe 0
+    }
+
+    test("preview waits for authoritative task mutations and reports platform delivery failure") {
+        val fixture = ReminderFixture()
+        fixture.coordinator.synchronize { Result.success(listOf(fixture.task("2026-10-23"))) }
+        fixture.coordinator.beginMutation()
+        fixture.coordinator.preview("task") shouldBe false
+        fixture.coordinator.endMutation()
+        fixture.platform.canShow = false
+        val state = fixture.store.state
+        fixture.coordinator.preview("task") shouldBe false
+        fixture.store.state shouldBe state
+        fixture.platform.shown.size shouldBe 0
+    }
+
     test("future reminders are replaced by task ID and delivered once per due date across process restarts") {
         val fixture = ReminderFixture()
         fixture.coordinator.synchronize { Result.success(listOf(fixture.task("2026-10-21"))) }.isSuccess shouldBe true

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
@@ -22,6 +23,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filterNotNull
 import net.onefivefour.echolist.feature.tasksettings.ui.recurrence.DailyDetailContent
@@ -40,7 +42,8 @@ internal fun MainTaskSettingsScreen(
     onDateSelected: (Long) -> Unit,
     onRecurrenceIntervalSelected: (RecurrenceInterval) -> Unit,
     onRecurrenceDetailChanged: (RecurrenceState) -> Unit,
-    onNotificationToggleChanged: (Boolean) -> Unit
+    onNotificationToggleChanged: (Boolean) -> Unit,
+    onDebugReminder: (() -> Unit)? = null
 ) {
     when (uiState) {
         is MainTaskSettingsUiState.Loading -> Unit
@@ -49,7 +52,8 @@ internal fun MainTaskSettingsScreen(
             onDateSelected = onDateSelected,
             onRecurrenceIntervalSelected = onRecurrenceIntervalSelected,
             onRecurrenceDetailChanged = onRecurrenceDetailChanged,
-            onNotificationToggleChanged = onNotificationToggleChanged
+            onNotificationToggleChanged = onNotificationToggleChanged,
+            onDebugReminder = onDebugReminder
         )
     }
 }
@@ -61,7 +65,8 @@ private fun MainTaskSettingsContent(
     onDateSelected: (Long) -> Unit,
     onRecurrenceIntervalSelected: (RecurrenceInterval) -> Unit,
     onRecurrenceDetailChanged: (RecurrenceState) -> Unit,
-    onNotificationToggleChanged: (Boolean) -> Unit
+    onNotificationToggleChanged: (Boolean) -> Unit,
+    onDebugReminder: (() -> Unit)?
 ) {
     val datePickerState = rememberDatePickerState(
         initialSelectedDateMillis = uiState.initialDateMillis
@@ -115,7 +120,14 @@ private fun MainTaskSettingsContent(
             ) {
                 Text(
                     text = "Erinnern",
-                    style = EchoListTheme.typography.bodyMedium
+                    style = EchoListTheme.typography.bodyMedium,
+                    modifier = if (onDebugReminder != null) {
+                        Modifier.pointerInput(onDebugReminder) {
+                            detectTapGestures(onLongPress = { onDebugReminder() })
+                        }
+                    } else {
+                        Modifier
+                    }
                 )
                 Switch(
                     checked = uiState.isNotificationEnabled,

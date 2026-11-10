@@ -114,6 +114,13 @@ The app checks the current account before navigating and reuses an existing task
 when possible. This does not invoke completion; the separate Done action still enqueues
 the existing completion worker. These internal links do not register a public URI handler.
 
+Android debug builds additionally wire a long press on the task settings' "Erinnern" label
+to a coordinator preview of the stored active reminder. It uses the same platform delivery
+and actions, bypassing only due-date timing and delivery deduplication without changing
+history or scheduled alarms. Account, permission and enabled-preference checks still apply.
+The Android release source set supplies no callback, so release has no long-press gesture
+or debug action implementation. Unsaved settings are not used for preview delivery.
+
 Desktop and browser targets perform the shared reconciliation and local-midnight checks while the application is running, with catch-up after reopening. They do not gain Android-style background execution when the desktop process or browser tab is closed. Browser persistence currently assumes one active app instance per origin. No first-install wizard is included in this change.
 
 ## Platform and persistence boundaries

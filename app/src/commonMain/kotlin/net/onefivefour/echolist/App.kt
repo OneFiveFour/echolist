@@ -64,7 +64,8 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun App(
     notificationTarget: TaskListNotificationTarget? = null,
-    onNotificationTargetConsumed: () -> Unit = {}
+    onNotificationTargetConsumed: () -> Unit = {},
+    onDebugReminder: ((String) -> Unit)? = null
 ) {
     EchoListTheme {
         GradientBackground {
@@ -91,7 +92,9 @@ fun App(
             when (authState) {
                 AuthState.Loading -> Unit
                 AuthState.Unauthenticated -> UnauthenticatedApp(authViewModel)
-                AuthState.Authenticated -> AuthenticatedApp(notificationTarget, onNotificationTargetConsumed)
+                AuthState.Authenticated -> AuthenticatedApp(
+                    notificationTarget, onNotificationTargetConsumed, onDebugReminder
+                )
             }
         }
     }
@@ -105,7 +108,8 @@ private fun UnauthenticatedApp(authViewModel: AuthViewModel) {
 @Composable
 private fun AuthenticatedApp(
     notificationTarget: TaskListNotificationTarget?,
-    onNotificationTargetConsumed: () -> Unit
+    onNotificationTargetConsumed: () -> Unit,
+    onDebugReminder: ((String) -> Unit)?
 ) {
     val backStack = rememberNavBackStack(echoListSavedStateConfig, BrowserRoute())
     val account = koinInject<NotificationAccountProvider>()
@@ -130,7 +134,8 @@ private fun AuthenticatedApp(
         AuthenticatedNavDisplay(
             backStack = backStack,
             canNavigateBack = canNavigateBack,
-            settingsChannels = settingsChannels
+            settingsChannels = settingsChannels,
+            onDebugReminder = onDebugReminder
         )
 
         if (canNavigateBack) {
@@ -155,7 +160,8 @@ private fun AuthenticatedApp(
 private fun AuthenticatedNavDisplay(
     backStack: NavBackStack<NavKey>,
     canNavigateBack: Boolean,
-    settingsChannels: TaskSettingsChannels
+    settingsChannels: TaskSettingsChannels,
+    onDebugReminder: ((String) -> Unit)?
 ) {
     NavDisplay(
         modifier = Modifier
@@ -243,6 +249,7 @@ private fun AuthenticatedNavDisplay(
                         route.currentRecurrence,
                         route.currentIsNotificationEnabled
                     ),
+                    onDebugReminder = onDebugReminder?.let { trigger -> { trigger(route.mainTaskId) } },
                     onResult = settingsChannels.sinkFor(
                         route.editorId.ifBlank {
                             backStack.filterIsInstance<EditTaskListRoute>().lastOrNull()?.editorId.orEmpty()

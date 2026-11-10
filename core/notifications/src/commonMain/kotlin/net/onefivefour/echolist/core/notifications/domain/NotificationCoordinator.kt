@@ -156,6 +156,23 @@ class NotificationCoordinator(
 
     suspend fun restore(): Unit = mutex.withLock { restoreLocked() }
 
+    /**
+     * Preview the stored reminder through normal platform delivery, including its actions.
+     * Only debug launchers expose this operation. It ignores timing/deduplication without
+     * changing occurrence history or cancelling the real alarm.
+     */
+    suspend fun preview(taskId: String): Boolean = mutex.withLock {
+        if (pendingMutations != 0) return@withLock false
+        val account = accounts.currentAccountId() ?: return@withLock false
+        val state = store.read()
+        if (state.activeAccount != account) return@withLock false
+        val reminder = state.reminders.firstOrNull {
+            it.accountId == account && it.taskId == taskId && it.active
+        } ?: return@withLock false
+        if (state.preferences[reminder.key] == false || !permission.isGranted()) return@withLock false
+        platform.show(reminder)
+    }
+
     suspend fun deliver(account: String, taskId: String, dueDate: String): Unit = mutex.withLock {
         val state = store.read()
         val reminder = state.reminders.firstOrNull {
