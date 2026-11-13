@@ -12,7 +12,14 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.todayIn
+import net.onefivefour.echolist.core.designsystem.ui.components.DueDateTagForDate
+import net.onefivefour.echolist.core.designsystem.ui.components.DueDateTagUrgency
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
+import net.onefivefour.echolist.core.tasks.domain.DueDateUrgencyCalculator
+import net.onefivefour.echolist.core.tasks.domain.model.DueDateUrgency
+import kotlin.time.Clock
 
 @Composable
 internal fun TaskPeekItemRow(
@@ -47,11 +54,18 @@ internal fun TaskPeekItemRow(
         )
 
         row.dueDate?.let { dueDate ->
-            Text(
-                text = dueDate.toString(),
-                style = EchoListTheme.typography.labelSmall,
-                color = EchoListTheme.materialColors.onSurface.copy(alpha = 0.6f)
+            val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+            DueDateTagForDate(
+                dueDate = dueDate,
+                today = today,
+                urgency = DueDateUrgencyCalculator.computeUrgency(dueDate, today).toTagUrgency()
             )
         }
     }
+}
+
+private fun DueDateUrgency.toTagUrgency(): DueDateTagUrgency = when (this) {
+    DueDateUrgency.Normal -> DueDateTagUrgency.Normal
+    DueDateUrgency.Warning -> DueDateTagUrgency.Warning
+    DueDateUrgency.Overdue -> DueDateTagUrgency.Overdue
 }

@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
@@ -30,7 +29,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,8 +41,8 @@ import net.onefivefour.echolist.core.tasks.domain.DueDateUrgencyCalculator
 import net.onefivefour.echolist.core.tasks.domain.model.DueDateUrgency
 import net.onefivefour.echolist.core.tasks.domain.model.MainTask
 import net.onefivefour.echolist.core.tasks.domain.model.SubTask
-import net.onefivefour.echolist.core.designsystem.ui.components.DueDateTag
-import net.onefivefour.echolist.core.designsystem.ui.components.relativeDueDateText
+import net.onefivefour.echolist.core.designsystem.ui.components.DueDateTagForDate
+import net.onefivefour.echolist.core.designsystem.ui.components.DueDateTagUrgency
 import net.onefivefour.echolist.core.designsystem.ui.components.ElTextField
 import net.onefivefour.echolist.core.designsystem.ui.components.GradientBackground
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
@@ -138,14 +136,11 @@ internal fun MainTaskCard(
                                 delay(1.minutes)
                             }
                         }
-                        val (backgroundColor, contentColor) = resolveUrgencyColors(
-                            DueDateUrgencyCalculator.computeUrgency(dueDate, today)
-                        )
-                        DueDateTag(
-                            label = relativeDueDateText(dueDate, today),
+                        DueDateTagForDate(
+                            dueDate = dueDate,
+                            today = today,
+                            urgency = DueDateUrgencyCalculator.computeUrgency(dueDate, today).toTagUrgency(),
                             isRecurring = mainTask.recurrenceState.text.isNotEmpty(),
-                            backgroundColor = backgroundColor,
-                            contentColor = contentColor,
                             onClick = onNavigateToSettings
                         )
                     }
@@ -211,22 +206,10 @@ internal fun MainTaskCard(
     }
 }
 
-@Composable
-internal fun resolveUrgencyColors(urgency: DueDateUrgency): Pair<Color, Color> {
-    return when (urgency) {
-        DueDateUrgency.Normal -> Pair(
-            EchoListTheme.materialColors.surfaceVariant,
-            EchoListTheme.materialColors.onSurfaceVariant
-        )
-        DueDateUrgency.Warning -> Pair(
-            EchoListTheme.echoListColorScheme.warning,
-            EchoListTheme.echoListColorScheme.onWarning
-        )
-        DueDateUrgency.Overdue -> Pair(
-            EchoListTheme.materialColors.error,
-            EchoListTheme.materialColors.onError
-        )
-    }
+private fun DueDateUrgency.toTagUrgency(): DueDateTagUrgency = when (this) {
+    DueDateUrgency.Normal -> DueDateTagUrgency.Normal
+    DueDateUrgency.Warning -> DueDateTagUrgency.Warning
+    DueDateUrgency.Overdue -> DueDateTagUrgency.Overdue
 }
 
 @Preview
