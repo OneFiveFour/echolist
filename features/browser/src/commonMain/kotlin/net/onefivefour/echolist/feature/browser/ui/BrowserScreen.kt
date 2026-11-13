@@ -38,6 +38,9 @@ internal fun BrowserScreen(
     onTaskClick: (taskListId: String) -> Unit = {},
     onDeleteCurrentFolderClick: () -> Unit = {},
     onRenameCurrentFolderClick: () -> Unit = {},
+    onTaskPeekClick: () -> Unit = {},
+    canNavigateBack: Boolean = false,
+    onBackClick: () -> Unit = {},
     createItemCallbacks: CreateItemCallbacks = CreateItemCallbacks(),
     createFolderUiState: CreateFolderUiState = CreateFolderUiState(),
     onFolderNameChange: (String) -> Unit = {},
@@ -130,7 +133,10 @@ internal fun BrowserScreen(
 
         BottomNavigation(
             createItemCallbacks = createItemCallbacks,
-            onOpenTaskNotifications = onOpenTaskNotifications
+            onOpenTaskNotifications = onOpenTaskNotifications,
+            onTaskPeekClick = onTaskPeekClick,
+            canNavigateBack = canNavigateBack,
+            onBackClick = onBackClick
         )
 
         CreateFolderDialog(

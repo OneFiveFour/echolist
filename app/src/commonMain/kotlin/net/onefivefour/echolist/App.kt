@@ -138,7 +138,8 @@ private fun AuthenticatedApp(
             onDebugReminder = onDebugReminder
         )
 
-        if (canNavigateBack) {
+        val isBrowserRoute = backStack.lastOrNull() is BrowserRoute
+        if (canNavigateBack && !isBrowserRoute) {
             RoundIconButton(
                 iconRes = Res.drawable.ic_arrow_back,
                 onClick = { backStack.removeLastOrNull() },
@@ -209,7 +210,10 @@ private fun AuthenticatedNavDisplay(
                     onOpenFolder = { backStack.add(BrowserRoute(it)) },
                     onOpenNote = { backStack.add(EditNoteRoute(route.parentDir, it)) },
                     onOpenTaskList = { backStack.add(EditTaskListRoute(route.parentDir, it)) },
-                    onOpenTaskNotifications = { backStack.add(TaskNotificationsRoute) }
+                    onOpenTaskNotifications = { backStack.add(TaskNotificationsRoute) },
+                    canNavigateBack = canNavigateBack,
+                    onBackClick = { backStack.removeLastOrNull() },
+                    onTaskPeekClick = {}
                 )
             }
 

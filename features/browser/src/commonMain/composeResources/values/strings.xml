@@ -3,4 +3,9 @@
     <string name="home_title">Home</string>
     <string name="folder">Folder</string>
     <string name="task_notifications">Task Notifications</string>
+    <string name="create_folder">New folder</string>
+    <string name="create_note">New note</string>
+    <string name="create_task_list">New task list</string>
+    <string name="task_peek">Task peek</string>
+    <string name="navigate_back">Navigate back</string>
 </resources>
