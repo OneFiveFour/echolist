@@ -22,6 +22,7 @@ import net.onefivefour.echolist.core.notifications.domain.ReminderState
 import net.onefivefour.echolist.core.notifications.domain.ReminderStore
 import net.onefivefour.echolist.core.tasks.domain.model.CreateTaskListParams
 import net.onefivefour.echolist.core.tasks.domain.model.MainTask
+import net.onefivefour.echolist.core.tasks.domain.model.MainTaskPeek
 import net.onefivefour.echolist.core.tasks.domain.model.TaskList
 import net.onefivefour.echolist.core.tasks.domain.model.TaskListEntry
 import net.onefivefour.echolist.core.tasks.domain.model.UpcomingMainTask
@@ -156,6 +157,7 @@ private class NotificationFixture {
         override suspend fun getTaskList(taskListId: String): Result<TaskList> = error("Unexpected task-list fetch")
         override suspend fun getMainTask(mainTaskId: String): Result<MainTask> = error("Unexpected task fetch")
         override suspend fun listTaskLists(parentDir: String): Result<List<TaskListEntry>> = error("Unexpected directory fetch")
+        override suspend fun listMainTaskPeek(parentDir: String): Result<List<MainTaskPeek>> = error("Unexpected peek fetch")
         override suspend fun updateTaskList(params: UpdateTaskListParams): Result<TaskList> = error("Unexpected update")
         override suspend fun deleteTaskList(taskListId: String): Result<Unit> = error("Unexpected delete")
     }

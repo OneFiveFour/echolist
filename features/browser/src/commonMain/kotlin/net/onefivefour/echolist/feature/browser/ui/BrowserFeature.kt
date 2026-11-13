@@ -17,8 +17,7 @@ fun BrowserFeature(
     onOpenTaskList: (String?) -> Unit,
     onOpenTaskNotifications: () -> Unit,
     canNavigateBack: Boolean = false,
-    onBackClick: () -> Unit = {},
-    onTaskPeekClick: () -> Unit = {}
+    onBackClick: () -> Unit = {}
 ) {
     val browserViewModel =
         koinViewModel<BrowserViewModel>(key = parentDir) { parametersOf(parentDir) }
@@ -49,6 +48,11 @@ fun BrowserFeature(
 
     val renameFolderUiState by renameFolderViewModel.uiState.collectAsStateWithLifecycle()
 
+    val taskPeekViewModel =
+        koinViewModel<TaskPeekViewModel>(key = "taskPeek-$parentDir") { parametersOf(parentDir) }
+
+    val taskPeekUiState by taskPeekViewModel.uiState.collectAsStateWithLifecycle()
+
     LaunchedEffect(renameFolderViewModel) {
         renameFolderViewModel.navigateToFolder.collect { newPath ->
             onReplaceFolder(newPath)
@@ -69,7 +73,8 @@ fun BrowserFeature(
         onNoteClick = { onOpenNote(it) },
         onTaskClick = { onOpenTaskList(it) },
         onOpenTaskNotifications = onOpenTaskNotifications,
-        onTaskPeekClick = onTaskPeekClick,
+        onTaskPeekClick = taskPeekViewModel::toggle,
+        taskPeekUiState = taskPeekUiState,
         canNavigateBack = canNavigateBack,
         onBackClick = onBackClick,
         onDeleteCurrentFolderClick = browserViewModel::onDeleteCurrentFolderClick,

@@ -106,6 +106,9 @@ class TaskListRepositoryPropertyTest : FunSpec({
             throw exception
         override suspend fun listTaskLists(request: ListTaskListsRequest): ListTaskListsResponse =
             throw exception
+        override suspend fun listMainTaskPeek(
+            request: tasks.v1.ListMainTaskPeekRequest
+        ): tasks.v1.ListMainTaskPeekResponse = throw exception
         override suspend fun listUpcomingMainTasks(
             request: tasks.v1.ListUpcomingMainTasksRequest
         ): tasks.v1.ListUpcomingMainTasksResponse = throw exception
@@ -137,6 +140,14 @@ class TaskListRepositoryPropertyTest : FunSpec({
         checkAll(PropTestConfig(iterations = 100), Arb.string(1..100), arbException) { path, ex ->
             val repo = newRepo(ThrowingDataSource(ex))
             val result = repo.listTaskLists(path)
+            result.shouldBeFailure { it shouldBe ex }
+        }
+    }
+
+    test("Feature: proto-api-update, Property 7: listMainTaskPeek propagates exception as Result.failure") {
+        checkAll(PropTestConfig(iterations = 100), Arb.string(1..100), arbException) { path, ex ->
+            val repo = newRepo(ThrowingDataSource(ex))
+            val result = repo.listMainTaskPeek(path)
             result.shouldBeFailure { it shouldBe ex }
         }
     }

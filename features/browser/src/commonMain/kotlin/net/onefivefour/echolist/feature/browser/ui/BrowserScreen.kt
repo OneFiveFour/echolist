@@ -39,6 +39,7 @@ internal fun BrowserScreen(
     onDeleteCurrentFolderClick: () -> Unit = {},
     onRenameCurrentFolderClick: () -> Unit = {},
     onTaskPeekClick: () -> Unit = {},
+    taskPeekUiState: TaskPeekUiState = TaskPeekUiState(),
     canNavigateBack: Boolean = false,
     onBackClick: () -> Unit = {},
     createItemCallbacks: CreateItemCallbacks = CreateItemCallbacks(),
@@ -102,31 +103,38 @@ internal fun BrowserScreen(
 
         Spacer(modifier = Modifier.height(EchoListTheme.dimensions.m))
 
-        val pullToRefreshState = rememberPullToRefreshState()
+        if (taskPeekUiState.isVisible) {
+            TaskPeekOverview(
+                uiState = taskPeekUiState,
+                modifier = Modifier.weight(1f)
+            )
+        } else {
+            val pullToRefreshState = rememberPullToRefreshState()
 
-        PullToRefreshBox(
-            modifier = Modifier.weight(1f),
-            isRefreshing = uiState.isRefreshing,
-            onRefresh = onRefresh,
-            state = pullToRefreshState,
-            indicator = {
-                PullToRefreshDefaults.Indicator(
-                    state = pullToRefreshState,
-                    isRefreshing = uiState.isRefreshing,
-                    modifier = Modifier.align(Alignment.TopCenter),
-                    containerColor = EchoListTheme.materialColors.primary,
-                    color = EchoListTheme.materialColors.onPrimary
+            PullToRefreshBox(
+                modifier = Modifier.weight(1f),
+                isRefreshing = uiState.isRefreshing,
+                onRefresh = onRefresh,
+                state = pullToRefreshState,
+                indicator = {
+                    PullToRefreshDefaults.Indicator(
+                        state = pullToRefreshState,
+                        isRefreshing = uiState.isRefreshing,
+                        modifier = Modifier.align(Alignment.TopCenter),
+                        containerColor = EchoListTheme.materialColors.primary,
+                        color = EchoListTheme.materialColors.onPrimary
+                    )
+                }
+            ) {
+                FileOverview(
+                    fileEntries = uiState.fileEntries,
+                    isLoading = uiState.isLoading,
+                    error = uiState.error,
+                    onFolderClick = onFolderClick,
+                    onNoteClick = onNoteClick,
+                    onTaskClick = onTaskClick
                 )
             }
-        ) {
-            FileOverview(
-                fileEntries = uiState.fileEntries,
-                isLoading = uiState.isLoading,
-                error = uiState.error,
-                onFolderClick = onFolderClick,
-                onNoteClick = onNoteClick,
-                onTaskClick = onTaskClick
-            )
         }
 
         Spacer(modifier = Modifier.height(EchoListTheme.dimensions.xxl))

@@ -212,8 +212,7 @@ private fun AuthenticatedNavDisplay(
                     onOpenTaskList = { backStack.add(EditTaskListRoute(route.parentDir, it)) },
                     onOpenTaskNotifications = { backStack.add(TaskNotificationsRoute) },
                     canNavigateBack = canNavigateBack,
-                    onBackClick = { backStack.removeLastOrNull() },
-                    onTaskPeekClick = {}
+                    onBackClick = { backStack.removeLastOrNull() }
                 )
             }
 

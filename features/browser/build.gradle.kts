@@ -10,6 +10,8 @@ kotlin.sourceSets.getByName("commonMain").dependencies {
     implementation(project(":core:files"))
     implementation(project(":core:networking"))
     implementation(project(":core:protocol"))
+    implementation(project(":core:tasks"))
+    implementation(libs.kotlinx.datetime)
     implementation(libs.compose.materialIconsExtended)
 }
 

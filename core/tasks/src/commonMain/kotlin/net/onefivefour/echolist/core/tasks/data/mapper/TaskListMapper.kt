@@ -4,6 +4,7 @@ import kotlinx.datetime.LocalDate
 import net.onefivefour.echolist.core.networking.data.error.NetworkException
 import net.onefivefour.echolist.core.tasks.domain.model.CreateTaskListParams
 import net.onefivefour.echolist.core.tasks.domain.model.MainTask
+import net.onefivefour.echolist.core.tasks.domain.model.MainTaskPeek
 import net.onefivefour.echolist.core.tasks.domain.model.SubTask
 import net.onefivefour.echolist.core.tasks.domain.model.TaskList
 import net.onefivefour.echolist.core.tasks.domain.model.TaskListEntry
@@ -13,6 +14,7 @@ import tasks.v1.CreateTaskListRequest
 import tasks.v1.CreateTaskListResponse
 import tasks.v1.GetMainTaskResponse
 import tasks.v1.GetTaskListResponse
+import tasks.v1.ListMainTaskPeekResponse
 import tasks.v1.ListTaskListsResponse
 import tasks.v1.ListUpcomingMainTasksResponse
 import tasks.v1.UpdateTaskListRequest
@@ -89,6 +91,35 @@ internal object TaskListMapper {
     }
 
     fun toDomain(proto: ListUpcomingMainTasksResponse): List<UpcomingMainTask> =
+        proto.tasks.map { toDomain(it) }
+
+    fun toDomain(proto: tasks.v1.MainTaskPeek): MainTaskPeek {
+        val dueDate = if (proto.due_date.isEmpty()) {
+            null
+        } else {
+            try {
+                require(Regex("[0-9]{4}-[0-9]{2}-[0-9]{2}").matches(proto.due_date)) {
+                    "Expected YYYY-MM-DD"
+                }
+                LocalDate.parse(proto.due_date)
+            } catch (e: IllegalArgumentException) {
+                throw NetworkException.SerializationError(
+                    "MainTaskPeek.due_date is not a valid YYYY-MM-DD date",
+                    e
+                )
+            }
+        }
+        return MainTaskPeek(
+            mainTaskId = proto.main_task_id,
+            description = proto.description,
+            isDone = proto.is_done,
+            dueDate = dueDate,
+            taskListId = proto.task_list_id,
+            taskListName = proto.task_list_name
+        )
+    }
+
+    fun toDomain(proto: ListMainTaskPeekResponse): List<MainTaskPeek> =
         proto.tasks.map { toDomain(it) }
 
     fun toEntry(proto: tasks.v1.TaskList): TaskListEntry = TaskListEntry(

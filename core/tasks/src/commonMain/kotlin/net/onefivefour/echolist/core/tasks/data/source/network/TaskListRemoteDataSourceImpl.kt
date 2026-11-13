@@ -9,6 +9,8 @@ import tasks.v1.GetMainTaskRequest
 import tasks.v1.GetMainTaskResponse
 import tasks.v1.GetTaskListRequest
 import tasks.v1.GetTaskListResponse
+import tasks.v1.ListMainTaskPeekRequest
+import tasks.v1.ListMainTaskPeekResponse
 import tasks.v1.ListTaskListsRequest
 import tasks.v1.ListTaskListsResponse
 import tasks.v1.ListUpcomingMainTasksRequest
@@ -53,6 +55,15 @@ internal class TaskListRemoteDataSourceImpl(
             request = request,
             requestSerializer = { ListTaskListsRequest.ADAPTER.encode(it) },
             responseDeserializer = { ListTaskListsResponse.ADAPTER.decode(it) }
+        ).getOrThrow()
+    }
+
+    override suspend fun listMainTaskPeek(request: ListMainTaskPeekRequest): ListMainTaskPeekResponse {
+        return client.call(
+            path = "/tasks.v1.TaskListService/ListMainTaskPeek",
+            request = request,
+            requestSerializer = { ListMainTaskPeekRequest.ADAPTER.encode(it) },
+            responseDeserializer = { ListMainTaskPeekResponse.ADAPTER.decode(it) }
         ).getOrThrow()
     }
 
