@@ -218,9 +218,11 @@ class AuthInterceptorPropertyTest : FunSpec({
             storage.put(StorageKeys.ACCESS_TOKEN, "expired-access")
             storage.put(StorageKeys.REFRESH_TOKEN, "valid-refresh")
             val repo = fakeAuthRepository(storage) { Result.failure(failure) }
-            val client = HttpClient(MockEngine {
-                respond("unauthorized", HttpStatusCode.Unauthorized)
-            }) {
+            val client = HttpClient(
+                MockEngine {
+                    respond("unauthorized", HttpStatusCode.Unauthorized)
+                }
+            ) {
                 install(AuthInterceptor) {
                     authRepository = repo
                     authEventBus = AuthEventBus()
@@ -247,16 +249,18 @@ class AuthInterceptorPropertyTest : FunSpec({
             storage.put(StorageKeys.ACCESS_TOKEN, "renewed")
             Result.success("renewed")
         }
-        val client = HttpClient(MockEngine { request ->
-            if (request.headers[HttpHeaders.Authorization] == "Bearer expired") {
-                initialRequests++
-                if (initialRequests == 2) bothStarted.complete(Unit)
-                bothStarted.await()
-                respond("unauthorized", HttpStatusCode.Unauthorized)
-            } else {
-                respond("ok", HttpStatusCode.OK)
+        val client = HttpClient(
+            MockEngine { request ->
+                if (request.headers[HttpHeaders.Authorization] == "Bearer expired") {
+                    initialRequests++
+                    if (initialRequests == 2) bothStarted.complete(Unit)
+                    bothStarted.await()
+                    respond("unauthorized", HttpStatusCode.Unauthorized)
+                } else {
+                    respond("ok", HttpStatusCode.OK)
+                }
             }
-        }) {
+        ) {
             install(AuthInterceptor) {
                 authRepository = repo
                 authEventBus = AuthEventBus()
@@ -274,5 +278,4 @@ class AuthInterceptorPropertyTest : FunSpec({
             client.close()
         }
     }
-
 })

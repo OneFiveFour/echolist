@@ -23,8 +23,12 @@ class NotificationAccountTest : FunSpec({
                 }
                 return value
             }
-            override fun put(key: String, value: String) { values[key] = value }
-            override fun delete(key: String) { values.remove(key) }
+            override fun put(key: String, value: String) {
+                values[key] = value
+            }
+            override fun delete(key: String) {
+                values.remove(key)
+            }
         }
         val account = NotificationAccount(storage)
         val executor = Executors.newFixedThreadPool(2)

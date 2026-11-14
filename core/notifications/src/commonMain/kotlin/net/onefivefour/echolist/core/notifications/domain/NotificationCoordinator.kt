@@ -185,7 +185,9 @@ class NotificationCoordinator(
             val account = accounts.currentAccountId() ?: return@withLock false
             if (pendingMutations != 0 || state.revision != snapshot.revision ||
                 state.activeAccount != snapshot.activeAccount || state.activeAccount != account
-            ) return@withLock false
+            ) {
+                return@withLock false
+            }
             if (state.preferences[reminderKey(account, taskId)] == false || !permission.isGranted()) {
                 return@withLock false
             }

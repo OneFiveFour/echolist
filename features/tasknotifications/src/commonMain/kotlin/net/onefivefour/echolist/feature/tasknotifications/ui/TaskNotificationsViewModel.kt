@@ -40,7 +40,9 @@ internal class TaskNotificationsViewModel(
     private val state = MutableStateFlow(TaskNotificationsUiState())
     val uiState = state.asStateFlow()
 
-    init { load() }
+    init {
+        load()
+    }
 
     fun load() {
         if (state.value.currentlyChangingTaskIds.isNotEmpty()) return
@@ -64,17 +66,24 @@ internal class TaskNotificationsViewModel(
     }
 
     fun setEnabled(taskId: String, isEnabled: Boolean) {
-        if (state.value.isLoading || taskId in state.value.currentlyChangingTaskIds || state.value.tasks.none { it.taskId == taskId }) return
+        if (state.value.isLoading || taskId in state.value.currentlyChangingTaskIds || state.value.tasks.none {
+                it.taskId == taskId
+            }
+        ) {
+            return
+        }
         state.update { it.copy(currentlyChangingTaskIds = it.currentlyChangingTaskIds + taskId, error = null) }
         viewModelScope.launch {
             try {
                 notifications.setEnabled(taskId, isEnabled)
                 state.update { current ->
-                    current.copy(enabledTaskIds = if (isEnabled) {
-                        current.enabledTaskIds + taskId
-                    } else {
-                        current.enabledTaskIds - taskId
-                    })
+                    current.copy(
+                        enabledTaskIds = if (isEnabled) {
+                            current.enabledTaskIds + taskId
+                        } else {
+                            current.enabledTaskIds - taskId
+                        }
+                    )
                 }
                 if (isEnabled) {
                     if (!permissionChecker.isGranted() && !permissionRequester.request()) {

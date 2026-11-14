@@ -26,7 +26,10 @@ class TaskReminderIntegrationTest : FunSpec({
         listOf("", "FREQ=DAILY").forEach { recurrence ->
             val fixture = TaskReminderFixture()
             val task = tasks.v1.MainTask(
-                id = "task", description = "Preview me", due_date = "2095-01-01", recurrence = recurrence
+                id = "task",
+                description = "Preview me",
+                due_date = "2095-01-01",
+                recurrence = recurrence
             )
             fixture.source.getTaskListResult = Result.success(
                 GetTaskListResponse(task_list = tasks.v1.TaskList(id = "list", tasks = listOf(task)))
@@ -58,9 +61,11 @@ class TaskReminderIntegrationTest : FunSpec({
                     GetTaskListResponse(
                         task_list = tasks.v1.TaskList(
                             id = "list",
-                            tasks = listOf(tasks.v1.MainTask(
-                                id = "task", due_date = date, is_done = done, recurrence = recurrence
-                            ))
+                            tasks = listOf(
+                                tasks.v1.MainTask(
+                                    id = "task", due_date = date, is_done = done, recurrence = recurrence
+                                )
+                            )
                         )
                     )
                 )
@@ -78,7 +83,11 @@ class TaskReminderIntegrationTest : FunSpec({
         previewTaskNotification(fixture.repository, fixture.coordinator, "list", "task") shouldBe true
         fixture.coordinator.isCurrentOccurrence("account", "task", "2095-01-01") shouldBe true
         completeRecurringTaskFromNotification(
-            fixture.repository, fixture.scheduler, "list", "task", expectedDueDate = "2095-01-01"
+            fixture.repository,
+            fixture.scheduler,
+            "list",
+            "task",
+            expectedDueDate = "2095-01-01"
         ).getOrThrow()
         fixture.source.lastUpdateRequest!!.tasks.single().is_done shouldBe true
     }
@@ -95,7 +104,11 @@ class TaskReminderIntegrationTest : FunSpec({
         fixture.shown.size shouldBe 1
 
         completeRecurringTaskFromNotification(
-            fixture.repository, fixture.scheduler, "list", "task", expectedDueDate = task.due_date
+            fixture.repository,
+            fixture.scheduler,
+            "list",
+            "task",
+            expectedDueDate = task.due_date
         ).getOrThrow()
 
         fixture.source.lastUpdateRequest!!.tasks.single().is_done shouldBe true

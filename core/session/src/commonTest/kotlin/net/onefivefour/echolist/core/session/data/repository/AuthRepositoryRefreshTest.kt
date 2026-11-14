@@ -23,9 +23,13 @@ class AuthRepositoryRefreshTest : FunSpec({
             ): Result<Res> {
                 path shouldBe "/auth.v1.AuthService/RefreshToken"
                 sentTokens += auth.v1.RefreshTokenRequest.ADAPTER.decode(requestSerializer(request)).refresh_token
-                return Result.success(responseDeserializer(auth.v1.RefreshTokenResponse.ADAPTER.encode(
-                    auth.v1.RefreshTokenResponse(access_token = "new-access", refresh_token = "new-refresh")
-                )))
+                return Result.success(
+                    responseDeserializer(
+                        auth.v1.RefreshTokenResponse.ADAPTER.encode(
+                            auth.v1.RefreshTokenResponse(access_token = "new-access", refresh_token = "new-refresh")
+                        )
+                    )
+                )
             }
         }
         val repo = AuthRepositoryImpl(storage, client, NetworkConfigProvider(storage))

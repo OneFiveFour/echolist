@@ -74,11 +74,13 @@ internal fun TaskNotifications(
         )
         state.error?.let { error ->
             Text(
-                text = stringResource(when (error) {
-                    NotificationError.Load -> Res.string.task_notifications_load_error
-                    NotificationError.Save -> Res.string.task_notifications_save_error
-                    NotificationError.Permission -> Res.string.task_notifications_permission_denied
-                }),
+                text = stringResource(
+                    when (error) {
+                        NotificationError.Load -> Res.string.task_notifications_load_error
+                        NotificationError.Save -> Res.string.task_notifications_save_error
+                        NotificationError.Permission -> Res.string.task_notifications_permission_denied
+                    }
+                ),
                 style = EchoListTheme.typography.bodyMedium,
                 color = EchoListTheme.materialColors.error
             )
@@ -114,12 +116,15 @@ internal fun TaskNotifications(
                             val (backgroundColor, contentColor) = when (
                                 DueDateUrgencyCalculator.computeUrgency(task.dueDate, today)
                             ) {
-                                DueDateUrgency.Normal -> EchoListTheme.materialColors.surfaceVariant to
-                                    EchoListTheme.materialColors.onSurfaceVariant
-                                DueDateUrgency.Warning -> EchoListTheme.echoListColorScheme.warning to
-                                    EchoListTheme.echoListColorScheme.onWarning
-                                DueDateUrgency.Overdue -> EchoListTheme.materialColors.error to
-                                    EchoListTheme.materialColors.onError
+                                DueDateUrgency.Normal ->
+                                    EchoListTheme.materialColors.surfaceVariant to
+                                        EchoListTheme.materialColors.onSurfaceVariant
+                                DueDateUrgency.Warning ->
+                                    EchoListTheme.echoListColorScheme.warning to
+                                        EchoListTheme.echoListColorScheme.onWarning
+                                DueDateUrgency.Overdue ->
+                                    EchoListTheme.materialColors.error to
+                                        EchoListTheme.materialColors.onError
                             }
                             DueDateTag(
                                 label = relativeDueDateText(task.dueDate, today),

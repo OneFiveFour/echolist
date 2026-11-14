@@ -42,13 +42,15 @@ class TaskNotificationsViewModelTest : FunSpec({
             val fixture = NotificationFixture()
             val tomorrow = fixture.task.copy(taskId = "tomorrow", dueDate = LocalDate(2028, 2, 29))
             val sameDate = tomorrow.copy(taskId = "same-date", title = "Same date", isRecurring = false)
-            fixture.upcomingResult = Result.success(listOf(
-                fixture.task,
-                fixture.task.copy(taskId = "today", dueDate = LocalDate(2028, 2, 28)),
-                tomorrow,
-                sameDate,
-                fixture.task.copy(taskId = "past", dueDate = LocalDate(2028, 2, 27))
-            ))
+            fixture.upcomingResult = Result.success(
+                listOf(
+                    fixture.task,
+                    fixture.task.copy(taskId = "today", dueDate = LocalDate(2028, 2, 28)),
+                    tomorrow,
+                    sameDate,
+                    fixture.task.copy(taskId = "past", dueDate = LocalDate(2028, 2, 27))
+                )
+            )
             fixture.coordinator.setEnabled("tomorrow", false)
             val vm = fixture.viewModel()
             advanceUntilIdle()
@@ -156,8 +158,12 @@ private class NotificationFixture {
         override suspend fun createTaskList(params: CreateTaskListParams): Result<TaskList> = error("Unexpected create")
         override suspend fun getTaskList(taskListId: String): Result<TaskList> = error("Unexpected task-list fetch")
         override suspend fun getMainTask(mainTaskId: String): Result<MainTask> = error("Unexpected task fetch")
-        override suspend fun listTaskLists(parentDir: String): Result<List<TaskListEntry>> = error("Unexpected directory fetch")
-        override suspend fun listMainTaskPeek(parentDir: String): Result<List<MainTaskPeek>> = error("Unexpected peek fetch")
+        override suspend fun listTaskLists(
+            parentDir: String
+        ): Result<List<TaskListEntry>> = error("Unexpected directory fetch")
+        override suspend fun listMainTaskPeek(
+            parentDir: String
+        ): Result<List<MainTaskPeek>> = error("Unexpected peek fetch")
         override suspend fun updateTaskList(params: UpdateTaskListParams): Result<TaskList> = error("Unexpected update")
         override suspend fun deleteTaskList(taskListId: String): Result<Unit> = error("Unexpected delete")
     }
@@ -180,9 +186,15 @@ private class NotificationFixture {
             }
         },
         object : ReminderPlatform {
-            override suspend fun schedule(reminder: Reminder) { scheduled[reminder.taskId] = reminder }
-            override suspend fun cancelPending(reminder: Reminder) { scheduled.remove(reminder.taskId) }
-            override suspend fun dismiss(reminder: Reminder) { dismissed.add(reminder.taskId) }
+            override suspend fun schedule(reminder: Reminder) {
+                scheduled[reminder.taskId] = reminder
+            }
+            override suspend fun cancelPending(reminder: Reminder) {
+                scheduled.remove(reminder.taskId)
+            }
+            override suspend fun dismiss(reminder: Reminder) {
+                dismissed.add(reminder.taskId)
+            }
             override suspend fun show(reminder: Reminder) = true
         },
         permission,
@@ -196,14 +208,19 @@ private class NotificationFixture {
 
     fun viewModel() =
         TaskNotificationsViewModel(
-            repository, coordinator, permission,
+            repository,
+            coordinator,
+            permission,
             object : NotificationPermissionRequester {
                 override suspend fun request(): Boolean {
                     permissionRequests++
                     return permissionGranted
                 }
             },
-            NotificationSyncHandler { syncCount++; Result.success(Unit) },
+            NotificationSyncHandler {
+                syncCount++
+                Result.success(Unit)
+            },
             clock
         )
 }

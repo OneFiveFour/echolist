@@ -23,8 +23,11 @@ internal fun ComponentActivity.debugReminderAction(): ((String, String) -> Unit)
         }
         Toast.makeText(
             this@debugReminderAction,
-            if (shown) "Test-Erinnerung gesendet." else
-                "Keine Erinnerung gesendet. Task speichern, Erinnerung aktivieren und Berechtigung prüfen.",
+            if (shown) {
+                "Test-Erinnerung gesendet."
+            } else {
+                "Keine Erinnerung gesendet. Task speichern, Erinnerung aktivieren und Berechtigung prüfen."
+            },
             Toast.LENGTH_LONG
         ).show()
     }

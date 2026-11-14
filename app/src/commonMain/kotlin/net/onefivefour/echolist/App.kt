@@ -93,7 +93,9 @@ fun App(
                 AuthState.Loading -> Unit
                 AuthState.Unauthenticated -> UnauthenticatedApp(authViewModel)
                 AuthState.Authenticated -> AuthenticatedApp(
-                    notificationTarget, onNotificationTargetConsumed, onDebugReminder
+                    notificationTarget,
+                    onNotificationTargetConsumed,
+                    onDebugReminder
                 )
             }
         }
