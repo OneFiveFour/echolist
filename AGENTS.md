@@ -19,6 +19,10 @@
 - Reminder preferences/history live in `core:notifications`, separate from the note cache. Use its coordinator for scheduling and changes; preserve account isolation, occurrence deduplication and offline catch-up. Due-date reminders do not require recurrence.
 - Supported targets are Android, JVM desktop, JS and WasmJS. There is no active iOS target. `composeApp/` is not an included Gradle module; do not use leftover build output as source.
 
+## Naming conventions
+
+- Boolean variables, properties and parameters must use a meaningful predicate prefix such as `is`, `are`, `has`, `can` or `should` (for example `isDesktop`, `isPasswordVisible`, `hasErrors`). Apply this to inferred Boolean types, delegated state and tests as well as explicitly typed Booleans. Name Boolean-returning functions as predicates where appropriate. Preserve names required by external APIs and overrides.
+
 ## Boundaries and verification
 
 - UI depends on domain contracts; data implements them; DI wires implementations. Domain must not import UI, platform UI, Koin, Ktor, SQLDelight, generated protocol messages or data implementations.
