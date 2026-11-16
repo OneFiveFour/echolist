@@ -46,12 +46,12 @@ class FoundationIntegrationTest : FunSpec({
 
     test("bundled type scale renders in both modes and the app background is solid") {
         SwingUtilities.invokeAndWait {
-            for (dark in listOf(false, true)) {
+            for (isDarkTheme in listOf(false, true)) {
                 val manager = ThemeManager(listOf(EchoListDefaultTheme))
-                val scheme = if (dark) EchoListDefaultTheme.materialColorSchemeDark
+                val scheme = if (isDarkTheme) EchoListDefaultTheme.materialColorSchemeDark
                     else EchoListDefaultTheme.materialColorSchemeLight
                 val image = renderComposeScene(900, 500) {
-                    EchoListTheme(darkTheme = dark, themeManager = manager) {
+                    EchoListTheme(isDarkTheme = isDarkTheme, themeManager = manager) {
                         EchoListBackground {
                             Column(
                                 modifier = Modifier.fillMaxSize().padding(32.dp),
@@ -85,7 +85,7 @@ class FoundationIntegrationTest : FunSpec({
                     for ((x, y) in listOf(0 to 0, 899 to 0, 0 to 499, 899 to 499)) {
                         rendered.getRGB(x, y) shouldBe scheme.background.toArgb()
                     }
-                    File("build/foundation-${if (dark) "dark" else "light"}.png").writeBytes(bytes)
+                    File("build/foundation-${if (isDarkTheme) "dark" else "light"}.png").writeBytes(bytes)
                 }
             }
         }

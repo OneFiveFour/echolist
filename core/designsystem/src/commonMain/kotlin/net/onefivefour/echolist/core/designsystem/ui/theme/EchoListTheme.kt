@@ -5,6 +5,9 @@ import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Typography
+import androidx.compose.material3.adaptive.WindowAdaptiveInfo
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
@@ -14,7 +17,21 @@ import net.onefivefour.echolist.core.designsystem.ui.theme.colorscheme.EchoListD
 import org.koin.compose.koinInject
 import org.koin.mp.KoinPlatform
 
+internal val LocalAdaptiveInfo = compositionLocalOf<WindowAdaptiveInfo> {
+    error("WindowAdaptiveInfo not provided by EchoListTheme")
+}
+
+internal val LocalDarkTheme = androidx.compose.runtime.compositionLocalOf { false }
+
 object EchoListTheme {
+    val isDarkTheme: Boolean
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalDarkTheme.current
+    val adaptiveInfo: WindowAdaptiveInfo
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalAdaptiveInfo.current
     val echoListColorScheme: EchoListColorScheme
         @Composable
         @ReadOnlyComposable
@@ -43,7 +60,7 @@ object EchoListTheme {
 
 @Composable
 fun EchoListTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    isDarkTheme: Boolean = isSystemInDarkTheme(),
     themeManager: ThemeManager? = null,
     typeScale: EchoListTypography = echoListTypography(),
     content: @Composable () -> Unit
@@ -60,17 +77,20 @@ fun EchoListTheme(
     }
     val colorTheme by resolvedThemeManager.selectedTheme.collectAsState()
     val materialColorScheme = when {
-        darkTheme -> colorTheme.materialColorSchemeDark
+        isDarkTheme -> colorTheme.materialColorSchemeDark
         else -> colorTheme.materialColorSchemeLight
     }
     val echoListColorScheme = when {
-        darkTheme -> colorTheme.echoListColorSchemeDark
+        isDarkTheme -> colorTheme.echoListColorSchemeDark
         else -> colorTheme.echoListColorSchemeLight
     }
 
     val typography = typeScale.toMaterialTypography()
+    val adaptiveInfo = currentWindowAdaptiveInfoV2()
 
     CompositionLocalProvider(
+        LocalAdaptiveInfo provides adaptiveInfo,
+        LocalDarkTheme provides isDarkTheme,
         LocalEchoListTypography provides typeScale,
         LocalTypography provides typography,
         LocalMaterialColors provides materialColorScheme,

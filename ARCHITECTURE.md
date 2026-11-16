@@ -69,6 +69,24 @@ Principal core dependencies:
 
 Notification code calls `TaskCompletionHandler`; `core:tasks` supplies its implementation. Thus notification infrastructure does not depend on task repositories. Login/refresh use a separate unauthenticated HTTP client, while normal requests use the authenticated client; dependency resolution has no auth-client cycle.
 
+## Adaptive UI foundation
+
+`core:designsystem` uses the official Compose Multiplatform Material 3 Adaptive
+library. `EchoListTheme` obtains `currentWindowAdaptiveInfoV2()` once and exposes
+the returned `WindowAdaptiveInfo` through `EchoListTheme.adaptiveInfo`. The full
+standard window size classes (Compact, Medium, Expanded, Large, Extra-large)
+and posture information remain available to all screens on Android, JVM, JS
+and WasmJS. There is no custom window measurement, breakpoint classification,
+Phone/Desktop enum or extra root layout provider. The former custom 720-dp
+boundary has been removed.
+
+Screens select their presentation using the official breakpoint constants;
+future navigation/list-detail screens can consume the same information with
+the official adaptive navigation and pane scaffolds. Login is a special case:
+its large introduction sidebar is shown from Expanded width (840 dp); Compact
+and Medium use the form-only layout. Persistent input/focus state stays above
+adaptive branches and content scrolls when height is insufficient.
+
 ## Navigation and results
 
 `app` defines `BrowserRoute`, `EditNoteRoute`, `EditTaskListRoute`, `MainTaskSettingsRoute` and `TaskNotificationsRoute`. The browser route preserves the former serialized HomeRoute name for saved-state compatibility.
