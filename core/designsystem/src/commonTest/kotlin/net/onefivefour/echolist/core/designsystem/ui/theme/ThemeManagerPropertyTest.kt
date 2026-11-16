@@ -66,23 +66,19 @@ class ThemeManagerPropertyTest : FunSpec({
             materialColorSchemeDark = arbColorSchemeDark().bind(),
             echoListColorSchemeLight = EchoListColorScheme(
                 background = arbColor().bind(),
-                backgroundGradient1 = arbColor().bind(),
-                backgroundGradient2 = arbColor().bind(),
-                backgroundGradient3 = arbColor().bind(),
                 taskColor = arbColor().bind(),
                 noteColor = arbColor().bind(),
                 folderColor = arbColor().bind(),
+                statusNormal = arbColor().bind(),
                 warning = arbColor().bind(),
                 onWarning = arbColor().bind()
             ),
             echoListColorSchemeDark = EchoListColorScheme(
                 background = arbColor().bind(),
-                backgroundGradient1 = arbColor().bind(),
-                backgroundGradient2 = arbColor().bind(),
-                backgroundGradient3 = arbColor().bind(),
                 taskColor = arbColor().bind(),
                 noteColor = arbColor().bind(),
                 folderColor = arbColor().bind(),
+                statusNormal = arbColor().bind(),
                 warning = arbColor().bind(),
                 onWarning = arbColor().bind()
             )

@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.format.DayOfWeekNames
-import net.onefivefour.echolist.core.designsystem.ui.components.GradientBackground
+import net.onefivefour.echolist.core.designsystem.ui.components.EchoListBackground
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 
 private val dayAbbreviations = DayOfWeekNames.ENGLISH_ABBREVIATED.names
@@ -42,7 +42,7 @@ internal fun DailyDetailContent(
 @Composable
 private fun DailyDetailContentPreview() {
     EchoListTheme {
-        GradientBackground {
+        EchoListBackground {
             DailyDetailContent(
                 selectedDays = setOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY),
                 onDayToggled = { _, _ -> }
@@ -55,7 +55,7 @@ private fun DailyDetailContentPreview() {
 @Composable
 private fun DailyDetailContentEmptyPreview() {
     EchoListTheme {
-        GradientBackground {
+        EchoListBackground {
             DailyDetailContent(
                 selectedDays = emptySet(),
                 onDayToggled = { _, _ -> }

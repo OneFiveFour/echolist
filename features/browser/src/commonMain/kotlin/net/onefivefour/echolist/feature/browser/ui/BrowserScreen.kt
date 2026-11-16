@@ -22,7 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import net.onefivefour.echolist.core.designsystem.resources.ic_delete
 import net.onefivefour.echolist.core.designsystem.resources.ic_edit
-import net.onefivefour.echolist.core.designsystem.ui.components.GradientBackground
+import net.onefivefour.echolist.core.designsystem.ui.components.EchoListBackground
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import org.jetbrains.compose.resources.painterResource
 
@@ -167,7 +167,7 @@ internal fun BrowserScreen(
 @Preview
 private fun BrowserScreenPreview() {
     EchoListTheme {
-        GradientBackground {
+        EchoListBackground {
             BrowserScreen(
                 uiState = BrowserUiState(
                     breadcrumbs = listOf(

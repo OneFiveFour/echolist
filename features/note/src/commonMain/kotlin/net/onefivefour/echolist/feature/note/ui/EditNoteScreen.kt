@@ -17,7 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.tooling.preview.Preview
 import net.onefivefour.echolist.core.designsystem.ui.components.EditTitle
-import net.onefivefour.echolist.core.designsystem.ui.components.GradientBackground
+import net.onefivefour.echolist.core.designsystem.ui.components.EchoListBackground
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 
 @Composable
@@ -100,7 +100,7 @@ internal fun EditNoteScreen(
 @Composable
 private fun EditNoteScreenPreview() {
     EchoListTheme {
-        GradientBackground {
+        EchoListBackground {
             EditNoteScreen(
                 uiState = EditNoteUiState(
                     titleState = TextFieldState(initialText = "Title"),

@@ -46,12 +46,10 @@ internal class ResolveUrgencyColorsPropertyTest : FunSpec({
 
     val testEchoListColorScheme = EchoListColorScheme(
         background = Color.Unspecified,
-        backgroundGradient1 = Color.Unspecified,
-        backgroundGradient2 = Color.Unspecified,
-        backgroundGradient3 = Color.Unspecified,
         taskColor = Color.Unspecified,
         noteColor = Color.Unspecified,
         folderColor = Color.Unspecified,
+        statusNormal = testWarning,
         warning = testWarning,
         onWarning = testOnWarning
     )

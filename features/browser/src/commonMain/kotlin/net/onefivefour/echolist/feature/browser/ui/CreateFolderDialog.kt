@@ -19,7 +19,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import net.onefivefour.echolist.core.designsystem.ui.components.ElButton
 import net.onefivefour.echolist.core.designsystem.ui.components.ElOutlinedTextField
-import net.onefivefour.echolist.core.designsystem.ui.components.GradientBackground
+import net.onefivefour.echolist.core.designsystem.ui.components.EchoListBackground
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 
 @Composable
@@ -101,7 +101,7 @@ internal fun CreateFolderDialog(
 @Composable
 internal fun CreateFolderDialogPreview() {
     EchoListTheme {
-        GradientBackground {
+        EchoListBackground {
             CreateFolderDialog(
                 uiState = CreateFolderUiState(
                     isVisible = true,

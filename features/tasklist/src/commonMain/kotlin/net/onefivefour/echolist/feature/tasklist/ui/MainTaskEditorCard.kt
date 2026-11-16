@@ -44,7 +44,7 @@ import net.onefivefour.echolist.core.tasks.domain.model.SubTask
 import net.onefivefour.echolist.core.designsystem.ui.components.DueDateTagForDate
 import net.onefivefour.echolist.core.designsystem.ui.components.DueDateTagUrgency
 import net.onefivefour.echolist.core.designsystem.ui.components.ElTextField
-import net.onefivefour.echolist.core.designsystem.ui.components.GradientBackground
+import net.onefivefour.echolist.core.designsystem.ui.components.EchoListBackground
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import org.jetbrains.compose.resources.painterResource
 import kotlin.time.Clock
@@ -231,7 +231,7 @@ private fun MainTaskCardPreview() {
         )
     }
     EchoListTheme {
-        GradientBackground {
+        EchoListBackground {
             MainTaskCard(
                 mainTask = task,
                 isAutoDelete = false,
@@ -261,7 +261,7 @@ private fun MainTaskCardEmptyPreview() {
         UiMainTask(id = "preview-2")
     }
     EchoListTheme {
-        GradientBackground {
+        EchoListBackground {
             MainTaskCard(
                 mainTask = task,
                 isAutoDelete = false,
@@ -291,7 +291,7 @@ private fun MainTaskCardNoDueDatePreview() {
         UiMainTask(id = "preview-3", description = "Schedule follow-up")
     }
     EchoListTheme {
-        GradientBackground {
+        EchoListBackground {
             MainTaskCard(
                 mainTask = task,
                 isAutoDelete = false,

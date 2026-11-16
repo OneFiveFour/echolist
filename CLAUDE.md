@@ -33,7 +33,7 @@ Use `ARCHITECTURE.md` and current code for module ownership and dependency rules
 From `.kiro/steering/design-system.md`:
 
 - Use `EchoListTheme.*` accessors, not raw `MaterialTheme.*` or ad hoc tokens
-- Use bundled Work Sans fonts from compose resources
+- Use the bundled Space Grotesk / Work Sans foundation type scale from compose resources
 - Use `EchoListDimensions` tokens for spacing and sizing
 - Use theme shapes instead of raw corner values
 - Folder cards use primary borders and primary-filled icon containers

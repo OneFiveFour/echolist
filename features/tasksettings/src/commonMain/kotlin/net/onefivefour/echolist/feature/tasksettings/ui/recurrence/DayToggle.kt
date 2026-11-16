@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import net.onefivefour.echolist.core.designsystem.ui.components.GradientBackground
+import net.onefivefour.echolist.core.designsystem.ui.components.EchoListBackground
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 
 /**
@@ -51,7 +51,7 @@ internal fun DayToggle(
 @Composable
 private fun DayTogglePreview() {
     EchoListTheme {
-        GradientBackground {
+        EchoListBackground {
             DayToggle(
                 label = "Mon",
                 isSelected = true,

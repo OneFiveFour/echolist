@@ -2,9 +2,10 @@
 
 ## Figma Reference
 
-- File: EchoList (key: `n7TqZmCTgWuaCqlzhrwEBf`)
-- Home Screen Frame: node-id `4024:3`
-- Only this frame is relevant — other screens in the Figma file belong to other apps.
+- File: EchoList (key: `jt6unsrw5ase8hVhZOWGdJ`)
+- Foundation: node `6:1780` (colors and typography)
+- This foundation replaces all historical palettes and gradient backgrounds.
+- Individual screen redesigns follow separately; legacy component layouts below are not new Figma specifications.
 
 ## Technology Stack
 
@@ -35,42 +36,73 @@ See `ARCHITECTURE.md` for the complete module map. The former Home screen is now
 
 ## Color Tokens
 
-### EchoList Classic — Light
-| Role         | Value     |
-|--------------|-----------|
-| background   | #FFFAF0   |
-| surface      | #FFFFFF   |
-| primary      | #023047   |
-| onPrimary    | #FFFFFF   |
-| secondary    | #780000   |
-| onSecondary  | #FFFFFF   |
-| onBackground | #023047   |
-| onSurface    | #023047   |
+The only bundled color theme is `EchoListDefaultTheme` (display name EchoList).
+Future themes remain swappable through `ColorTheme` / `ThemeManager`.
 
-### EchoList Classic — Dark
-| Role         | Value     |
-|--------------|-----------|
-| background   | #1A1A1A   |
-| surface      | #2C2C2C   |
-| primary      | #8ECAE6   |
-| onPrimary    | #023047   |
-| secondary    | #FFB3B3   |
-| onSecondary  | #780000   |
-| onBackground | #FFFAF0   |
-| onSurface    | #E0E0E0   |
+| Role | Light | Dark |
+|---|---|---|
+| background | #F6F7F4 | #101312 |
+| surface | #FFFFFF | #181C1B |
+| surfaceVariant | #E8ECE8 | #252B29 |
+| primary | #315F59 | #91D5C9 |
+| onPrimary | #FFFFFF | #0B3934 |
+| secondary | #635A78 | #CBC1E7 |
+| onSecondary | #FFFFFF | #342D47 |
+| onBackground | #1A1D1C | #E8ECE9 |
+| onSurface | #1A1D1C | #E8ECE9 |
+| onSurfaceVariant | #56605C | #BAC3BE |
+| error | #B42318 | #FFB4AB |
+| onError | #FFFFFF | #690005 |
+| outline | #747E79 | #89938E |
+| outlineVariant | #CAD1CD | #3E4743 |
+| folderColor | #B65E18 | #FFB56B |
+| noteColor | #7152B8 | #CBB2FF |
+| taskColor | #16766C | #72D5C7 |
+| statusNormal | #56716B | #9DB9B2 |
+| warning | #D99A08 | #F4C95D |
+| onWarning | #302000 | #362A00 |
+
+`background` is identical in Material and EchoList color schemes. Use
+`EchoListBackground` for the shared solid background and system bar insets.
+The old gradient component and its three gradient tokens have been removed.
+
+Every Material color role absent from Figma is explicitly **Color.Magenta** in
+both modes, including container, inverse, tint, scrim and fixed roles. This is an
+intentional diagnostic: do not substitute Material defaults or invent colors to
+hide it. New role colors require a design decision.
 
 ## Typography
 
-Font family: Work Sans (bundled in `composeResources/font/`)
+`EchoListTheme.typeScale` exposes the six Figma levels. Its default is provided
+by `echoListTypography()` and can be replaced through the `EchoListTheme`
+`typeScale` parameter independently of the palette.
 
-| Material3 Style | Weight     | Size  |
-|-----------------|------------|-------|
-| titleLarge      | Bold 700   | 24sp  |
-| titleSmall      | SemiBold 600 | 14sp |
-| labelMedium     | Medium 500 | 14sp  |
-| labelSmall      | Medium 500 | 10sp  |
-| bodySmall       | Regular 400| 10sp  |
-| bodyMedium      | Regular 400| 14sp  |
+| Level | Font | Weight | Size / line height | Letter spacing |
+|---|---|---|---|---|
+| display | Space Grotesk | 650 | 40 / 44 sp | -1 sp |
+| titleLarge | Space Grotesk | 620 | 28 / 34 sp | -0.7 sp |
+| title | Space Grotesk | 600 | 20 / 26 sp | -0.5 sp |
+| body | Work Sans | 400 | 16 / 24 sp | -0.4 sp |
+| bodySmall | Work Sans | 400 | 14 / 20 sp | -0.35 sp |
+| label | Work Sans | 600 | 13 / 16 sp | 0.52 sp |
+
+All fonts are bundled in `composeResources/font/`. Space Grotesk's exact static
+weights 600, 620 and 650 are instantiated from the Google Fonts variable font,
+`ofl/spacegrotesk/SpaceGrotesk[wght].ttf`; its SIL Open Font License is bundled
+alongside them. Static instances preserve the intermediate weights across all
+four targets without relying on platform variable-font support or synthesis.
+
+`EchoListTheme.typography` remains the Material adapter. All 15 Material slots
+are explicitly mapped, with no default font fallback:
+
+- displayLarge / displayMedium / displaySmall → display
+- headlineLarge / headlineMedium / headlineSmall / titleLarge → titleLarge
+- titleMedium / titleSmall → title
+- bodyLarge / bodyMedium → body
+- bodySmall → bodySmall
+- labelLarge / labelMedium / labelSmall → label
+
+The label style does not uppercase content automatically; callers own text case.
 
 ## Spacing & Sizing Tokens (EchoListDimensions)
 

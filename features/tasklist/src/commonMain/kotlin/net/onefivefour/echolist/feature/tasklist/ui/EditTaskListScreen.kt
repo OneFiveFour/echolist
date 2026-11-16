@@ -25,7 +25,7 @@ import net.onefivefour.echolist.core.tasks.domain.model.MainTask
 import net.onefivefour.echolist.core.tasks.domain.model.SubTask
 import net.onefivefour.echolist.core.designsystem.ui.components.EditTitle
 import net.onefivefour.echolist.core.designsystem.ui.components.ElButton
-import net.onefivefour.echolist.core.designsystem.ui.components.GradientBackground
+import net.onefivefour.echolist.core.designsystem.ui.components.EchoListBackground
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 
 @Composable
@@ -184,7 +184,7 @@ private fun EditTaskListScreenPreview() {
     }
 
     EchoListTheme {
-        GradientBackground {
+        EchoListBackground {
             EditTaskListScreen(
                 uiState = EditTaskListUiState(
                     titleState = TextFieldState(initialText = "Launch plan"),

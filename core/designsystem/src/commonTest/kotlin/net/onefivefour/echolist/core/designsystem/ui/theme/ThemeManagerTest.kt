@@ -15,12 +15,10 @@ class ThemeManagerTest : FunSpec({
 
     val defaultEchoListColors = EchoListColorScheme(
         background = Color.White,
-        backgroundGradient1 = Color.White,
-        backgroundGradient2 = Color.White,
-        backgroundGradient3 = Color.White,
         taskColor = Color.White,
         noteColor = Color.White,
         folderColor = Color.White,
+        statusNormal = Color.White,
         warning = Color.White,
         onWarning = Color.White
     )

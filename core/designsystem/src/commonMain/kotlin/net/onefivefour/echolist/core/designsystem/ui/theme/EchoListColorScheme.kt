@@ -5,12 +5,10 @@ import androidx.compose.ui.graphics.Color
 
 data class EchoListColorScheme(
     val background: Color,
-    val backgroundGradient1: Color,
-    val backgroundGradient2: Color,
-    val backgroundGradient3: Color,
     val taskColor: Color,
     val noteColor: Color,
     val folderColor: Color,
+    val statusNormal: Color,
     val warning: Color,
     val onWarning: Color
 )
@@ -18,12 +16,10 @@ data class EchoListColorScheme(
 val LocalEchoListColors = staticCompositionLocalOf {
     EchoListColorScheme(
         background = Color.Unspecified,
-        backgroundGradient1 = Color.Unspecified,
-        backgroundGradient2 = Color.Unspecified,
-        backgroundGradient3 = Color.Unspecified,
         taskColor = Color.Unspecified,
         noteColor = Color.Unspecified,
         folderColor = Color.Unspecified,
+        statusNormal = Color.Unspecified,
         warning = Color.Unspecified,
         onWarning = Color.Unspecified
     )

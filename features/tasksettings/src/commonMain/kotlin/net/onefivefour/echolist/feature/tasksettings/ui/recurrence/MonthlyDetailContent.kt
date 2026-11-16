@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import net.onefivefour.echolist.core.designsystem.ui.components.GradientBackground
+import net.onefivefour.echolist.core.designsystem.ui.components.EchoListBackground
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 
 /**
@@ -65,7 +65,7 @@ internal fun MonthlyDetailContent(
 @Composable
 private fun MonthlyDetailContentPreview() {
     EchoListTheme {
-        GradientBackground {
+        EchoListBackground {
             MonthlyDetailContent(
                 everyNMonths = 1,
                 dayOfMonth = 15,
@@ -82,7 +82,7 @@ private fun MonthlyDetailContentPreview() {
 @Composable
 private fun MonthlyDetailContentMultiMonthPreview() {
     EchoListTheme {
-        GradientBackground {
+        EchoListBackground {
             MonthlyDetailContent(
                 everyNMonths = 3,
                 dayOfMonth = 1,

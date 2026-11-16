@@ -48,7 +48,7 @@ import net.onefivefour.echolist.app.resources.ic_arrow_back
 import net.onefivefour.echolist.app.resources.navigate_back
 import net.onefivefour.echolist.ui.AuthState
 import net.onefivefour.echolist.ui.AuthViewModel
-import net.onefivefour.echolist.core.designsystem.ui.components.GradientBackground
+import net.onefivefour.echolist.core.designsystem.ui.components.EchoListBackground
 import net.onefivefour.echolist.core.designsystem.ui.components.RoundIconButton
 import net.onefivefour.echolist.feature.login.ui.LoginFeature
 import net.onefivefour.echolist.ui.navigation.EditNoteRoute
@@ -68,7 +68,7 @@ fun App(
     onDebugReminder: ((String, String) -> Unit)? = null
 ) {
     EchoListTheme {
-        GradientBackground {
+        EchoListBackground {
             val authViewModel = koinViewModel<AuthViewModel>()
             val authState by authViewModel.authState.collectAsStateWithLifecycle()
             val settingsChannels = koinViewModel<TaskSettingsChannels>()

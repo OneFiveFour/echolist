@@ -10,7 +10,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import net.onefivefour.echolist.core.designsystem.ui.theme.colorscheme.EchoListClassicTheme
+import net.onefivefour.echolist.core.designsystem.ui.theme.colorscheme.EchoListDefaultTheme
 import org.koin.compose.koinInject
 import org.koin.mp.KoinPlatform
 
@@ -23,6 +23,10 @@ object EchoListTheme {
         @Composable
         @ReadOnlyComposable
         get() = LocalMaterialColors.current
+    val typeScale: EchoListTypography
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalEchoListTypography.current
     val typography: Typography
         @Composable
         @ReadOnlyComposable
@@ -41,6 +45,7 @@ object EchoListTheme {
 fun EchoListTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     themeManager: ThemeManager? = null,
+    typeScale: EchoListTypography = echoListTypography(),
     content: @Composable () -> Unit
 ) {
     val isKoinStarted = runCatching { KoinPlatform.getKoin() }.isSuccess
@@ -49,8 +54,8 @@ fun EchoListTheme(
     } else {
         // use default theme for previews where we cannot use Koin
         ThemeManager(
-            availableThemes = listOf(EchoListClassicTheme),
-            initialTheme = EchoListClassicTheme
+            availableThemes = listOf(EchoListDefaultTheme),
+            initialTheme = EchoListDefaultTheme
         )
     }
     val colorTheme by resolvedThemeManager.selectedTheme.collectAsState()
@@ -63,9 +68,10 @@ fun EchoListTheme(
         else -> colorTheme.echoListColorSchemeLight
     }
 
-    val typography = material3Typography()
+    val typography = typeScale.toMaterialTypography()
 
     CompositionLocalProvider(
+        LocalEchoListTypography provides typeScale,
         LocalTypography provides typography,
         LocalMaterialColors provides materialColorScheme,
         LocalEchoListColors provides echoListColorScheme

@@ -10,7 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import net.onefivefour.echolist.core.designsystem.ui.components.GradientBackground
+import net.onefivefour.echolist.core.designsystem.ui.components.EchoListBackground
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 
 /**
@@ -58,7 +58,7 @@ internal fun SettingsSection(
 @Composable
 private fun SettingsSectionPreview() {
     EchoListTheme {
-        GradientBackground {
+        EchoListBackground {
             SettingsSection(
                 title = "Due date",
                 modifier = Modifier.padding(EchoListTheme.dimensions.l)
