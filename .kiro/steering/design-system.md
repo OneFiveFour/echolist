@@ -104,6 +104,73 @@ are explicitly mapped, with no default font fallback:
 
 The label style does not uppercase content automatically; callers own text case.
 
+## Adaptive layout (all four targets)
+
+Use the official Compose Multiplatform Material 3 Adaptive APIs from
+`org.jetbrains.compose.material3.adaptive:adaptive`, in `commonMain`.
+`EchoListTheme` calls `currentWindowAdaptiveInfoV2()` and exposes its unmodified
+`WindowAdaptiveInfo` as `EchoListTheme.adaptiveInfo`. This contains the official
+`windowSizeClass` and `windowPosture`; no custom window measurement, breakpoint
+calculation, Phone/Desktop enum or root layout wrapper is maintained.
+
+The official width classes are Compact below 600 dp, Medium from 600 dp,
+Expanded from 840 dp, Large from 1200 dp and Extra-large from 1600 dp. Use the
+library's named constants and `isWidthAtLeastBreakpoint` /
+`isHeightAtLeastBreakpoint`, not copied numeric thresholds in production code.
+The former custom 720-dp boundary has been removed. Window information comes
+from Compose's platform window APIs, reacts to native window/browser resizing,
+rotation and density changes, and is independent of child-pane constraints.
+
+Choose presentation per screen rather than reducing the shared information to
+two global modes. Future navigation and list/detail screens should use the
+official adaptive navigation/pane scaffolds where they fit their design. The
+Login's editorial introduction is a screen-specific exception: it is shown at
+Expanded width or greater; Compact and Medium share the form-only layout.
+Additional size classes do not require inventing additional Login layouts.
+
+Keep UI state and focus owners above adaptive branches. Login uses one form at
+one stable composition location so input state, password visibility and focus
+survive size-class transitions. Content scrolls when viewport/keyboard height
+is insufficient. Previews and renders only need `EchoListTheme`; resizing tests
+must change platform `LocalWindowInfo` as well as render constraints, since the
+official APIs intentionally use the window rather than a child layout's size.
+
+## Login implementation
+
+Figma page `4:779`: Desktop Light `10:2775`, Desktop Dark `10:3283`,
+Phone Light `10:3537`, Phone Dark `10:3722`; error references `12:4305` and
+`12:4504` specify the status-row arrangement. The logo and theme controls in
+the error references are excluded by the user's explicit direction.
+
+The introduction sidebar is the approved exception for manually specified
+colors and editorial typography. It occupies 44% of the wide Login layout; its internal
+heading and illustration scale down fluidly within that mode. The form is
+capped at 448 dp, centered alongside the introduction and bottom-aligned in
+the form-only layout. It uses
+theme fonts, semantic colors, `ElFormTextField` with external labels and the
+shared `ElButton`. Form text sizes/tracking follow the screen's Figma values.
+Shared theme shapes `large` (15 dp) and `extraLarge` (17 dp) support fields and
+buttons. Existing legacy outlined fields and default pill buttons are retained
+for screens whose redesign has not happened yet.
+
+Field and authentication errors are collected into one summary with exactly
+one error icon. The summary sits in a reserved area above Server address,
+between the fixed heading and the fields; multiple messages appear as a list.
+The reserved height is 96 dp scaled by the font scale, exists even without an
+error, and scrolls internally for long messages. Neither the header, inputs nor
+Connect changes position when errors or loading appear/disappear. Phone bottom
+padding is independent of validation state. The whole form still scrolls in a
+short viewport or above the keyboard.
+
+Existing validation messages and authentication error mapping are preserved;
+errors also remain associated with fields through accessibility semantics.
+Focused fields use `primary`; error fields use `error`. During login, Connect
+is disabled and its trailing arrow becomes a progress indicator, while its
+container/content colors remain `primary` / `onPrimary`. Other disabled buttons
+retain their usual appearance; `ElButton` accepts explicit Material colors.
+The URL's `https://` default, saved URL behavior and all business logic remain
+unchanged.
+
 ## Spacing & Sizing Tokens (EchoListDimensions)
 
 | Token       | Value |
@@ -128,6 +195,8 @@ Accessed via `LocalEchoListDimensions.current` inside composables.
 |--------|---------------|
 | small  | 8dp (s)       |
 | medium | 12dp (m)      |
+| large | 15dp |
+| extraLarge | 17dp |
 
 ## Component Patterns
 

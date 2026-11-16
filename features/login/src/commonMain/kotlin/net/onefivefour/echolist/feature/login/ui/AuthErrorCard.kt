@@ -1,22 +1,24 @@
 package net.onefivefour.echolist.feature.login.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.Icon
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
+import net.onefivefour.echolist.core.session.domain.AuthError
 import net.onefivefour.echolist.feature.login.resources.Res
 import net.onefivefour.echolist.feature.login.resources.error_auth_invalid_credentials
 import net.onefivefour.echolist.feature.login.resources.error_auth_invalid_credentials_description
@@ -26,17 +28,11 @@ import net.onefivefour.echolist.feature.login.resources.error_auth_server
 import net.onefivefour.echolist.feature.login.resources.error_auth_server_description
 import net.onefivefour.echolist.feature.login.resources.error_auth_unknown
 import net.onefivefour.echolist.feature.login.resources.error_auth_unknown_description
-import net.onefivefour.echolist.core.session.domain.AuthError
-import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import org.jetbrains.compose.resources.stringResource
 
+/** Presentation text for the existing authentication error types; validation stays in the ViewModel. */
 @Composable
-internal fun AuthErrorCard(
-    error: AuthError,
-    modifier: Modifier = Modifier
-) {
-    val dimensions = EchoListTheme.dimensions
-
+internal fun authErrorMessage(error: AuthError): String {
     val (title, description) = when (error) {
         is AuthError.InvalidCredentials -> {
             stringResource(Res.string.error_auth_invalid_credentials) to
@@ -56,43 +52,40 @@ internal fun AuthErrorCard(
         }
     }
 
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(
-                color = EchoListTheme.materialColors.errorContainer,
-                shape = EchoListTheme.shapes.small
-            )
-            .border(
-                width = dimensions.borderWidth,
-                color = EchoListTheme.materialColors.error,
-                shape = EchoListTheme.shapes.small
-            )
-            .padding(dimensions.m),
-        verticalArrangement = Arrangement.spacedBy(dimensions.xs)
+    return "$title. $description"
+}
+
+/** A single status message and icon for all current field and authentication errors. */
+@Composable
+internal fun LoginErrorSummary(messages: List<String>, modifier: Modifier = Modifier) {
+    val colors = EchoListTheme.materialColors
+    Row(
+        modifier.fillMaxWidth().heightIn(min = 36.dp),
+        verticalAlignment = Alignment.Top,
+        horizontalArrangement = Arrangement.spacedBy(9.dp)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start
+        Box(
+            Modifier.size(20.dp).background(colors.error, CircleShape)
+                .semantics { testTag = "login-error-icon" },
+            contentAlignment = Alignment.Center
         ) {
-            Icon(
-                imageVector = Icons.Default.Warning,
-                contentDescription = null,
-                tint = EchoListTheme.materialColors.error,
-                modifier = Modifier.size(dimensions.l)
-            )
-            Spacer(modifier = Modifier.width(dimensions.s))
             Text(
-                text = title,
-                style = EchoListTheme.typography.titleSmall,
-                color = EchoListTheme.materialColors.onErrorContainer
+                "!",
+                style = EchoListTheme.typeScale.label.copy(
+                    fontSize = 11.sp, lineHeight = 16.5.sp,
+                    letterSpacing = 0.sp, fontWeight = FontWeight.Bold
+                ),
+                color = colors.onError
             )
         }
-
         Text(
-            text = description,
-            style = EchoListTheme.typography.bodySmall,
-            color = EchoListTheme.materialColors.onErrorContainer
+            if (messages.size == 1) messages.single() else messages.joinToString("\n") { "• $it" },
+            style = EchoListTheme.typeScale.bodySmall.copy(
+                fontSize = 12.sp, lineHeight = 17.sp,
+                letterSpacing = 0.sp, fontWeight = FontWeight.Medium
+            ),
+            color = colors.error,
+            modifier = Modifier.weight(1f)
         )
     }
 }
