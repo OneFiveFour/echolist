@@ -21,5 +21,5 @@ internal object ReminderDeliveryPolicy {
         action(state, reminder, today) == ReminderDeliveryAction.DELIVER
 
     private fun isPending(state: ReminderState, reminder: Reminder): Boolean =
-        reminder.active && state.preferences[reminder.key] != false && reminder.dueDate !in reminder.deliveredDates
+        reminder.isActive && state.preferences[reminder.key] != false && reminder.dueDate !in reminder.deliveredDates
 }

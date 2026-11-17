@@ -140,7 +140,7 @@ class NotificationCoordinatorTest : FunSpec({
         fixture.coordinator.synchronize { Result.success(listOf(fixture.task("2026-10-23"))) }
         fixture.coordinator.synchronize { Result.success(emptyList()) }.isSuccess shouldBe true
         fixture.platform.scheduled.size shouldBe 0
-        fixture.store.state.reminders.single().active shouldBe false
+        fixture.store.state.reminders.single().isActive shouldBe false
     }
 
     test("offline synchronization retains schedules and delivers missed known reminders") {
@@ -325,7 +325,7 @@ class NotificationCoordinatorTest : FunSpec({
         fixture.coordinator.synchronize { Result.success(listOf(fixture.task("2026-10-23"))) }
         fixture.coordinator.synchronize { Result.success(emptyList()) }
         fixture.coordinator.schedule("task", "list", "Old title", "Old body", "2026-10-23")
-        fixture.store.state.reminders.single().active shouldBe false
+        fixture.store.state.reminders.single().isActive shouldBe false
         fixture.platform.scheduled.size shouldBe 0
     }
 })

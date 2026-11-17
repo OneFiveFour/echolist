@@ -12,7 +12,7 @@ internal data class ReminderPreview(val reminders: List<Reminder>, val reminder:
             if (task != null && (task.taskId != taskId || task.taskListId.isBlank())) return null
             val records = if (task == null) reminders else ReminderReconciler.merge(reminders, account, listOf(task))
             val reminder = records.firstOrNull {
-                it.accountId == account && it.taskId == taskId && it.active
+                it.accountId == account && it.taskId == taskId && it.isActive
             } ?: return null
             return ReminderPreview(records, reminder)
         }

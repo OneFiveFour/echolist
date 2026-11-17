@@ -112,7 +112,7 @@ class TaskReminderIntegrationTest : FunSpec({
         ).getOrThrow()
 
         fixture.source.lastUpdateRequest!!.tasks.single().is_done shouldBe true
-        fixture.state.reminders.single().active shouldBe false
+        fixture.state.reminders.single().isActive shouldBe false
         fixture.coordinator.restore()
         fixture.shown.size shouldBe 1
     }
@@ -145,7 +145,7 @@ class TaskReminderIntegrationTest : FunSpec({
         fixture.repository.updateTaskList(UpdateTaskListParams("list", "List", listOf(task.copy(isDone = true)), false))
             .getOrThrow()
         fixture.scheduled.size shouldBe 0
-        fixture.state.reminders.single().active shouldBe false
+        fixture.state.reminders.single().isActive shouldBe false
         fixture.repository.deleteTaskList("list").getOrThrow()
         fixture.scheduled.size shouldBe 0
     }

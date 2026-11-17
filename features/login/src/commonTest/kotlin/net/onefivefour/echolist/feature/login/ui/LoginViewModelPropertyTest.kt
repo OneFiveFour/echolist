@@ -55,8 +55,8 @@ class LoginViewModelPropertyTest : FunSpec({
                 vm.onLoginClick()
                 advanceUntilIdle()
 
-                vm.uiState.value.backendUrlError.shouldNotBeNull()
-                vm.uiState.value.isLoading shouldBe false
+                vm.loginUiState.value.backendUrlError.shouldNotBeNull()
+                vm.loginUiState.value.isLoading shouldBe false
             }
         }
     }
@@ -74,8 +74,8 @@ class LoginViewModelPropertyTest : FunSpec({
                 vm.onLoginClick()
                 advanceUntilIdle()
 
-                vm.uiState.value.usernameError.shouldNotBeNull()
-                vm.uiState.value.isLoading shouldBe false
+                vm.loginUiState.value.usernameError.shouldNotBeNull()
+                vm.loginUiState.value.isLoading shouldBe false
             }
         }
     }
@@ -93,8 +93,8 @@ class LoginViewModelPropertyTest : FunSpec({
                 vm.onLoginClick()
                 advanceUntilIdle()
 
-                vm.uiState.value.passwordError.shouldNotBeNull()
-                vm.uiState.value.isLoading shouldBe false
+                vm.loginUiState.value.passwordError.shouldNotBeNull()
+                vm.loginUiState.value.isLoading shouldBe false
             }
         }
     }
@@ -116,7 +116,7 @@ class LoginViewModelPropertyTest : FunSpec({
                 val vm = LoginViewModel(FakeAuthRepository(storage))
                 advanceUntilIdle()
 
-                vm.uiState.value.backendUrl shouldBe url
+                vm.loginUiState.value.backendUrl shouldBe url
             }
         }
     }
@@ -150,10 +150,10 @@ class LoginViewModelPropertyTest : FunSpec({
                 vm.onLoginClick()
                 // Don't advanceUntilIdle — we want to observe the loading state before login completes
 
-                vm.uiState.value.isLoading shouldBe true
-                vm.uiState.value.backendUrlError.shouldBeNull()
-                vm.uiState.value.usernameError.shouldBeNull()
-                vm.uiState.value.passwordError.shouldBeNull()
+                vm.loginUiState.value.isLoading shouldBe true
+                vm.loginUiState.value.backendUrlError.shouldBeNull()
+                vm.loginUiState.value.usernameError.shouldBeNull()
+                vm.loginUiState.value.passwordError.shouldBeNull()
             }
         }
     }
@@ -187,8 +187,8 @@ class LoginViewModelPropertyTest : FunSpec({
                 vm.onLoginClick()
                 advanceUntilIdle()
 
-                vm.uiState.value.authError.shouldNotBeNull()
-                vm.uiState.value.isLoading shouldBe false
+                vm.loginUiState.value.authError.shouldNotBeNull()
+                vm.loginUiState.value.isLoading shouldBe false
             }
         }
     }

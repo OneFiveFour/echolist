@@ -66,7 +66,7 @@ class LoginViewModelStringResourcePropertyTest : FunSpec({
                 vm.onLoginClick()
                 advanceUntilIdle()
 
-                val uiState = vm.uiState.value
+                val uiState = vm.loginUiState.value
 
                 // Assert that each non-null error field matches the corresponding resource string
                 if (uiState.backendUrlError != null) {

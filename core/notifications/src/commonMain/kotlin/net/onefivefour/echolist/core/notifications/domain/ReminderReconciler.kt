@@ -16,7 +16,7 @@ internal object ReminderReconciler {
         }
         val ids = tasks.map { it.taskId }.toSet()
         return reconcile(reminders, account, tasks) {
-            it.accountId == account && it.active && LocalDate.parse(it.dueDate) >= from && it.taskId !in ids
+            it.accountId == account && it.isActive && LocalDate.parse(it.dueDate) >= from && it.taskId !in ids
         }
     }
 
@@ -62,7 +62,7 @@ internal object ReminderReconciler {
         val retained = reminders.map {
             if (shouldRemove(it)) {
                 removed.add(it)
-                it.copy(active = false)
+                it.copy(isActive = false)
             } else {
                 it
             }

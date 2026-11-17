@@ -45,7 +45,7 @@ object EchoListTheme {
         @Composable
         @ReadOnlyComposable
         get() = LocalMaterialColors.current
-    val typeScale: EchoListTypography
+    val echoListTypography: EchoListTypography
         @Composable
         @ReadOnlyComposable
         get() = LocalEchoListTypography.current

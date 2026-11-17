@@ -8,8 +8,9 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun LoginFeature(onAuthenticated: () -> Unit) {
+
     val loginViewModel = koinViewModel<LoginViewModel>()
-    val loginState by loginViewModel.uiState.collectAsStateWithLifecycle()
+    val loginState by loginViewModel.loginUiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(loginViewModel) {
         loginViewModel.loginSuccess.collect {
@@ -18,7 +19,7 @@ fun LoginFeature(onAuthenticated: () -> Unit) {
     }
 
     LoginScreen(
-        uiState = loginState,
+        loginUiState = loginState,
         onBackendUrlChange = loginViewModel::onBackendUrlChanged,
         onUsernameChange = loginViewModel::onUsernameChanged,
         onPasswordChange = loginViewModel::onPasswordChanged,

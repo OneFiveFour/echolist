@@ -67,35 +67,48 @@ fun App(
     overlayContent: @Composable () -> Unit = {}
 ) {
     EchoListTheme {
+
         val authViewModel = koinViewModel<AuthViewModel>()
-        val authState by authViewModel.authState.collectAsStateWithLifecycle()
         val settingsChannels = koinViewModel<TaskSettingsChannels>()
+
         val notifications = koinInject<NotificationCoordinator>()
         val reminderWork = koinInject<ReminderBackgroundScheduler>()
+
         val reminderScope = rememberCoroutineScope()
+
+        val authState by authViewModel.authState.collectAsStateWithLifecycle()
+
         LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
             reminderScope.launch {
                 notifications.refreshSession()
                 notifications.restore()
-                if (authState == AuthState.Authenticated) reminderWork.requestSync()
+                if (authState == AuthState.Authenticated) {
+                    reminderWork.requestSync()
+                }
             }
         }
+
         LaunchedEffect(authState) {
-            if (authState == AuthState.Unauthenticated) settingsChannels.clearEditors()
+            if (authState == AuthState.Unauthenticated) {
+                settingsChannels.clearEditors()
+            }
             notifications.refreshSession()
             notifications.restore()
-            if (authState == AuthState.Authenticated) reminderWork.requestSync()
+            if (authState == AuthState.Authenticated) {
+                reminderWork.requestSync()
+            }
         }
 
         when (authState) {
             AuthState.Loading -> Unit
             AuthState.Unauthenticated -> UnauthenticatedApp(authViewModel)
             AuthState.Authenticated -> AuthenticatedApp(
-                notificationTarget,
-                onNotificationTargetConsumed,
-                onDebugReminder
+                notificationTarget = notificationTarget,
+                onNotificationTargetConsumed = onNotificationTargetConsumed,
+                onDebugReminder = onDebugReminder
             )
         }
+
         overlayContent()
     }
 }

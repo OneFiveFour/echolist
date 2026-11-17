@@ -7,8 +7,8 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import net.onefivefour.echolist.core.tasks.domain.TaskSettingsResultSink
 import net.onefivefour.echolist.core.tasks.domain.model.TaskSettingsChanges
 
-/** Owns one result queue per editor navigation entry, including while settings cover it. */
 internal class TaskSettingsChannels : ViewModel() {
+
     private class Entry {
         val channel = Channel<TaskSettingsChanges>(Channel.UNLIMITED)
         val results = channel.receiveAsFlow()

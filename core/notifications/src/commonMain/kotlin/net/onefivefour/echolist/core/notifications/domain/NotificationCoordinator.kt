@@ -15,7 +15,7 @@ class NotificationCoordinator(
     private val platform: ReminderPlatform,
     private val permission: NotificationPermissionChecker,
     private val accounts: NotificationAccountProvider,
-    private val background: ReminderBackgroundScheduler,
+    private val backgroundScheduler: ReminderBackgroundScheduler,
     private val clock: Clock = Clock.System,
     private val zone: () -> TimeZone = { TimeZone.currentSystemDefault() }
 ) {
@@ -39,21 +39,28 @@ class NotificationCoordinator(
             store.write(state.copy(revision = state.revision + 1))
             if (pendingMutations == 0) restoreLocked()
         }
-        background.requestSync()
+        backgroundScheduler.requestSync()
     }
 
     suspend fun refreshSession(): Unit = mutex.withLock {
         val state = store.read()
         val account = accounts.currentAccountId()
+
         if (state.activeAccount != account) {
             // Cancel both old alarms and visible notifications before publishing the new session.
-            state.reminders.filter { it.accountId == state.activeAccount }.forEach {
-                platform.cancelPending(it)
-                platform.dismiss(it)
-            }
+            state.reminders
+                .filter { it.accountId == state.activeAccount }
+                .forEach {
+                    platform.cancelPending(it)
+                    platform.dismiss(it)
+                }
             store.write(state.copy(activeAccount = account, revision = state.revision + 1))
         }
-        if (account == null) background.stop() else background.start()
+
+        when (account) {
+            null -> backgroundScheduler.stop()
+            else -> backgroundScheduler.start()
+        }
     }
 
     suspend fun isEnabled(taskId: String): Boolean = mutex.withLock {
@@ -92,7 +99,7 @@ class NotificationCoordinator(
         val prefs = state.preferences + preferences.mapKeys { reminderKey(account, it.key) }
         store.write(state.copy(reminders = changes.reminders, preferences = prefs, revision = state.revision + 1))
         restoreLocked()
-        background.requestSync()
+        backgroundScheduler.requestSync()
     }
 
     suspend fun schedule(taskId: String, taskListId: String, title: String, body: String, dueDate: String) {
@@ -132,18 +139,18 @@ class NotificationCoordinator(
         platform.dismiss(old)
         store.write(
             state.copy(
-                reminders = state.reminders.map { if (it.key == old.key) it.copy(active = false) else it },
+                reminders = state.reminders.map { if (it.key == old.key) it.copy(isActive = false) else it },
                 revision = state.revision + 1
             )
         )
-        background.requestSync()
+        backgroundScheduler.requestSync()
     }
 
     suspend fun cancelWhenIneligible(taskId: String): Unit = mutex.withLock {
         val account = accounts.currentAccountId() ?: return@withLock
         val state = store.read()
         val record = state.reminders.firstOrNull { it.key == reminderKey(account, taskId) } ?: return@withLock
-        if (!record.active || state.preferences[record.key] == false) {
+        if (!record.isActive || state.preferences[record.key] == false) {
             platform.cancelPending(record)
             platform.dismiss(record)
         }
@@ -274,18 +281,25 @@ class NotificationCoordinator(
         val state = store.read()
         val account = accounts.currentAccountId()
         if (account == null || state.activeAccount != account) return
-        state.reminders.filter { it.accountId == account }.forEach { reminder ->
-            when (ReminderDeliveryPolicy.action(state, reminder) { clock.todayIn(zone()) }) {
-                ReminderDeliveryAction.CANCEL_PENDING -> platform.cancelPending(reminder)
-                ReminderDeliveryAction.DELIVER -> deliverLocked(store.read(), reminder)
-                ReminderDeliveryAction.SCHEDULE -> platform.schedule(reminder)
+        state.reminders
+            .filter { it.accountId == account }
+            .forEach { reminder ->
+                when (ReminderDeliveryPolicy.action(state, reminder) { clock.todayIn(zone()) }) {
+                    ReminderDeliveryAction.CANCEL_PENDING -> platform.cancelPending(reminder)
+                    ReminderDeliveryAction.DELIVER -> deliverLocked(store.read(), reminder)
+                    ReminderDeliveryAction.SCHEDULE -> platform.schedule(reminder)
+                }
             }
-        }
     }
 
     private suspend fun deliverLocked(state: ReminderState, reminder: Reminder) {
         if (pendingMutations != 0) return
-        if (!ReminderDeliveryPolicy.canDeliver(state, reminder, accounts.currentAccountId()) { clock.todayIn(zone()) }) {
+        if (!ReminderDeliveryPolicy.canDeliver(
+                state,
+                reminder,
+                accounts.currentAccountId()
+            ) { clock.todayIn(zone()) }
+        ) {
             return
         }
         if (!permission.isGranted()) return // Keep the occurrence pending for permission restoration.

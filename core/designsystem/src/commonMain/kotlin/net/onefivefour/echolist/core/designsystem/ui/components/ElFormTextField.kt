@@ -51,13 +51,13 @@ fun ElFormTextField(
     val dimensions = EchoListTheme.dimensions
     val interaction = remember { MutableInteractionSource() }
     val isFocused by interaction.collectIsFocusedAsState()
-    val textStyle = EchoListTheme.typeScale.body.copy(
+    val textStyle = EchoListTheme.echoListTypography.body.copy(
         fontSize = 15.sp, lineHeight = 22.sp, letterSpacing = 0.sp
     )
     Column(verticalArrangement = Arrangement.spacedBy(dimensions.s)) {
         Text(
             label,
-            style = EchoListTheme.typeScale.label.copy(fontSize = 12.sp, letterSpacing = 0.sp),
+            style = EchoListTheme.echoListTypography.label.copy(fontSize = 12.sp, letterSpacing = 0.sp),
             color = colors.onSurfaceVariant
         )
         BasicTextField(

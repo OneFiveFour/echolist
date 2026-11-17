@@ -55,7 +55,7 @@ class FoundationIntegrationTest : FunSpec({
                             modifier = Modifier.fillMaxSize().padding(32.dp),
                             verticalArrangement = Arrangement.spacedBy(18.dp)
                         ) {
-                            val scale = EchoListTheme.typeScale
+                            val scale = EchoListTheme.echoListTypography
                             val material = EchoListTheme.typography
                             material.displayLarge shouldBe scale.display
                             material.titleLarge shouldBe scale.titleLarge

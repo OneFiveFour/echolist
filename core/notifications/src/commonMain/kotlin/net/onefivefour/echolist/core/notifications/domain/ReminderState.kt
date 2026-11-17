@@ -3,7 +3,6 @@ package net.onefivefour.echolist.core.notifications.domain
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
-/** Persisted device state; contains no tokens or passwords. Dates retain the wire calendar date. */
 @Serializable
 data class ReminderState(
     val activeAccount: String? = null,
@@ -23,7 +22,7 @@ data class Reminder(
     val title: String,
     val body: String,
     val dueDate: String,
-    val active: Boolean = true,
+    val isActive: Boolean = true,
     val deliveredDates: Set<String> = emptySet()
 ) {
     val key: String get() = reminderKey(accountId, taskId)
