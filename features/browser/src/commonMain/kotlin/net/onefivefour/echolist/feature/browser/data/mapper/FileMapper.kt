@@ -19,8 +19,6 @@ import `file`.v1.UpdateFolderResponse
  */
 internal object FileMapper {
 
-    // Proto -> Domain
-
     fun toDomain(proto: `file`.v1.Folder): Folder = Folder(
         path = proto.path,
         name = proto.name
@@ -59,8 +57,6 @@ internal object FileMapper {
 
     fun toDomain(proto: UpdateFolderResponse): Folder =
         toDomain(requireFolder(proto.folder, "UpdateFolderResponse"))
-
-    // Domain -> Proto
 
     fun toProto(params: CreateFolderParams): CreateFolderRequest = CreateFolderRequest(
         parent_dir = params.parentDir,

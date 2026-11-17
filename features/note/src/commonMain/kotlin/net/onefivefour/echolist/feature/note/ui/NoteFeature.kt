@@ -9,7 +9,7 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Composable
-fun NoteFeature(parentDir: String, noteId: String?, onNavigateBack: () -> Unit) {
+fun NoteFeature(parentDir: String, noteId: String?, onBack: () -> Unit) {
     val resolvedNoteId = noteId?.takeIf { it.isNotBlank() }
 
     val mode = resolvedNoteId?.let(EditNoteMode::Edit)
@@ -20,7 +20,7 @@ fun NoteFeature(parentDir: String, noteId: String?, onNavigateBack: () -> Unit) 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(viewModel) {
-        viewModel.navigateBack.collect { onNavigateBack() }
+        viewModel.navigateBack.collect { onBack() }
     }
 
     EditNoteScreen(

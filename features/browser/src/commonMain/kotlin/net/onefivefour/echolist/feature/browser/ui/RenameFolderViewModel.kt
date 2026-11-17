@@ -30,7 +30,7 @@ internal class RenameFolderViewModel(
         }
     }
 
-    fun dismissDialog() {
+    fun onDismissDialog() {
         uiState.update {
             RenameFolderUiState()
         }

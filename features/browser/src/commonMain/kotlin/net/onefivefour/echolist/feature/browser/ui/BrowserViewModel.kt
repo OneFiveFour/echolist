@@ -47,11 +47,6 @@ internal class BrowserViewModel(
         }
     }
 
-    /**
-     * Clears any stale error and reloads data.
-     * Called when the composable re-enters composition (e.g. after re-authentication)
-     * to ensure a reused ViewModel does not show errors from a previous session.
-     */
     fun clearErrorAndReload() {
         viewModelScope.launch {
             uiState.update { it.copy(error = null) }
@@ -148,12 +143,9 @@ internal fun buildBreadcrumbs(parentDir: String, homeTitle: String): List<Breadc
     return breadcrumbs
 }
 
-/** Folders sort by name; files share a chronological order regardless of their type.
- * Zero is the protocol fallback for a missing updated_at; equal dates retain server order.
- */
 internal fun sortBrowserEntries(entries: List<FileEntry>) =
     entries.sortedWith(compareBy<FileEntry> {
         it.itemType != ItemType.FOLDER
     }.thenBy {
         if (it.itemType == ItemType.FOLDER) it.title.lowercase() else ""
-    }.thenBy { it.lastModifiedAt })
+    }.thenBy { it.lastModified })

@@ -31,8 +31,8 @@ class BrowserLayoutTest : FunSpec({
                         EchoListTheme(isDarkTheme = isDarkTheme, themeManager = ThemeManager(listOf(EchoListDefaultTheme))) {
                             BrowserScreen(
                                 browserUiState = BrowserUiState(listOf(BreadcrumbItem("Home", "")), fileEntries = sampleEntries()),
-                                navigateToTasksSummary = { dueClicks++ },
-                                onOpenRemindersSummary = { reminderClicks++ },
+                                navToTasksSummary = { dueClicks++ },
+                                navToRemindersSummary = { reminderClicks++ },
                                 createItemCallbacks = CreateItemCallbacks(onCreateNote = { createClicks++ })
                             )
                         }
@@ -42,8 +42,8 @@ class BrowserLayoutTest : FunSpec({
                                 .writeBytes(requireNotNull(image.encodeToData()).bytes)
                         }
                         val nodes = scene.browserNodes()
-                        val isWide = width >= 840
-                        (nodes.tagged("browser-sidebar") != null) shouldBe isWide
+                        val isDesktop = width >= 840
+                        (nodes.tagged("browser-sidebar") != null) shouldBe isDesktop
                         val folder = requireNotNull(nodes.tagged("browser-folder"))
                         val file = requireNotNull(nodes.tagged("browser-file"))
                         (folder.boundsInRoot.height < file.boundsInRoot.height) shouldBe true
@@ -52,7 +52,7 @@ class BrowserLayoutTest : FunSpec({
                         (file.boundsInRoot.top >= folders.last().boundsInRoot.bottom) shouldBe true
                         nodes.tagged("nav-Due")!!.config[SemanticsActions.OnClick].action!!.invoke()
                         dueClicks shouldBe 1
-                        nodes.tagged(if (isWide) "nav-Reminders" else "nav-Remind")!!.config[SemanticsActions.OnClick].action!!.invoke()
+                        nodes.tagged(if (isDesktop) "nav-Reminders" else "nav-Remind")!!.config[SemanticsActions.OnClick].action!!.invoke()
                         reminderClicks shouldBe 1
                         val create = requireNotNull(nodes.tagged("browser-create"))
                         (create.boundsInRoot.bottom <= height) shouldBe true

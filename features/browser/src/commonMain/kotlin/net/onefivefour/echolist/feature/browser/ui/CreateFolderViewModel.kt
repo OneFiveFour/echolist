@@ -23,7 +23,7 @@ internal class CreateFolderViewModel(
         }
     }
 
-    fun dismissDialog() {
+    fun onDismissDialog() {
         uiState.update {
             CreateFolderUiState()
         }

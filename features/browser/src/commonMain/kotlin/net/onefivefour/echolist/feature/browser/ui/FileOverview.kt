@@ -17,10 +17,10 @@ import org.jetbrains.compose.resources.stringResource
 internal fun FileOverview(
     fileEntries: List<FileEntry>, isLoading: Boolean, error: String?,
     onFolderClick: (String) -> Unit, onNoteClick: (String) -> Unit, onTaskClick: (String) -> Unit,
-    modifier: Modifier = Modifier, isWide: Boolean = false
+    modifier: Modifier = Modifier, isDesktop: Boolean = false
 ) {
-    val spacing = if (isWide) EchoListTheme.dimensions.m else EchoListTheme.dimensions.s
-    val hasTwoColumns = isWide && EchoListTheme.adaptiveInfo.windowSizeClass
+    val spacing = if (isDesktop) EchoListTheme.dimensions.m else EchoListTheme.dimensions.s
+    val hasTwoColumns = isDesktop && EchoListTheme.adaptiveInfo.windowSizeClass
         .isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_LARGE_LOWER_BOUND)
     LazyVerticalGrid(
         columns = GridCells.Fixed(if (hasTwoColumns) 2 else 1),
@@ -39,7 +39,7 @@ internal fun FileOverview(
             else -> {
                 val folders = fileEntries.filter { it.itemType == ItemType.FOLDER }
                 items(folders, key = { it.path }) { entry ->
-                    FolderItem(entry.title, entry.metadata as? FileMetadata.Folder, { onFolderClick(entry.path) }, isWide = isWide)
+                    FolderItem(entry.title, entry.metadata as? FileMetadata.Folder, { onFolderClick(entry.path) }, isDesktop = isDesktop)
                 }
                 val files = fileEntries.filter { it.itemType == ItemType.NOTE || it.itemType == ItemType.TASK_LIST }
                 // Fill the unused folder cell so files begin on a new row.
@@ -48,8 +48,8 @@ internal fun FileOverview(
                 }
                 items(files, key = { it.path }) { entry ->
                     when (val metadata = entry.metadata) {
-                        is FileMetadata.Note -> NoteItem(metadata.id, entry.title, metadata.preview, onNoteClick, isWide = isWide)
-                        is FileMetadata.TaskList -> TaskItem(metadata.id, entry.title, metadata.doneTaskCount, metadata.totalTaskCount, onTaskClick, isWide = isWide)
+                        is FileMetadata.Note -> NoteItem(metadata.id, entry.title, metadata.preview, onNoteClick, isDesktop = isDesktop)
+                        is FileMetadata.TaskList -> TaskItem(metadata.id, entry.title, metadata.doneTaskCount, metadata.totalTaskCount, onTaskClick, isDesktop = isDesktop)
                         else -> Unit
                     }
                 }

@@ -25,17 +25,17 @@ internal fun BrowserNavButton(
     label: String,
     icon: DrawableResource,
     isSelected: Boolean,
-    isWide: Boolean,
+    isDesktop: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     hasDueBadge: Boolean = false
 ) {
     val colors = EchoListTheme.materialColors
-    val contentColor = if (isSelected) { if (isWide) colors.onPrimary else colors.primary } else colors.onSurfaceVariant
-    val containerColor = if (isSelected) colors.primary.copy(alpha = if (isWide) 1f else 0.1f) else colors.surface
-    val buttonModifier = modifier.height(if (isWide) 48.dp else 54.dp).clip(EchoListTheme.shapes.medium)
+    val contentColor = if (isSelected) { if (isDesktop) colors.onPrimary else colors.primary } else colors.onSurfaceVariant
+    val containerColor = if (isSelected) colors.primary.copy(alpha = if (isDesktop) 1f else 0.1f) else colors.surface
+    val buttonModifier = modifier.height(if (isDesktop) 48.dp else 54.dp).clip(EchoListTheme.shapes.medium)
         .background(containerColor).clickable(onClick = onClick).testTag("nav-$label")
-    if (isWide) {
+    if (isDesktop) {
         Row(buttonModifier.fillMaxWidth().padding(horizontal = EchoListTheme.dimensions.m),
             horizontalArrangement = Arrangement.spacedBy(EchoListTheme.dimensions.m), verticalAlignment = Alignment.CenterVertically) {
             Icon(painterResource(icon), null, Modifier.size(19.dp), tint = contentColor)
@@ -58,13 +58,13 @@ internal fun BrowserNavButton(
 @Composable
 internal fun CreateItemButton(
     createItemCallbacks: CreateItemCallbacks,
-    isWide: Boolean
+    isDesktop: Boolean
 ) {
     var isMenuExpanded by remember { mutableStateOf(false) }
     Box {
         Surface(onClick = { isMenuExpanded = true }, shape = EchoListTheme.shapes.extraLarge,
             color = EchoListTheme.materialColors.primary, shadowElevation = 12.dp,
-            modifier = Modifier.size(if (isWide) 58.dp else 52.dp).testTag("browser-create")) {
+            modifier = Modifier.size(if (isDesktop) 58.dp else 52.dp).testTag("browser-create")) {
             Box(contentAlignment = Alignment.Center) {
                 Icon(painterResource(Res.drawable.browser_plus), stringResource(Res.string.create_item), Modifier.size(24.dp), tint = EchoListTheme.materialColors.onPrimary)
             }
@@ -97,7 +97,7 @@ internal fun BottomNavigation(
                 label = stringResource(resource = Res.string.nav_browse),
                 icon = Res.drawable.browser_browse,
                 isSelected = true,
-                isWide = false,
+                isDesktop = false,
                 onClick = {},
                 modifier = Modifier.weight(1f)
             )
@@ -105,7 +105,7 @@ internal fun BottomNavigation(
                 label = stringResource(resource = Res.string.nav_due),
                 icon = Res.drawable.browser_due,
                 isSelected = false,
-                isWide = false,
+                isDesktop = false,
                 onClick = navigateToTasksSummary,
                 modifier = Modifier.weight(1f)
             )
@@ -113,7 +113,7 @@ internal fun BottomNavigation(
                 label = stringResource(resource = Res.string.nav_remind),
                 icon = Res.drawable.browser_remind,
                 isSelected = false,
-                isWide = false,
+                isDesktop = false,
                 onClick = onOpenRemindersSummary,
                 modifier = Modifier.weight(1f)
             )

@@ -16,8 +16,8 @@ fun TaskListFeature(
     parentDir: String,
     taskListId: String?,
     settingsResults: Flow<TaskSettingsChanges>,
-    onOpenSettings: (String?, TaskSettingsChanges) -> Unit,
-    onNavigateBack: () -> Unit
+    navToMainTaskSettings: (String?, TaskSettingsChanges) -> Unit,
+    onBack: () -> Unit
 ) {
     val resolvedTaskListId = taskListId?.takeIf { it.isNotBlank() }
 
@@ -31,7 +31,7 @@ fun TaskListFeature(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(viewModel) {
-        viewModel.navigateBack.collect { onNavigateBack() }
+        viewModel.navigateBack.collect { onBack() }
     }
 
     DisposableEffect(viewModel) {
@@ -54,7 +54,7 @@ fun TaskListFeature(
                 currentRecurrence,
                 currentIsNotificationEnabled ->
             viewModel.onSettingsNavigationStarted()
-            onOpenSettings(
+            navToMainTaskSettings(
                 viewModel.taskListId,
                 TaskSettingsChanges(mainTaskId, currentDueDate, currentRecurrence, currentIsNotificationEnabled)
             )

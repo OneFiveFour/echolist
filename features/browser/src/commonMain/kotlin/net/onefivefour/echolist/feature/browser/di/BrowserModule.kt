@@ -14,7 +14,11 @@ import org.koin.dsl.module
 val browserModule = module {
     single<FileRemoteDataSource> { FileRemoteDataSourceImpl(client = get()) }
     single<FileRepository> {
-        FileRepositoryImpl(networkDataSource = get(), directoryChangeNotifier = get(), dispatcher = Dispatchers.Default)
+        FileRepositoryImpl(
+            fileRemoteDataSource = get(),
+            directoryChangedNotifier = get(),
+            dispatcher = Dispatchers.Default
+        )
     }
     viewModel { params ->
         BrowserViewModel(

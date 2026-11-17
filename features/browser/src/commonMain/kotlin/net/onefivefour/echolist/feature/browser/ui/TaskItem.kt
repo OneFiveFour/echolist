@@ -17,9 +17,9 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun TaskItem(id: String, title: String, doneTaskCount: Int, totalTaskCount: Int,
-    onClick: (String) -> Unit, modifier: Modifier = Modifier, isWide: Boolean = false) {
+    onClick: (String) -> Unit, modifier: Modifier = Modifier, isDesktop: Boolean = false) {
     val color = EchoListTheme.echoListColorScheme.taskColor
-    BrowserItemCard(title, Res.drawable.browser_tasks, color, false, isWide, { onClick(id) }, modifier, compactHeight = 99.dp) {
+    BrowserItemCard(title, Res.drawable.browser_tasks, color, false, isDesktop, { onClick(id) }, modifier, compactHeight = 99.dp) {
         Row(Modifier.padding(top = EchoListTheme.dimensions.s).widthIn(max = 210.dp),
             horizontalArrangement = Arrangement.spacedBy(EchoListTheme.dimensions.s), verticalAlignment = Alignment.CenterVertically) {
             Box(Modifier.weight(1f).height(3.dp).clip(EchoListTheme.shapes.small).background(EchoListTheme.materialColors.surfaceVariant)) {

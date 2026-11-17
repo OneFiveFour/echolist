@@ -27,7 +27,7 @@ internal fun BrowserItemCard(
     icon: DrawableResource,
     accent: Color,
     isFolder: Boolean,
-    isWide: Boolean,
+    isDesktop: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     compactHeight: Dp = 96.dp,
@@ -36,8 +36,8 @@ internal fun BrowserItemCard(
     Surface(
         onClick = onClick,
         modifier = modifier.fillMaxWidth().height(if (isFolder) {
-            if (isWide) 76.dp else 68.dp
-        } else if (isWide) 118.dp else compactHeight).testTag(if (isFolder) "browser-folder" else "browser-file"),
+            if (isDesktop) 76.dp else 68.dp
+        } else if (isDesktop) 118.dp else compactHeight).testTag(if (isFolder) "browser-folder" else "browser-file"),
         shape = EchoListTheme.shapes.large,
         border = BorderStroke(EchoListTheme.dimensions.borderWidth, EchoListTheme.materialColors.outlineVariant),
         color = EchoListTheme.materialColors.surface
@@ -45,12 +45,12 @@ internal fun BrowserItemCard(
         Box {
             Box(Modifier.width(3.dp).fillMaxHeight().background(accent))
             Row(
-                Modifier.fillMaxSize().padding(if (isWide) EchoListTheme.dimensions.l else EchoListTheme.dimensions.m),
+                Modifier.fillMaxSize().padding(if (isDesktop) EchoListTheme.dimensions.l else EchoListTheme.dimensions.m),
                 verticalAlignment = if (isFolder) Alignment.CenterVertically else Alignment.Top,
                 horizontalArrangement = Arrangement.spacedBy(EchoListTheme.dimensions.m)
             ) {
                 Box(
-                    Modifier.size(if (isWide) 42.dp else 40.dp).clip(EchoListTheme.shapes.medium)
+                    Modifier.size(if (isDesktop) 42.dp else 40.dp).clip(EchoListTheme.shapes.medium)
                         .background(accent.copy(alpha = 0.12f)),
                     contentAlignment = Alignment.Center
                 ) { Icon(painterResource(icon), null, Modifier.size(21.dp), tint = accent) }

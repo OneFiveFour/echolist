@@ -6,8 +6,7 @@ internal data class FileEntry(
     val itemType: ItemType,
     val metadata: FileMetadata?
 ) {
-    /** Unix timestamp from backend metadata, or deterministic epoch fallback when unavailable. */
-    val lastModifiedAt: Long
+    val lastModified: Long
         get() = when (val value = metadata) {
             is FileMetadata.Note -> value.updatedAt
             is FileMetadata.TaskList -> value.updatedAt

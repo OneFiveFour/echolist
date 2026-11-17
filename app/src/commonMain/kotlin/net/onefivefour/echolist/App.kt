@@ -189,22 +189,22 @@ private fun AuthenticatedNavDisplay(
             entry<TasksSummaryRoute> { route ->
                 TasksSummaryFeature(
                     parentDir = route.parentDir,
-                    onBackClick = { backStack.removeLastOrNull() }
+                    onBack = { backStack.removeLastOrNull() }
                 )
             }
             entry<BrowserRoute> { browserRoute ->
                 BrowserFeature(
                     selectedFolder = browserRoute.parentDir,
                     canNavigateBack = canNavigateBack,
-                    onOpenFolder = { backStack.add(BrowserRoute(it)) },
                     onFolderRenamed = { newPath ->
                         backStack[backStack.lastIndex] = BrowserRoute(newPath)
                     },
-                    onOpenNote = { backStack.add(EditNoteRoute(browserRoute.parentDir, it)) },
-                    onOpenTaskList = { backStack.add(EditTaskListRoute(browserRoute.parentDir, it)) },
-                    onOpenRemindersSummary = { backStack.add(RemindersSummaryRoute) },
-                    navigateToTasksSummary = { backStack.add(TasksSummaryRoute(browserRoute.parentDir)) },
-                    onBackClick = { backStack.removeLastOrNull() }
+                    navToFolder = { backStack.add(BrowserRoute(it)) },
+                    navToNote = { backStack.add(EditNoteRoute(browserRoute.parentDir, it)) },
+                    navToTaskList = { backStack.add(EditTaskListRoute(browserRoute.parentDir, it)) },
+                    navToRemindersSummary = { backStack.add(RemindersSummaryRoute) },
+                    navToTasksSummary = { backStack.add(TasksSummaryRoute(browserRoute.parentDir)) },
+                    onBack = { backStack.removeLastOrNull() }
                 )
             }
 
@@ -213,7 +213,10 @@ private fun AuthenticatedNavDisplay(
             }
 
             entry<EditNoteRoute> { route ->
-                NoteFeature(route.parentDir, route.noteId, onNavigateBack = { backStack.removeLastOrNull() })
+                NoteFeature(
+                    parentDir = route.parentDir,
+                    noteId = route.noteId,
+                    onBack = { backStack.removeLastOrNull() })
             }
 
             entry<EditTaskListRoute> { route ->
@@ -221,7 +224,7 @@ private fun AuthenticatedNavDisplay(
                     parentDir = route.parentDir,
                     taskListId = route.taskListId,
                     settingsResults = settingsChannels.resultsFor(route.editorId),
-                    onOpenSettings = { taskListId, initial ->
+                    navToMainTaskSettings = { taskListId, initial ->
                         backStack.add(
                             MainTaskSettingsRoute(
                                 mainTaskId = initial.mainTaskId,
@@ -233,7 +236,7 @@ private fun AuthenticatedNavDisplay(
                             )
                         )
                     },
-                    onNavigateBack = { backStack.removeLastOrNull() }
+                    onBack = { backStack.removeLastOrNull() }
                 )
             }
 

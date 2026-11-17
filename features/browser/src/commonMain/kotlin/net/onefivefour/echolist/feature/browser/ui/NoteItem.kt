@@ -13,9 +13,9 @@ import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 
 @Composable
 internal fun NoteItem(id: String, title: String, preview: String?, onClick: (String) -> Unit,
-    modifier: Modifier = Modifier, isWide: Boolean = false) {
+    modifier: Modifier = Modifier, isDesktop: Boolean = false) {
     val color = EchoListTheme.echoListColorScheme.noteColor
-    BrowserItemCard(title, Res.drawable.browser_note, color, false, isWide, { onClick(id) }, modifier) {
+    BrowserItemCard(title, Res.drawable.browser_note, color, false, isDesktop, { onClick(id) }, modifier) {
         Spacer(Modifier.height(EchoListTheme.dimensions.s))
         Box(Modifier.width(30.dp).height(2.dp).background(color))
         if (!preview.isNullOrEmpty()) {

@@ -5,7 +5,7 @@ import net.onefivefour.echolist.core.session.domain.SecureStorage
 /**
  * In-memory [SecureStorage] implementation for use in common tests.
  */
-class FakeSecureStorage : SecureStorage {
+internal class FakeSecureStorage : SecureStorage {
 
     private val store = mutableMapOf<String, String>()
 

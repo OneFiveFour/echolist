@@ -92,7 +92,7 @@ internal class CreateFolderViewModelPropertyTest : FunSpec({
                 vm.uiState.value.error shouldBe null
                 vm.uiState.value.isLoading shouldBe false
 
-                vm.dismissDialog()
+                vm.onDismissDialog()
                 vm.uiState.value.isVisible shouldBe false
                 vm.uiState.value.folderName shouldBe ""
                 vm.uiState.value.error shouldBe null

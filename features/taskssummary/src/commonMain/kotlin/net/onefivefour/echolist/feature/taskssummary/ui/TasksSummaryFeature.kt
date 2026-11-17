@@ -21,10 +21,10 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Composable
-fun TasksSummaryFeature(parentDir: String, onBackClick: () -> Unit) {
+fun TasksSummaryFeature(parentDir: String, onBack: () -> Unit) {
     val viewModel = koinViewModel<TasksSummaryViewModel>(key = parentDir) { parametersOf(parentDir) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    TasksSummaryScreen(uiState, onBackClick)
+    TasksSummaryScreen(uiState, onBack)
 }
 
 @Composable

@@ -15,8 +15,8 @@ import net.onefivefour.echolist.core.files.domain.DirectoryChangeNotifier
 import net.onefivefour.echolist.feature.browser.domain.repository.FileRepository
 
 internal class FileRepositoryImpl(
-    private val networkDataSource: FileRemoteDataSource,
-    private val directoryChangeNotifier: DirectoryChangeNotifier,
+    private val fileRemoteDataSource: FileRemoteDataSource,
+    private val directoryChangedNotifier: DirectoryChangeNotifier,
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default
 ) : FileRepository {
 
@@ -24,9 +24,9 @@ internal class FileRepositoryImpl(
         withContext(dispatcher) {
             try {
                 val request = FileMapper.toProto(params)
-                val response = networkDataSource.createFolder(request)
+                val response = fileRemoteDataSource.createFolder(request)
                 val folder = FileMapper.toDomain(response)
-                directoryChangeNotifier.notifyChanged(params.parentDir)
+                directoryChangedNotifier.notifyChanged(params.parentDir)
                 Result.success(folder)
             } catch (e: Exception) {
                 Result.failure(e)
@@ -37,7 +37,7 @@ internal class FileRepositoryImpl(
         withContext(dispatcher) {
             try {
                 val request = ListFilesRequest(parent_dir = parentDir)
-                val response = networkDataSource.listFiles(request)
+                val response = fileRemoteDataSource.listFiles(request)
                 Result.success(FileMapper.toDomain(response))
             } catch (e: Exception) {
                 Result.failure(e)
@@ -48,10 +48,10 @@ internal class FileRepositoryImpl(
         withContext(dispatcher) {
             try {
                 val request = FileMapper.toProto(params)
-                val response = networkDataSource.updateFolder(request)
+                val response = fileRemoteDataSource.updateFolder(request)
                 val folder = FileMapper.toDomain(response)
                 val parentDir = params.folderPath.substringBeforeLast('/', "")
-                directoryChangeNotifier.notifyChanged(parentDir)
+                directoryChangedNotifier.notifyChanged(parentDir)
                 Result.success(folder)
             } catch (e: Exception) {
                 Result.failure(e)
@@ -62,9 +62,9 @@ internal class FileRepositoryImpl(
         withContext(dispatcher) {
             try {
                 val request = FileMapper.toProto(params)
-                networkDataSource.deleteFolder(request)
+                fileRemoteDataSource.deleteFolder(request)
                 val parentDir = params.folderPath.substringBeforeLast('/', "")
-                directoryChangeNotifier.notifyChanged(parentDir)
+                directoryChangedNotifier.notifyChanged(parentDir)
                 Result.success(Unit)
             } catch (e: Exception) {
                 Result.failure(e)

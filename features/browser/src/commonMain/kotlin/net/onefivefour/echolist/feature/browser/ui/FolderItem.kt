@@ -12,9 +12,9 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun FolderItem(title: String, metadata: FileMetadata.Folder?, onClick: () -> Unit,
-    modifier: Modifier = Modifier, isWide: Boolean = false) {
+    modifier: Modifier = Modifier, isDesktop: Boolean = false) {
     val color = EchoListTheme.echoListColorScheme.folderColor
-    BrowserItemCard(title, Res.drawable.browser_folder, color, true, isWide, onClick, modifier) {
+    BrowserItemCard(title, Res.drawable.browser_folder, color, true, isDesktop, onClick, modifier) {
         metadata?.let {
             Text(if (it.childCount == 0) stringResource(Res.string.folder_empty)
                 else stringResource(Res.string.folder_item_count, it.childCount),

@@ -11,13 +11,13 @@ import org.koin.core.parameter.parametersOf
 fun BrowserFeature(
     selectedFolder: String,
     canNavigateBack: Boolean = false,
-    onOpenFolder: (String) -> Unit,
     onFolderRenamed: (String) -> Unit,
-    onOpenNote: (String?) -> Unit,
-    onOpenTaskList: (String?) -> Unit,
-    onOpenRemindersSummary: () -> Unit,
-    navigateToTasksSummary: () -> Unit,
-    onBackClick: () -> Unit = {}
+    navToFolder: (String) -> Unit,
+    navToNote: (String?) -> Unit,
+    navToTaskList: (String?) -> Unit,
+    navToRemindersSummary: () -> Unit,
+    navToTasksSummary: () -> Unit,
+    onBack: () -> Unit = {}
 ) {
     val browserViewModel = koinViewModel<BrowserViewModel>(key = selectedFolder) {
         parametersOf(selectedFolder)
@@ -31,7 +31,7 @@ fun BrowserFeature(
 
     LaunchedEffect(browserViewModel) {
         browserViewModel.navigateBack.collect {
-            onBackClick()
+            onBack()
         }
     }
 
@@ -59,31 +59,31 @@ fun BrowserFeature(
         renameFolderUiState = renameFolderUiState,
 
         canNavigateBack = canNavigateBack,
-        onBackClick = onBackClick,
+        onBack = onBack,
 
         createItemCallbacks = CreateItemCallbacks(
             onCreateFolder = createFolderViewModel::showDialog,
-            onCreateNote = { onOpenNote(null) },
-            onCreateTaskList = { onOpenTaskList(null) }
+            onCreateNote = { navToNote(null) },
+            onCreateTaskList = { navToTaskList(null) }
         ),
 
         onConfirmCreateFolder = createFolderViewModel::onConfirm,
-        onDismissCreateFolder = createFolderViewModel::dismissDialog,
+        onDismissCreateFolder = createFolderViewModel::onDismissDialog,
 
         onConfirmRenameFolder = renameFolderViewModel::onConfirm,
-        onDismissRenameFolder = renameFolderViewModel::dismissDialog,
+        onDismissRenameFolder = renameFolderViewModel::onDismissDialog,
         onRenameCurrentFolderClick = renameFolderViewModel::showDialog,
         onRenameFolderNameChange = renameFolderViewModel::onNameChange,
         onFolderNameChange = createFolderViewModel::onNameChange,
 
         onDeleteCurrentFolderClick = browserViewModel::onDeleteCurrentFolderClick,
 
-        onFolderClick = onOpenFolder,
-        onNoteClick = { onOpenNote(it) },
-        onTaskClick = { onOpenTaskList(it) },
+        onFolderClick = navToFolder,
+        onNoteClick = { navToNote(it) },
+        onTaskClick = { navToTaskList(it) },
 
-        onOpenRemindersSummary = onOpenRemindersSummary,
-        navigateToTasksSummary = navigateToTasksSummary,
+        navToRemindersSummary = navToRemindersSummary,
+        navToTasksSummary = navToTasksSummary,
 
         onRefresh = browserViewModel::refresh,
     )

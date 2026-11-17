@@ -18,6 +18,6 @@ class BrowserSortingTest : FunSpec({
     test("missing timestamps use epoch and equal timestamps preserve server order") {
         val entries = listOf(note("first", 0), tasks("second", 0), note("third", 1))
         sortBrowserEntries(entries) shouldBe entries
-        FileEntry("unknown", "unknown", ItemType.NOTE, null).lastModifiedAt shouldBe 0L
+        FileEntry("unknown", "unknown", ItemType.NOTE, null).lastModified shouldBe 0L
     }
 })

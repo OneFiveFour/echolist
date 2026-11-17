@@ -8,7 +8,7 @@ import net.onefivefour.echolist.core.session.domain.AuthRepository
  * Fake [AuthRepository] for LoginViewModel tests.
  * By default, login succeeds. Set [loginResult] to control behavior.
  */
-open class FakeAuthRepository(
+internal open class FakeAuthRepository(
     private val storage: net.onefivefour.echolist.core.session.domain.SecureStorage? = null
 ) : AuthRepository {
 
