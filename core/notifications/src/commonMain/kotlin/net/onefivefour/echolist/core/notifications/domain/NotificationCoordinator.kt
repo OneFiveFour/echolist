@@ -19,6 +19,7 @@ class NotificationCoordinator(
     private val clock: Clock = Clock.System,
     private val zone: () -> TimeZone = { TimeZone.currentSystemDefault() }
 ) {
+    // One lock owns every state transition and its platform effects. Policies never write state.
     private val mutex = Mutex()
     private var pendingMutations = 0
 
@@ -83,19 +84,13 @@ class NotificationCoordinator(
         val account = accounts.currentAccountId() ?: return@withLock
         val state = store.read()
         if (state.activeAccount != account || expectedAccount != account) return@withLock
-        val desired = tasks.associateBy { it.taskId }
-        val records = state.reminders.map { old ->
-            if (old.accountId == account && old.taskListId == taskListId && old.taskId !in desired) {
-                platform.cancelPending(old)
-                platform.dismiss(old)
-                old.copy(active = false)
-            } else {
-                old
-            }
-        }.toMutableList()
-        tasks.forEach { merge(records, account, it) }
+        val changes = ReminderReconciler.replaceTaskList(state.reminders, account, taskListId, tasks)
+        changes.removed.forEach {
+            platform.cancelPending(it)
+            platform.dismiss(it)
+        }
         val prefs = state.preferences + preferences.mapKeys { reminderKey(account, it.key) }
-        store.write(state.copy(reminders = records, preferences = prefs, revision = state.revision + 1))
+        store.write(state.copy(reminders = changes.reminders, preferences = prefs, revision = state.revision + 1))
         restoreLocked()
         background.requestSync()
     }
@@ -191,20 +186,13 @@ class NotificationCoordinator(
             if (state.preferences[reminderKey(account, taskId)] == false || !permission.isGranted()) {
                 return@withLock false
             }
-            val records = state.reminders.toMutableList()
-            if (task != null) {
-                if (task.taskId != taskId || task.taskListId.isBlank()) return@withLock false
-                merge(records, account, task)
-            }
-            val reminder = records.firstOrNull {
-                it.accountId == account && it.taskId == taskId && it.active
-            } ?: return@withLock false
+            val preview = ReminderPreview.prepare(state.reminders, account, taskId, task) ?: return@withLock false
             if (task != null) {
                 // Done validates its occurrence against this metadata, even before the first sync.
                 // Keep delivered dates and all other tasks; do not consume the real reminder.
-                store.write(state.copy(reminders = records, revision = state.revision + 1))
+                store.write(state.copy(reminders = preview.reminders, revision = state.revision + 1))
             }
-            platform.show(reminder)
+            platform.show(preview.reminder)
         }
     }
 
@@ -248,28 +236,12 @@ class NotificationCoordinator(
                         ) {
                             "Notification state changed during synchronization"
                         }
-                        require(tasks.map { it.taskId }.distinct().size == tasks.size) { "Duplicate task IDs" }
-                        require(
-                            tasks.all { it.taskId.isNotBlank() && it.taskListId.isNotBlank() && it.dueDate >= from }
-                        ) {
-                            "Incomplete upcoming-task snapshot"
-                        }
-                        val ids = tasks.map { it.taskId }.toSet()
-                        val records = state.reminders.map { old ->
-                            if (old.accountId == account && old.active && LocalDate.parse(old.dueDate) >= from &&
-                                old.taskId !in ids
-                            ) {
-                                platform.cancelPending(old)
-                                // Keep already displayed reminders until the user handles them.
-                                old.copy(active = false)
-                            } else {
-                                old
-                            }
-                        }.toMutableList()
-                        tasks.forEach { merge(records, account, it) }
+                        val changes = ReminderReconciler.replaceSnapshot(state.reminders, account, tasks, from)
+                        // Keep already displayed reminders until the user handles them.
+                        changes.removed.forEach { platform.cancelPending(it) }
                         store.write(
                             state.copy(
-                                reminders = records,
+                                reminders = changes.reminders,
                                 syncDates = state.syncDates + (account to todayUtc.toString()),
                                 lastSuccessUtc = state.lastSuccessUtc + (account to clock.now().toString()),
                                 lastError = null,
@@ -297,47 +269,23 @@ class NotificationCoordinator(
         Result.failure(error)
     }
 
-    private fun merge(records: MutableList<Reminder>, account: String, task: UpcomingReminder) {
-        val old = records.firstOrNull { it.accountId == account && it.taskId == task.taskId }
-        records.removeAll { it.accountId == account && it.taskId == task.taskId }
-        records.add(
-            Reminder(
-                account,
-                task.taskId,
-                task.taskListId,
-                "Task due",
-                task.title,
-                task.dueDate.toString(),
-                deliveredDates = old?.deliveredDates.orEmpty()
-            )
-        )
-    }
-
     private suspend fun restoreLocked() {
         if (pendingMutations != 0) return
         val state = store.read()
         val account = accounts.currentAccountId()
         if (account == null || state.activeAccount != account) return
         state.reminders.filter { it.accountId == account }.forEach { reminder ->
-            if (!reminder.active || state.preferences[reminder.key] == false ||
-                reminder.dueDate in reminder.deliveredDates
-            ) {
-                platform.cancelPending(reminder)
-            } else if (LocalDate.parse(reminder.dueDate) <= clock.todayIn(zone())) {
-                deliverLocked(store.read(), reminder)
-            } else {
-                platform.schedule(reminder)
+            when (ReminderDeliveryPolicy.action(state, reminder) { clock.todayIn(zone()) }) {
+                ReminderDeliveryAction.CANCEL_PENDING -> platform.cancelPending(reminder)
+                ReminderDeliveryAction.DELIVER -> deliverLocked(store.read(), reminder)
+                ReminderDeliveryAction.SCHEDULE -> platform.schedule(reminder)
             }
         }
     }
 
     private suspend fun deliverLocked(state: ReminderState, reminder: Reminder) {
         if (pendingMutations != 0) return
-        if (accounts.currentAccountId() != reminder.accountId || state.activeAccount != reminder.accountId ||
-            !reminder.active || state.preferences[reminder.key] == false ||
-            reminder.dueDate in reminder.deliveredDates ||
-            LocalDate.parse(reminder.dueDate) > clock.todayIn(zone())
-        ) {
+        if (!ReminderDeliveryPolicy.canDeliver(state, reminder, accounts.currentAccountId()) { clock.todayIn(zone()) }) {
             return
         }
         if (!permission.isGranted()) return // Keep the occurrence pending for permission restoration.
