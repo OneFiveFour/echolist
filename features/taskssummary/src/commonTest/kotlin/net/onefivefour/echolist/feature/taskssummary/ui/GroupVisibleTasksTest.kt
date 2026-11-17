@@ -1,4 +1,4 @@
-package net.onefivefour.echolist.feature.browser.ui
+package net.onefivefour.echolist.feature.taskssummary.ui
 
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe

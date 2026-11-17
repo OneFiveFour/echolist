@@ -1,10 +1,9 @@
-package net.onefivefour.echolist.feature.browser.ui
+package net.onefivefour.echolist.feature.taskssummary.ui
 
 import kotlinx.datetime.LocalDate
 
 internal data class TasksSummaryUiState(
-    val isVisible: Boolean = false,
-    val isLoading: Boolean = false,
+    val isLoading: Boolean = true,
     val groups: List<TasksSummaryGroup> = emptyList(),
     val error: String? = null
 ) {
@@ -12,7 +11,7 @@ internal data class TasksSummaryUiState(
 }
 
 /**
- * A task list and its visible (not-done) peek rows, preserving server order.
+ * A task list and its visible (not-done) summary rows, preserving server order.
  */
 internal data class TasksSummaryGroup(
     val taskListId: String,

@@ -17,6 +17,14 @@ class RouteSerializationPropertyTest : FunSpec({
         serializersModule = navKeySerializersModule
     }
 
+    test("TasksSummaryRoute preserves the selected folder through polymorphic serialization") {
+        checkAll(PropTestConfig(iterations = 25), Arb.string(0..200)) { parentDir ->
+            val route: NavKey = TasksSummaryRoute(parentDir)
+            val encoded = json.encodeToString(kotlinx.serialization.serializer<NavKey>(), route)
+            json.decodeFromString(kotlinx.serialization.serializer<NavKey>(), encoded) shouldBe route
+        }
+    }
+
     test("Property 1: BrowserRoute serialization round-trip") {
         checkAll(PropTestConfig(iterations = 25), Arb.string(0..200)) { parentDir ->
             val route = BrowserRoute(parentDir)

@@ -12,6 +12,7 @@ apps/
 app/                Composition root, session state and Navigation 3
 features/
   browser/          Folder listing and folder operations; previously Home
+  taskssummary/     Open tasks in the selected browser directory
   tasklist/         Task-list editor and autosave
   note/             Note editor, cache access and offline synchronization
   login/            Login form and validation
@@ -49,7 +50,7 @@ platform apps -> app -> features -> core
 platform apps ------------------> core (platform integration only)
 ```
 
-- Features never depend on other features. They expose `BrowserFeature`, `TaskListFeature`, `NoteFeature`, `LoginFeature`, `TaskSettingsFeature`, `TaskNotificationsFeature` and their Koin modules.
+- Features never depend on other features. They expose `BrowserFeature`, `TaskListFeature`, `NoteFeature`, `LoginFeature`, `TaskSettingsFeature`, `TaskNotificationsFeature`, `TasksSummaryFeature` and their Koin modules.
 - The app owns routes and navigation; features receive values, event callbacks or a typed result stream/sink.
 - Core modules never depend on features or the app. Core-to-core dependencies form a directed acyclic graph.
 - `ui` depends on domain contracts, not data implementations. `data` implements domain contracts; `di` connects both.
@@ -91,8 +92,9 @@ The browser shows bottom navigation on Compact/Medium windows and a persistent s
 from Expanded width. Its file grid becomes two columns from Large width; narrower windows
 keep one column. The browser owns its insets so the sidebar can reach the window edge,
 while other routes retain their existing app padding. Folder cards have a fixed compact
-height; note/task-list cards are taller. Browse and Due switch between the file list and
-the existing directory task peek; Remind opens Task Notifications.
+height; note/task-list cards are taller. Due opens the separate Tasks Summary screen for the current directory;
+Remind opens Task Notifications. Tasks Summary owns its UI, ViewModel and tests,
+loads on entry without visibility/toggle state, and reuses TaskListRepository in core:tasks.
 
 Browser entries sort folders first by case-insensitive name, then notes and task lists
 together by ascending backend `updated_at`. Equal timestamps preserve server order;
@@ -102,7 +104,7 @@ UI placeholders until backend count fields are available.
 
 ## Navigation and results
 
-`app` defines `BrowserRoute`, `EditNoteRoute`, `EditTaskListRoute`, `MainTaskSettingsRoute` and `TaskNotificationsRoute`. The browser route preserves the former serialized HomeRoute name for saved-state compatibility.
+`app` defines `TasksSummaryRoute`, `BrowserRoute`, `EditNoteRoute`, `EditTaskListRoute`, `MainTaskSettingsRoute` and `TaskNotificationsRoute`. The browser route preserves the former serialized HomeRoute name for saved-state compatibility.
 
 Every task-list navigation entry has a persistent `editorId`. The app's `TaskSettingsChannels` ViewModel owns one queue per editor, surviving configuration changes. Settings send `TaskSettingsChanges` to the calling editor's sink. This supports unsaved task IDs, queues results while the editor is covered, and isolates two editors of the same task. Popping an editor or logging out closes its queue; a late permission response cannot recreate it. The former application-wide result bus exists only as a local test fixture.
 

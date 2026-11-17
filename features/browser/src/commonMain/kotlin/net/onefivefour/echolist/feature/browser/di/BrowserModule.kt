@@ -8,7 +8,6 @@ import net.onefivefour.echolist.feature.browser.domain.repository.FileRepository
 import net.onefivefour.echolist.feature.browser.ui.BrowserViewModel
 import net.onefivefour.echolist.feature.browser.ui.CreateFolderViewModel
 import net.onefivefour.echolist.feature.browser.ui.RenameFolderViewModel
-import net.onefivefour.echolist.feature.browser.ui.TasksSummaryViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -26,5 +25,4 @@ val browserModule = module {
     }
     viewModel { params -> CreateFolderViewModel(parentDir = params.get(), fileRepository = get()) }
     viewModel { params -> RenameFolderViewModel(parentDir = params.get(), fileRepository = get()) }
-    viewModel { params -> TasksSummaryViewModel(parentDir = params.get(), taskListRepository = get()) }
 }

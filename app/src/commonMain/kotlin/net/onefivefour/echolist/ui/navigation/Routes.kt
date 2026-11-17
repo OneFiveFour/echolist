@@ -12,6 +12,9 @@ import kotlinx.serialization.modules.polymorphic
 data object TaskNotificationsRoute : NavKey
 
 @Serializable
+data class TasksSummaryRoute(val parentDir: String) : NavKey
+
+@Serializable
 data object LoginRoute : NavKey
 
 @Serializable
@@ -44,6 +47,7 @@ data class MainTaskSettingsRoute(
 val navKeySerializersModule = SerializersModule {
     polymorphic(NavKey::class) {
         subclass(TaskNotificationsRoute::class, TaskNotificationsRoute.serializer())
+        subclass(TasksSummaryRoute::class, TasksSummaryRoute.serializer())
         subclass(LoginRoute::class, LoginRoute.serializer())
         subclass(BrowserRoute::class, BrowserRoute.serializer())
         subclass(EditNoteRoute::class, EditNoteRoute.serializer())

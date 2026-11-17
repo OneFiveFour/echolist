@@ -1,4 +1,4 @@
-package net.onefivefour.echolist.feature.browser.ui
+package net.onefivefour.echolist.feature.taskssummary.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -18,17 +18,12 @@ internal class TasksSummaryViewModel(
     private val _uiState = MutableStateFlow(TasksSummaryUiState())
     val uiState: StateFlow<TasksSummaryUiState> = _uiState.asStateFlow()
 
-    /** Toggles the peek view in place: showing it (re)loads the current directory's tasks. */
-    fun toggle() {
-        if (_uiState.value.isVisible) {
-            _uiState.update { TasksSummaryUiState() }
-        } else {
-            load()
-        }
+    init {
+        load()
     }
 
     private fun load() {
-        _uiState.update { it.copy(isVisible = true, isLoading = true, error = null) }
+        _uiState.update { it.copy(isLoading = true, error = null) }
         viewModelScope.launch {
             val result = taskListRepository.listMainTasksSummary(parentDir)
             _uiState.update { current ->
@@ -54,7 +49,7 @@ internal class TasksSummaryViewModel(
 }
 
 /**
- * Groups peek entries by task list, preserving the server's grouping and order,
+ * Groups summary entries by task list, preserving the server's grouping and order,
  * hides done tasks, and drops task lists that have no visible tasks left.
  */
 internal fun groupVisibleTasks(tasks: List<MainTasksSummary>): List<TasksSummaryGroup> {

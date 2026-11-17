@@ -5,6 +5,7 @@ import net.onefivefour.echolist.core.files.di.filesModule
 import net.onefivefour.echolist.core.session.di.sessionModule
 import net.onefivefour.echolist.core.tasks.di.tasksModule
 import net.onefivefour.echolist.feature.browser.di.browserModule
+import net.onefivefour.echolist.feature.taskssummary.di.tasksSummaryModule
 import net.onefivefour.echolist.feature.login.di.loginModule
 import net.onefivefour.echolist.feature.note.di.noteModule
 import net.onefivefour.echolist.feature.tasklist.di.taskListModule
@@ -30,6 +31,7 @@ val appModules: List<Module> = listOf(
     tasksModule,
     designSystemModule,
     browserModule,
+    tasksSummaryModule,
     loginModule,
     noteModule,
     taskListModule,

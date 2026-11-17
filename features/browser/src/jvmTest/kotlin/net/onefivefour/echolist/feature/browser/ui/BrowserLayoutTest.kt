@@ -31,7 +31,7 @@ class BrowserLayoutTest : FunSpec({
                         EchoListTheme(isDarkTheme = isDarkTheme, themeManager = ThemeManager(listOf(EchoListDefaultTheme))) {
                             BrowserScreen(
                                 browserUiState = BrowserUiState(listOf(BreadcrumbItem("Home", "")), fileEntries = sampleEntries()),
-                                onTasksSummaryClick = { dueClicks++ },
+                                navigateToTasksSummary = { dueClicks++ },
                                 onOpenTaskNotifications = { reminderClicks++ },
                                 createItemCallbacks = CreateItemCallbacks(onCreateNote = { createClicks++ })
                             )

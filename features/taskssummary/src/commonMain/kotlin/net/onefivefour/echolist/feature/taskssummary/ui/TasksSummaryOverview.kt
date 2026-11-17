@@ -1,4 +1,4 @@
-package net.onefivefour.echolist.feature.browser.ui
+package net.onefivefour.echolist.feature.taskssummary.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,13 +8,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
-import net.onefivefour.echolist.feature.browser.resources.Res
-import net.onefivefour.echolist.feature.browser.resources.task_peek_empty
+import net.onefivefour.echolist.feature.taskssummary.resources.Res
+import net.onefivefour.echolist.feature.taskssummary.resources.tasks_summary_empty
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -24,8 +25,13 @@ internal fun TasksSummaryOverview(
     modifier: Modifier = Modifier
 ) {
     when {
-        uiState.isLoading -> LoadingIndicator(modifier = modifier)
-        uiState.error != null -> ErrorContainer(message = uiState.error, modifier = modifier)
+        uiState.isLoading -> Box(modifier, contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(color = EchoListTheme.materialColors.primary)
+        }
+        uiState.error != null -> Text(
+            text = uiState.error, modifier = modifier.padding(EchoListTheme.dimensions.l),
+            color = EchoListTheme.materialColors.error
+        )
         uiState.isEmpty -> TasksSummaryEmptyState(modifier = modifier)
         else -> TasksSummaryList(groups = uiState.groups, modifier = modifier)
     }
@@ -83,7 +89,7 @@ private fun TasksSummaryEmptyState(
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = stringResource(Res.string.task_peek_empty),
+            text = stringResource(Res.string.tasks_summary_empty),
             style = EchoListTheme.typography.bodyMedium,
             color = EchoListTheme.materialColors.onSurface.copy(alpha = 0.6f)
         )

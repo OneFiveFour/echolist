@@ -1,4 +1,4 @@
-package net.onefivefour.echolist.feature.browser.ui
+package net.onefivefour.echolist.feature.taskssummary.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

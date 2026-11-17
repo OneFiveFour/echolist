@@ -35,8 +35,7 @@ internal fun BrowserScreen(
     onTaskClick: (taskListId: String) -> Unit = {},
     onDeleteCurrentFolderClick: () -> Unit = {},
     onRenameCurrentFolderClick: () -> Unit = {},
-    onTasksSummaryClick: () -> Unit = {},
-    tasksSummaryUiState: TasksSummaryUiState = TasksSummaryUiState(),
+    navigateToTasksSummary: () -> Unit = {},
     canNavigateBack: Boolean = false,
     onBackClick: () -> Unit = {},
     createItemCallbacks: CreateItemCallbacks = CreateItemCallbacks(),
@@ -75,16 +74,16 @@ internal fun BrowserScreen(
                     BrowserNavButton(
                         label = stringResource(resource = Res.string.nav_browse),
                         icon = Res.drawable.browser_browse,
-                        isSelected = !tasksSummaryUiState.isVisible,
+                        isSelected = true,
                         isWide = true,
-                        onClick = { if (tasksSummaryUiState.isVisible) onTasksSummaryClick() })
+                        onClick = {})
                     Spacer(Modifier.height(EchoListTheme.dimensions.xs))
                     BrowserNavButton(
                         label = stringResource(resource = Res.string.nav_due),
                         icon = Res.drawable.browser_due,
-                        isSelected = tasksSummaryUiState.isVisible,
+                        isSelected = false,
                         isWide = true,
-                        onClick = { if (!tasksSummaryUiState.isVisible) onTasksSummaryClick() },
+                        onClick = navigateToTasksSummary,
                         hasDueBadge = true
                     )
                     Spacer(Modifier.height(EchoListTheme.dimensions.xs))
@@ -174,7 +173,7 @@ internal fun BrowserScreen(
                         Spacer(Modifier.width(EchoListTheme.dimensions.s))
                     }
                     Text(
-                        if (tasksSummaryUiState.isVisible) stringResource(Res.string.nav_due) else browserUiState.breadcrumbs.lastOrNull()?.label.orEmpty(),
+                        browserUiState.breadcrumbs.lastOrNull()?.label.orEmpty(),
                         modifier = Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis,
                         style = EchoListTheme.typography.titleLarge.copy(
                             fontSize = if (isWide) 40.sp else 26.sp,
@@ -209,15 +208,11 @@ internal fun BrowserScreen(
                 }
                 Spacer(Modifier.height(if (isWide) 56.dp else EchoListTheme.dimensions.xl))
                 Box(Modifier.weight(1f)) {
-                    if (tasksSummaryUiState.isVisible) {
-                        TasksSummaryOverview(tasksSummaryUiState, Modifier.fillMaxSize())
-                    } else {
-                        PullToRefreshBox(isRefreshing = browserUiState.isRefreshing, onRefresh = onRefresh) {
-                            FileOverview(
-                                browserUiState.fileEntries, browserUiState.isLoading, browserUiState.error,
-                                onFolderClick, onNoteClick, onTaskClick, isWide = isWide
-                            )
-                        }
+                    PullToRefreshBox(isRefreshing = browserUiState.isRefreshing, onRefresh = onRefresh) {
+                        FileOverview(
+                            browserUiState.fileEntries, browserUiState.isLoading, browserUiState.error,
+                            onFolderClick, onNoteClick, onTaskClick, isWide = isWide
+                        )
                     }
                 }
                 if (!isWide) Spacer(Modifier.height(80.dp))
@@ -232,9 +227,9 @@ internal fun BrowserScreen(
                         .padding(horizontal = EchoListTheme.dimensions.m, vertical = EchoListTheme.dimensions.m)
                 ) {
                     BottomNavigation(
-                        createItemCallbacks, onOpenTaskNotifications,
-                        { if (tasksSummaryUiState.isVisible) onTasksSummaryClick() },
-                        { if (!tasksSummaryUiState.isVisible) onTasksSummaryClick() }, tasksSummaryUiState.isVisible
+                        createItemCallbacks = createItemCallbacks,
+                        onOpenTaskNotifications = onOpenTaskNotifications,
+                        navigateToTasksSummary = navigateToTasksSummary
                     )
                 }
             }

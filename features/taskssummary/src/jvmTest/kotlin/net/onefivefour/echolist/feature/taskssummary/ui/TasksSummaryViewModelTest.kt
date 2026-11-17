@@ -1,4 +1,4 @@
-package net.onefivefour.echolist.feature.browser.ui
+package net.onefivefour.echolist.feature.taskssummary.ui
 
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
@@ -26,9 +26,9 @@ class TasksSummaryViewModelTest : FunSpec({
     beforeSpec { Dispatchers.setMain(dispatcher) }
     afterSpec { Dispatchers.resetMain() }
 
-    test("toggle loads, groups and hides done tasks for the current directory") {
+    test("initialization loads, groups and hides done tasks for the current directory") {
         runTest(dispatcher) {
-            val repository = FakePeekRepository(
+            val repository = FakeSummaryRepository(
                 Result.success(
                     listOf(
                         MainTasksSummary("a", "A", false, LocalDate(2026, 1, 1), "l1", "List 1"),
@@ -38,11 +38,9 @@ class TasksSummaryViewModelTest : FunSpec({
             )
             val viewModel = TasksSummaryViewModel(parentDir = "projects", taskListRepository = repository)
 
-            viewModel.toggle()
             advanceUntilIdle()
 
             val state = viewModel.uiState.first()
-            state.isVisible shouldBe true
             state.isLoading shouldBe false
             repository.requestedParentDir shouldBe "projects"
             state.groups shouldBe listOf(
@@ -51,25 +49,11 @@ class TasksSummaryViewModelTest : FunSpec({
         }
     }
 
-    test("toggling again hides the peek view and clears state") {
-        runTest(dispatcher) {
-            val repository = FakePeekRepository(Result.success(emptyList()))
-            val viewModel = TasksSummaryViewModel(parentDir = "", taskListRepository = repository)
-
-            viewModel.toggle()
-            advanceUntilIdle()
-            viewModel.toggle()
-
-            viewModel.uiState.first().isVisible shouldBe false
-        }
-    }
-
     test("surfaces an error message on failure") {
         runTest(dispatcher) {
-            val repository = FakePeekRepository(Result.failure(IllegalStateException("boom")))
+            val repository = FakeSummaryRepository(Result.failure(IllegalStateException("boom")))
             val viewModel = TasksSummaryViewModel(parentDir = "", taskListRepository = repository)
 
-            viewModel.toggle()
             advanceUntilIdle()
 
             val state = viewModel.uiState.first()
@@ -79,7 +63,7 @@ class TasksSummaryViewModelTest : FunSpec({
     }
 })
 
-private class FakePeekRepository(
+private class FakeSummaryRepository(
     private val result: Result<List<MainTasksSummary>>
 ) : TaskListRepository {
     var requestedParentDir: String? = null

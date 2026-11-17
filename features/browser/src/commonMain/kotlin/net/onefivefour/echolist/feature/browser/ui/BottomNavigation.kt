@@ -83,16 +83,40 @@ internal fun CreateItemButton(
 }
 
 @Composable
-internal fun BottomNavigation(createItemCallbacks: CreateItemCallbacks, onOpenTaskNotifications: () -> Unit,
-    onBrowseClick: () -> Unit, onDueClick: () -> Unit, isDueSelected: Boolean) {
+internal fun BottomNavigation(
+    createItemCallbacks: CreateItemCallbacks,
+    onOpenTaskNotifications: () -> Unit,
+    navigateToTasksSummary: () -> Unit
+) {
     Surface(shape = androidx.compose.foundation.shape.RoundedCornerShape(22.dp),
         color = EchoListTheme.materialColors.surface, shadowElevation = 16.dp,
         border = BorderStroke(EchoListTheme.dimensions.borderWidth, EchoListTheme.materialColors.outlineVariant)) {
         Row(Modifier.fillMaxWidth().padding(6.dp), verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(EchoListTheme.dimensions.xs)) {
-            BrowserNavButton(stringResource(Res.string.nav_browse), Res.drawable.browser_browse, !isDueSelected, false, onBrowseClick, Modifier.weight(1f))
-            BrowserNavButton(stringResource(Res.string.nav_due), Res.drawable.browser_due, isDueSelected, false, onDueClick, Modifier.weight(1f))
-            BrowserNavButton(stringResource(Res.string.nav_remind), Res.drawable.browser_remind, false, false, onOpenTaskNotifications, Modifier.weight(1f))
+            BrowserNavButton(
+                label = stringResource(resource = Res.string.nav_browse),
+                icon = Res.drawable.browser_browse,
+                isSelected = true,
+                isWide = false,
+                onClick = {},
+                modifier = Modifier.weight(1f)
+            )
+            BrowserNavButton(
+                label = stringResource(resource = Res.string.nav_due),
+                icon = Res.drawable.browser_due,
+                isSelected = false,
+                isWide = false,
+                onClick = navigateToTasksSummary,
+                modifier = Modifier.weight(1f)
+            )
+            BrowserNavButton(
+                label = stringResource(resource = Res.string.nav_remind),
+                icon = Res.drawable.browser_remind,
+                isSelected = false,
+                isWide = false,
+                onClick = onOpenTaskNotifications,
+                modifier = Modifier.weight(1f)
+            )
             CreateItemButton(createItemCallbacks, false)
         }
     }

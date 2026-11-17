@@ -16,6 +16,7 @@ fun BrowserFeature(
     onOpenNote: (String?) -> Unit,
     onOpenTaskList: (String?) -> Unit,
     onOpenTaskNotifications: () -> Unit,
+    navigateToTasksSummary: () -> Unit,
     onBackClick: () -> Unit = {}
 ) {
     val browserViewModel = koinViewModel<BrowserViewModel>(key = selectedFolder) {
@@ -46,12 +47,6 @@ fun BrowserFeature(
 
     val renameFolderUiState by renameFolderViewModel.uiState.collectAsStateWithLifecycle()
 
-    val tasksSummaryViewModel = koinViewModel<TasksSummaryViewModel>(key = "tasksSummary-$selectedFolder") {
-        parametersOf(selectedFolder)
-    }
-
-    val tasksSummaryUiState by tasksSummaryViewModel.uiState.collectAsStateWithLifecycle()
-
     LaunchedEffect(renameFolderViewModel) {
         renameFolderViewModel.navigateToFolder.collect { newPath ->
             onFolderRenamed(newPath)
@@ -62,7 +57,6 @@ fun BrowserFeature(
         browserUiState = browserUiState,
         createFolderUiState = createFolderUiState,
         renameFolderUiState = renameFolderUiState,
-        tasksSummaryUiState = tasksSummaryUiState,
 
         canNavigateBack = canNavigateBack,
         onBackClick = onBackClick,
@@ -89,7 +83,7 @@ fun BrowserFeature(
         onTaskClick = { onOpenTaskList(it) },
 
         onOpenTaskNotifications = onOpenTaskNotifications,
-        onTasksSummaryClick = tasksSummaryViewModel::toggle,
+        navigateToTasksSummary = navigateToTasksSummary,
 
         onRefresh = browserViewModel::refresh,
     )

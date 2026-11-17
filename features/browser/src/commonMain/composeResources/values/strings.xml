@@ -7,7 +7,6 @@
     <string name="create_note">New note</string>
     <string name="create_task_list">New task list</string>
     <string name="task_peek">Task peek</string>
-    <string name="task_peek_empty">No open tasks in this folder</string>
     <string name="navigate_back">Navigate back</string>
     <string name="folder_empty">Empty</string>
     <string name="folder_item_count">%1$d items</string>

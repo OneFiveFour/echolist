@@ -1,0 +1,5 @@
+<resources>
+    <string name="tasks_summary_title">Due</string>
+    <string name="tasks_summary_empty">No open tasks in this folder</string>
+    <string name="navigate_back">Navigate back</string>
+</resources>
