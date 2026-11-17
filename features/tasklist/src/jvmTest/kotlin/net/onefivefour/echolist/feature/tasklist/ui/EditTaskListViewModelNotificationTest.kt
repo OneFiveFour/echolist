@@ -20,7 +20,7 @@ import kotlinx.datetime.LocalDate
 import net.onefivefour.echolist.core.notifications.domain.NotificationScheduler
 import net.onefivefour.echolist.core.tasks.domain.model.CreateTaskListParams
 import net.onefivefour.echolist.core.tasks.domain.model.MainTask
-import net.onefivefour.echolist.core.tasks.domain.model.MainTaskPeek
+import net.onefivefour.echolist.core.tasks.domain.model.MainTasksSummary
 import net.onefivefour.echolist.core.tasks.domain.model.TaskList
 import net.onefivefour.echolist.core.tasks.domain.model.TaskListEntry
 import net.onefivefour.echolist.core.tasks.domain.model.TaskSettingsChanges
@@ -487,7 +487,7 @@ private class FakeNotificationTestRepository : TaskListRepository {
     override suspend fun listTaskLists(parentDir: String): Result<List<TaskListEntry>> =
         Result.success(emptyList())
 
-    override suspend fun listMainTaskPeek(parentDir: String): Result<List<MainTaskPeek>> =
+    override suspend fun listMainTasksSummary(parentDir: String): Result<List<MainTasksSummary>> =
         error("Task peek is not used by this test fixture")
 
     override suspend fun listUpcomingMainTasks(fromDate: LocalDate): Result<List<UpcomingMainTask>> =

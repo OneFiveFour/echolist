@@ -13,7 +13,7 @@ import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
 import net.onefivefour.echolist.core.tasks.domain.model.CreateTaskListParams
 import net.onefivefour.echolist.core.tasks.domain.model.MainTask
-import net.onefivefour.echolist.core.tasks.domain.model.MainTaskPeek
+import net.onefivefour.echolist.core.tasks.domain.model.MainTasksSummary
 import net.onefivefour.echolist.core.tasks.domain.model.TaskList
 import net.onefivefour.echolist.core.tasks.domain.model.TaskListEntry
 import net.onefivefour.echolist.core.tasks.domain.model.UpcomingMainTask
@@ -21,7 +21,7 @@ import net.onefivefour.echolist.core.tasks.domain.model.UpdateTaskListParams
 import net.onefivefour.echolist.core.tasks.domain.repository.TaskListRepository
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class TaskPeekViewModelTest : FunSpec({
+class TasksSummaryViewModelTest : FunSpec({
     val dispatcher = StandardTestDispatcher()
     beforeSpec { Dispatchers.setMain(dispatcher) }
     afterSpec { Dispatchers.resetMain() }
@@ -31,12 +31,12 @@ class TaskPeekViewModelTest : FunSpec({
             val repository = FakePeekRepository(
                 Result.success(
                     listOf(
-                        MainTaskPeek("a", "A", false, LocalDate(2026, 1, 1), "l1", "List 1"),
-                        MainTaskPeek("b", "B", true, null, "l1", "List 1")
+                        MainTasksSummary("a", "A", false, LocalDate(2026, 1, 1), "l1", "List 1"),
+                        MainTasksSummary("b", "B", true, null, "l1", "List 1")
                     )
                 )
             )
-            val viewModel = TaskPeekViewModel(parentDir = "projects", taskListRepository = repository)
+            val viewModel = TasksSummaryViewModel(parentDir = "projects", taskListRepository = repository)
 
             viewModel.toggle()
             advanceUntilIdle()
@@ -46,7 +46,7 @@ class TaskPeekViewModelTest : FunSpec({
             state.isLoading shouldBe false
             repository.requestedParentDir shouldBe "projects"
             state.groups shouldBe listOf(
-                TaskPeekGroup("l1", "List 1", listOf(TaskPeekRow("a", "A", false, LocalDate(2026, 1, 1))))
+                TasksSummaryGroup("l1", "List 1", listOf(TasksSummaryRow("a", "A", false, LocalDate(2026, 1, 1))))
             )
         }
     }
@@ -54,7 +54,7 @@ class TaskPeekViewModelTest : FunSpec({
     test("toggling again hides the peek view and clears state") {
         runTest(dispatcher) {
             val repository = FakePeekRepository(Result.success(emptyList()))
-            val viewModel = TaskPeekViewModel(parentDir = "", taskListRepository = repository)
+            val viewModel = TasksSummaryViewModel(parentDir = "", taskListRepository = repository)
 
             viewModel.toggle()
             advanceUntilIdle()
@@ -67,7 +67,7 @@ class TaskPeekViewModelTest : FunSpec({
     test("surfaces an error message on failure") {
         runTest(dispatcher) {
             val repository = FakePeekRepository(Result.failure(IllegalStateException("boom")))
-            val viewModel = TaskPeekViewModel(parentDir = "", taskListRepository = repository)
+            val viewModel = TasksSummaryViewModel(parentDir = "", taskListRepository = repository)
 
             viewModel.toggle()
             advanceUntilIdle()
@@ -80,11 +80,11 @@ class TaskPeekViewModelTest : FunSpec({
 })
 
 private class FakePeekRepository(
-    private val result: Result<List<MainTaskPeek>>
+    private val result: Result<List<MainTasksSummary>>
 ) : TaskListRepository {
     var requestedParentDir: String? = null
 
-    override suspend fun listMainTaskPeek(parentDir: String): Result<List<MainTaskPeek>> {
+    override suspend fun listMainTasksSummary(parentDir: String): Result<List<MainTasksSummary>> {
         requestedParentDir = parentDir
         return result
     }

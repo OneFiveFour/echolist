@@ -11,9 +11,6 @@ import net.onefivefour.echolist.feature.note.ui.NoteFeature
 
 import net.onefivefour.echolist.feature.browser.ui.BrowserFeature
 
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -31,7 +28,6 @@ import net.onefivefour.echolist.core.notifications.domain.ReminderBackgroundSche
 import org.koin.compose.koinInject
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -167,55 +163,26 @@ private fun AuthenticatedNavDisplay(
     settingsChannels: TaskSettingsChannels,
     onDebugReminder: ((String, String) -> Unit)?
 ) {
-    val isBrowserRoute = backStack.lastOrNull() is BrowserRoute
     NavDisplay(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(
-                start = if (isBrowserRoute) 0.dp else EchoListTheme.dimensions.l,
-                top = if (isBrowserRoute) 0.dp else EchoListTheme.dimensions.m,
-                end = if (isBrowserRoute) 0.dp else EchoListTheme.dimensions.l,
-                bottom = if (isBrowserRoute) 0.dp else if (canNavigateBack) {
-                    EchoListTheme.dimensions.xxxl + EchoListTheme.dimensions.xl
-                } else {
-                    EchoListTheme.dimensions.m
-                }
-            ),
+        modifier = Modifier.fillMaxSize(),
         backStack = backStack,
         onBack = { backStack.removeLastOrNull() },
         entryDecorators = listOf(
             rememberSaveableStateHolderNavEntryDecorator(),
             rememberViewModelStoreNavEntryDecorator()
         ),
-        transitionSpec = { EnterTransition.None togetherWith ExitTransition.None },
-        popTransitionSpec = { EnterTransition.None togetherWith ExitTransition.None },
-        predictivePopTransitionSpec = { EnterTransition.None togetherWith ExitTransition.None },
         entryProvider = entryProvider {
-            entry<BrowserRoute> { route ->
+            entry<BrowserRoute> { browserRoute ->
                 BrowserFeature(
-                    parentDir = route.parentDir,
-                    onBreadcrumbClick = { parentDir ->
-                        val index = backStack.indexOfLast { it is BrowserRoute && it.parentDir == parentDir }
-                        if (index >= 0) {
-                            while (backStack.size > index + 1) backStack.removeLast()
-                        } else {
-                            backStack.add(BrowserRoute(parentDir))
-                        }
-                    },
-                    onReplaceFolder = { parentDir ->
-                        val index = backStack.indexOfLast { it is BrowserRoute && it.parentDir == parentDir }
-                        if (index >= 0) {
-                            while (backStack.size > index + 1) backStack.removeLast()
-                        } else {
-                            backStack.removeLastOrNull()
-                            backStack.add(BrowserRoute(parentDir))
-                        }
-                    },
-                    onOpenFolder = { backStack.add(BrowserRoute(it)) },
-                    onOpenNote = { backStack.add(EditNoteRoute(route.parentDir, it)) },
-                    onOpenTaskList = { backStack.add(EditTaskListRoute(route.parentDir, it)) },
-                    onOpenTaskNotifications = { backStack.add(TaskNotificationsRoute) },
+                    selectedFolder = browserRoute.parentDir,
                     canNavigateBack = canNavigateBack,
+                    onOpenFolder = { backStack.add(BrowserRoute(it)) },
+                    onFolderRenamed = { newPath ->
+                        backStack[backStack.lastIndex] = BrowserRoute(newPath)
+                    },
+                    onOpenNote = { backStack.add(EditNoteRoute(browserRoute.parentDir, it)) },
+                    onOpenTaskList = { backStack.add(EditTaskListRoute(browserRoute.parentDir, it)) },
+                    onOpenTaskNotifications = { backStack.add(TaskNotificationsRoute) },
                     onBackClick = { backStack.removeLastOrNull() }
                 )
             }

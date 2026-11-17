@@ -1,7 +1,6 @@
 package net.onefivefour.echolist.feature.browser.ui
 
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -32,8 +31,7 @@ import kotlinx.coroutines.flow.first
 
 @Composable
 internal fun BreadcrumbBar(
-    breadcrumbs: List<BreadcrumbItem>,
-    onBreadcrumbClick: (String) -> Unit
+    breadcrumbs: List<BreadcrumbItem>
 ) {
     val scrollState = rememberScrollState()
 
@@ -67,8 +65,7 @@ internal fun BreadcrumbBar(
         ) {
             Icon(
                 modifier = Modifier
-                    .offset(x = EchoListTheme.dimensions.xs)
-                    .clickable { onBreadcrumbClick("") },
+                    .offset(x = EchoListTheme.dimensions.xs),
                 painter = painterResource(Res.drawable.ic_home),
                 contentDescription = stringResource(Res.string.home_title),
                 tint = when (breadcrumbs.size) {
@@ -92,7 +89,6 @@ internal fun BreadcrumbBar(
                     .dropLast(1)
                     .forEach { bc ->
                         Text(
-                            modifier = Modifier.clickable { onBreadcrumbClick(bc.parentDir) },
                             text = bc.label,
                             style = EchoListTheme.typography.labelMedium
                         )
@@ -132,8 +128,7 @@ private fun BreadcrumbBarPreview() {
                     label = "Folder 2",
                     parentDir = "folder1/folder2"
                 )
-            ),
-            onBreadcrumbClick = { }
+            )
         )
     }
 }

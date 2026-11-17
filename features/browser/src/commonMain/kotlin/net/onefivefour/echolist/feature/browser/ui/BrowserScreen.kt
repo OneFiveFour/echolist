@@ -27,8 +27,7 @@ import net.onefivefour.echolist.core.designsystem.resources.Res as SharedRes
 
 @Composable
 internal fun BrowserScreen(
-    uiState: BrowserUiState,
-    onBreadcrumbClick: (path: String) -> Unit,
+    browserUiState: BrowserUiState,
     onRefresh: () -> Unit = {},
     onOpenTaskNotifications: () -> Unit = {},
     onFolderClick: (path: String) -> Unit = {},
@@ -36,8 +35,8 @@ internal fun BrowserScreen(
     onTaskClick: (taskListId: String) -> Unit = {},
     onDeleteCurrentFolderClick: () -> Unit = {},
     onRenameCurrentFolderClick: () -> Unit = {},
-    onTaskPeekClick: () -> Unit = {},
-    taskPeekUiState: TaskPeekUiState = TaskPeekUiState(),
+    onTasksSummaryClick: () -> Unit = {},
+    tasksSummaryUiState: TasksSummaryUiState = TasksSummaryUiState(),
     canNavigateBack: Boolean = false,
     onBackClick: () -> Unit = {},
     createItemCallbacks: CreateItemCallbacks = CreateItemCallbacks(),
@@ -76,16 +75,16 @@ internal fun BrowserScreen(
                     BrowserNavButton(
                         label = stringResource(resource = Res.string.nav_browse),
                         icon = Res.drawable.browser_browse,
-                        isSelected = !taskPeekUiState.isVisible,
+                        isSelected = !tasksSummaryUiState.isVisible,
                         isWide = true,
-                        onClick = { if (taskPeekUiState.isVisible) onTaskPeekClick() })
+                        onClick = { if (tasksSummaryUiState.isVisible) onTasksSummaryClick() })
                     Spacer(Modifier.height(EchoListTheme.dimensions.xs))
                     BrowserNavButton(
                         label = stringResource(resource = Res.string.nav_due),
                         icon = Res.drawable.browser_due,
-                        isSelected = taskPeekUiState.isVisible,
+                        isSelected = tasksSummaryUiState.isVisible,
                         isWide = true,
-                        onClick = { if (!taskPeekUiState.isVisible) onTaskPeekClick() },
+                        onClick = { if (!tasksSummaryUiState.isVisible) onTasksSummaryClick() },
                         hasDueBadge = true
                     )
                     Spacer(Modifier.height(EchoListTheme.dimensions.xs))
@@ -103,11 +102,10 @@ internal fun BrowserScreen(
                         color = colors.outline
                     )
                     Spacer(Modifier.height(EchoListTheme.dimensions.m))
-                    uiState.breadcrumbs.forEach { crumb ->
+                    browserUiState.breadcrumbs.forEach { crumb ->
                         Surface(
-                            onClick = { onBreadcrumbClick(crumb.parentDir) },
                             modifier = Modifier.fillMaxWidth(), shape = EchoListTheme.shapes.small,
-                            color = if (crumb == uiState.breadcrumbs.lastOrNull()) colors.surfaceVariant else colors.surface
+                            color = if (crumb == browserUiState.breadcrumbs.lastOrNull()) colors.surfaceVariant else colors.surface
                         ) {
                             Row(
                                 modifier = Modifier
@@ -152,8 +150,8 @@ internal fun BrowserScreen(
                         color = colors.onSurfaceVariant
                     )
                     Spacer(Modifier.height(EchoListTheme.dimensions.s))
-                } else if (uiState.breadcrumbs.size > 1) {
-                    BreadcrumbBar(uiState.breadcrumbs, onBreadcrumbClick)
+                } else if (browserUiState.breadcrumbs.size > 1) {
+                    BreadcrumbBar(browserUiState.breadcrumbs)
                     Spacer(Modifier.height(EchoListTheme.dimensions.s))
                 }
 
@@ -176,7 +174,7 @@ internal fun BrowserScreen(
                         Spacer(Modifier.width(EchoListTheme.dimensions.s))
                     }
                     Text(
-                        if (taskPeekUiState.isVisible) stringResource(Res.string.nav_due) else uiState.breadcrumbs.lastOrNull()?.label.orEmpty(),
+                        if (tasksSummaryUiState.isVisible) stringResource(Res.string.nav_due) else browserUiState.breadcrumbs.lastOrNull()?.label.orEmpty(),
                         modifier = Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis,
                         style = EchoListTheme.typography.titleLarge.copy(
                             fontSize = if (isWide) 40.sp else 26.sp,
@@ -190,7 +188,7 @@ internal fun BrowserScreen(
                             tint = colors.onSurfaceVariant
                         )
                     }
-                    if (uiState.canRenameCurrentFolder) {
+                    if (browserUiState.canRenameCurrentFolder) {
                         IconButton(onClick = onRenameCurrentFolderClick) {
                             Icon(
                                 painterResource(SharedRes.drawable.ic_edit),
@@ -199,8 +197,8 @@ internal fun BrowserScreen(
                             )
                         }
                     }
-                    if (uiState.canDeleteCurrentFolder) {
-                        IconButton(onClick = onDeleteCurrentFolderClick, enabled = !uiState.isDeletingFolder) {
+                    if (browserUiState.canDeleteCurrentFolder) {
+                        IconButton(onClick = onDeleteCurrentFolderClick, enabled = !browserUiState.isDeletingFolder) {
                             Icon(
                                 painterResource(SharedRes.drawable.ic_delete),
                                 stringResource(Res.string.delete_folder),
@@ -211,12 +209,12 @@ internal fun BrowserScreen(
                 }
                 Spacer(Modifier.height(if (isWide) 56.dp else EchoListTheme.dimensions.xl))
                 Box(Modifier.weight(1f)) {
-                    if (taskPeekUiState.isVisible) {
-                        TaskPeekOverview(taskPeekUiState, Modifier.fillMaxSize())
+                    if (tasksSummaryUiState.isVisible) {
+                        TasksSummaryOverview(tasksSummaryUiState, Modifier.fillMaxSize())
                     } else {
-                        PullToRefreshBox(isRefreshing = uiState.isRefreshing, onRefresh = onRefresh) {
+                        PullToRefreshBox(isRefreshing = browserUiState.isRefreshing, onRefresh = onRefresh) {
                             FileOverview(
-                                uiState.fileEntries, uiState.isLoading, uiState.error,
+                                browserUiState.fileEntries, browserUiState.isLoading, browserUiState.error,
                                 onFolderClick, onNoteClick, onTaskClick, isWide = isWide
                             )
                         }
@@ -235,8 +233,8 @@ internal fun BrowserScreen(
                 ) {
                     BottomNavigation(
                         createItemCallbacks, onOpenTaskNotifications,
-                        { if (taskPeekUiState.isVisible) onTaskPeekClick() },
-                        { if (!taskPeekUiState.isVisible) onTaskPeekClick() }, taskPeekUiState.isVisible
+                        { if (tasksSummaryUiState.isVisible) onTasksSummaryClick() },
+                        { if (!tasksSummaryUiState.isVisible) onTasksSummaryClick() }, tasksSummaryUiState.isVisible
                     )
                 }
             }

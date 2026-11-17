@@ -12,7 +12,7 @@ import net.onefivefour.echolist.core.tasks.data.mapper.TaskListMapper
 import net.onefivefour.echolist.core.tasks.data.source.network.TaskListRemoteDataSource
 import net.onefivefour.echolist.core.tasks.domain.model.CreateTaskListParams
 import net.onefivefour.echolist.core.tasks.domain.model.MainTask
-import net.onefivefour.echolist.core.tasks.domain.model.MainTaskPeek
+import net.onefivefour.echolist.core.tasks.domain.model.MainTasksSummary
 import net.onefivefour.echolist.core.tasks.domain.model.TaskList
 import net.onefivefour.echolist.core.tasks.domain.model.TaskListEntry
 import net.onefivefour.echolist.core.tasks.domain.model.UpcomingMainTask
@@ -21,7 +21,7 @@ import net.onefivefour.echolist.core.tasks.domain.repository.TaskListRepository
 import tasks.v1.DeleteTaskListRequest
 import tasks.v1.GetMainTaskRequest
 import tasks.v1.GetTaskListRequest
-import tasks.v1.ListMainTaskPeekRequest
+import tasks.v1.ListMainTasksSummaryRequest
 import tasks.v1.ListTaskListsRequest
 import tasks.v1.ListUpcomingMainTasksRequest
 
@@ -95,11 +95,11 @@ internal class TaskListRepositoryImpl(
             }
         }
 
-    override suspend fun listMainTaskPeek(parentDir: String): Result<List<MainTaskPeek>> =
+    override suspend fun listMainTasksSummary(parentDir: String): Result<List<MainTasksSummary>> =
         withContext(dispatcher) {
             try {
-                val request = ListMainTaskPeekRequest(parent_dir = parentDir)
-                val response = networkDataSource.listMainTaskPeek(request)
+                val request = ListMainTasksSummaryRequest(parent_dir = parentDir)
+                val response = networkDataSource.listMainTasksSummary(request)
                 Result.success(TaskListMapper.toDomain(response))
             } catch (e: CancellationException) {
                 throw e

@@ -119,7 +119,7 @@ internal class BrowserViewModelClearErrorTest : FunSpec({
         }
     }
 
-    test("empty non-root folder can be deleted and navigates to parent") {
+    test("empty non-root folder can be deleted and requests back navigation") {
         runTest(testDispatcher) {
             var deletedPath: String? = null
             val repo = object : FileRepository {
@@ -143,13 +143,13 @@ internal class BrowserViewModelClearErrorTest : FunSpec({
             advanceUntilIdle()
 
             vm.uiState.value.canDeleteCurrentFolder shouldBe true
-            val navigation = async { vm.navigateToFolder.first() }
+            val navigation = async { vm.navigateBack.first() }
 
             vm.onDeleteCurrentFolderClick()
             advanceUntilIdle()
 
             deletedPath shouldBe "parent/child"
-            navigation.await() shouldBe "parent"
+            navigation.await() shouldBe Unit
             vm.uiState.value.isDeletingFolder shouldBe false
         }
     }

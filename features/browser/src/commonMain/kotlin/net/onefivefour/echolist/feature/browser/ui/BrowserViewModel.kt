@@ -33,8 +33,8 @@ internal class BrowserViewModel(
     )
     val uiState: StateFlow<BrowserUiState> = _uiState.asStateFlow()
 
-    private val _navigateToFolder = MutableSharedFlow<String>()
-    val navigateToFolder: SharedFlow<String> = _navigateToFolder.asSharedFlow()
+    private val _navigateBack = MutableSharedFlow<Unit>()
+    val navigateBack: SharedFlow<Unit> = _navigateBack.asSharedFlow()
 
     init {
         viewModelScope.launch {
@@ -81,7 +81,7 @@ internal class BrowserViewModel(
             result.fold(
                 onSuccess = {
                     _uiState.update { it.copy(isDeletingFolder = false) }
-                    _navigateToFolder.emit(parentPath(parentDir))
+                    _navigateBack.emit(Unit)
                 },
                 onFailure = { exception ->
                     _uiState.update {
@@ -135,8 +135,6 @@ internal class BrowserViewModel(
             homeTitle = getString(Res.string.home_title)
         )
 
-    private fun parentPath(path: String): String =
-        path.trimEnd('/').substringBeforeLast('/', "")
 }
 
 internal fun buildBreadcrumbs(parentDir: String, homeTitle: String): List<BreadcrumbItem> {

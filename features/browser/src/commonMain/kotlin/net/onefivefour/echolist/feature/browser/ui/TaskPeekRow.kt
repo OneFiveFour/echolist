@@ -22,8 +22,8 @@ import net.onefivefour.echolist.core.tasks.domain.model.DueDateUrgency
 import kotlin.time.Clock
 
 @Composable
-internal fun TaskPeekItemRow(
-    row: TaskPeekRow,
+internal fun TasksSummaryItemRow(
+    row: TasksSummaryRow,
     modifier: Modifier = Modifier
 ) {
     Row(

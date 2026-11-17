@@ -9,7 +9,7 @@ service TaskListService {
   rpc GetTaskList (GetTaskListRequest) returns (GetTaskListResponse);
   rpc GetMainTask (GetMainTaskRequest) returns (GetMainTaskResponse);
   rpc ListTaskLists (ListTaskListsRequest) returns (ListTaskListsResponse);
-  rpc ListMainTaskPeek (ListMainTaskPeekRequest) returns (ListMainTaskPeekResponse);
+  rpc ListMainTasksSummary (ListMainTasksSummaryRequest) returns (ListMainTasksSummaryResponse);
   rpc ListUpcomingMainTasks (ListUpcomingMainTasksRequest) returns (ListUpcomingMainTasksResponse);
   rpc UpdateTaskList (UpdateTaskListRequest) returns (UpdateTaskListResponse);
   rpc DeleteTaskList (DeleteTaskListRequest) returns (DeleteTaskListResponse);
@@ -70,16 +70,16 @@ message ListTaskListsResponse {
   repeated TaskList task_lists = 1;
 }
 
-message ListMainTaskPeekRequest {
+message ListMainTasksSummaryRequest {
   // Relative path to the parent directory. Empty string for root.
   // Must not start with "/", must not contain ".." segments.
   string parent_dir = 1;
 }
 
-// MainTaskPeek is a flattened main-task entry aggregated across all task lists
+// MainTasksSummary is a flattened main-task entry aggregated across all task lists
 // in a single directory. Subtasks are intentionally omitted. Field names and
 // types for description, is_done, and due_date mirror MainTask.
-message MainTaskPeek {
+message MainTasksSummary {
   string main_task_id = 1;
   string description = 2;
   bool is_done = 3;
@@ -89,10 +89,10 @@ message MainTaskPeek {
   string task_list_name = 6;
 }
 
-message ListMainTaskPeekResponse {
+message ListMainTasksSummaryResponse {
   // Flat list of main tasks, grouped per task list, and within each task list
   // in stored task order.
-  repeated MainTaskPeek tasks = 1;
+  repeated MainTasksSummary tasks = 1;
 }
 
 message UpdateTaskListRequest {

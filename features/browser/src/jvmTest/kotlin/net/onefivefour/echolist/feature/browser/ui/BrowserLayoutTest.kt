@@ -30,8 +30,8 @@ class BrowserLayoutTest : FunSpec({
                     ImageComposeScene(width, height) {
                         EchoListTheme(isDarkTheme = isDarkTheme, themeManager = ThemeManager(listOf(EchoListDefaultTheme))) {
                             BrowserScreen(
-                                uiState = BrowserUiState(listOf(BreadcrumbItem("Home", "")), fileEntries = sampleEntries()),
-                                onBreadcrumbClick = {}, onTaskPeekClick = { dueClicks++ },
+                                browserUiState = BrowserUiState(listOf(BreadcrumbItem("Home", "")), fileEntries = sampleEntries()),
+                                onTasksSummaryClick = { dueClicks++ },
                                 onOpenTaskNotifications = { reminderClicks++ },
                                 createItemCallbacks = CreateItemCallbacks(onCreateNote = { createClicks++ })
                             )

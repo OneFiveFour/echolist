@@ -9,18 +9,18 @@ import org.koin.core.parameter.parametersOf
 
 @Composable
 fun BrowserFeature(
-    parentDir: String,
-    onBreadcrumbClick: (String) -> Unit,
-    onReplaceFolder: (String) -> Unit,
+    selectedFolder: String,
+    canNavigateBack: Boolean = false,
     onOpenFolder: (String) -> Unit,
+    onFolderRenamed: (String) -> Unit,
     onOpenNote: (String?) -> Unit,
     onOpenTaskList: (String?) -> Unit,
     onOpenTaskNotifications: () -> Unit,
-    canNavigateBack: Boolean = false,
     onBackClick: () -> Unit = {}
 ) {
-    val browserViewModel =
-        koinViewModel<BrowserViewModel>(key = parentDir) { parametersOf(parentDir) }
+    val browserViewModel = koinViewModel<BrowserViewModel>(key = selectedFolder) {
+        parametersOf(selectedFolder)
+    }
 
     val browserUiState by browserViewModel.uiState.collectAsStateWithLifecycle()
 
@@ -29,62 +29,68 @@ fun BrowserFeature(
     }
 
     LaunchedEffect(browserViewModel) {
-        browserViewModel.navigateToFolder.collect { parentDir ->
-            onReplaceFolder(parentDir)
+        browserViewModel.navigateBack.collect {
+            onBackClick()
         }
     }
 
-    val createFolderViewModel =
-        koinViewModel<CreateFolderViewModel>(
-            key = "createFolder-$parentDir"
-        ) { parametersOf(parentDir) }
+    val createFolderViewModel = koinViewModel<CreateFolderViewModel>(key = "createFolder-$selectedFolder") {
+        parametersOf(selectedFolder)
+    }
 
     val createFolderUiState by createFolderViewModel.uiState.collectAsStateWithLifecycle()
 
-    val renameFolderViewModel =
-        koinViewModel<RenameFolderViewModel>(
-            key = "renameFolder-$parentDir"
-        ) { parametersOf(parentDir) }
+    val renameFolderViewModel = koinViewModel<RenameFolderViewModel>(key = "renameFolder-$selectedFolder") {
+        parametersOf(selectedFolder)
+    }
 
     val renameFolderUiState by renameFolderViewModel.uiState.collectAsStateWithLifecycle()
 
-    val taskPeekViewModel =
-        koinViewModel<TaskPeekViewModel>(key = "taskPeek-$parentDir") { parametersOf(parentDir) }
+    val tasksSummaryViewModel = koinViewModel<TasksSummaryViewModel>(key = "tasksSummary-$selectedFolder") {
+        parametersOf(selectedFolder)
+    }
 
-    val taskPeekUiState by taskPeekViewModel.uiState.collectAsStateWithLifecycle()
+    val tasksSummaryUiState by tasksSummaryViewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(renameFolderViewModel) {
         renameFolderViewModel.navigateToFolder.collect { newPath ->
-            onReplaceFolder(newPath)
+            onFolderRenamed(newPath)
         }
     }
 
     BrowserScreen(
-        uiState = browserUiState,
+        browserUiState = browserUiState,
         createFolderUiState = createFolderUiState,
-        onBreadcrumbClick = onBreadcrumbClick,
-        onRefresh = browserViewModel::refresh,
+        renameFolderUiState = renameFolderUiState,
+        tasksSummaryUiState = tasksSummaryUiState,
+
+        canNavigateBack = canNavigateBack,
+        onBackClick = onBackClick,
+
         createItemCallbacks = CreateItemCallbacks(
             onCreateFolder = createFolderViewModel::showDialog,
             onCreateNote = { onOpenNote(null) },
             onCreateTaskList = { onOpenTaskList(null) }
         ),
+
+        onConfirmCreateFolder = createFolderViewModel::onConfirm,
+        onDismissCreateFolder = createFolderViewModel::dismissDialog,
+
+        onConfirmRenameFolder = renameFolderViewModel::onConfirm,
+        onDismissRenameFolder = renameFolderViewModel::dismissDialog,
+        onRenameCurrentFolderClick = renameFolderViewModel::showDialog,
+        onRenameFolderNameChange = renameFolderViewModel::onNameChange,
+        onFolderNameChange = createFolderViewModel::onNameChange,
+
+        onDeleteCurrentFolderClick = browserViewModel::onDeleteCurrentFolderClick,
+
         onFolderClick = onOpenFolder,
         onNoteClick = { onOpenNote(it) },
         onTaskClick = { onOpenTaskList(it) },
+
         onOpenTaskNotifications = onOpenTaskNotifications,
-        onTaskPeekClick = taskPeekViewModel::toggle,
-        taskPeekUiState = taskPeekUiState,
-        canNavigateBack = canNavigateBack,
-        onBackClick = onBackClick,
-        onDeleteCurrentFolderClick = browserViewModel::onDeleteCurrentFolderClick,
-        onRenameCurrentFolderClick = renameFolderViewModel::showDialog,
-        onFolderNameChange = createFolderViewModel::onNameChange,
-        onConfirmCreateFolder = createFolderViewModel::onConfirm,
-        onDismissCreateFolder = createFolderViewModel::dismissDialog,
-        renameFolderUiState = renameFolderUiState,
-        onRenameFolderNameChange = renameFolderViewModel::onNameChange,
-        onConfirmRenameFolder = renameFolderViewModel::onConfirm,
-        onDismissRenameFolder = renameFolderViewModel::dismissDialog
+        onTasksSummaryClick = tasksSummaryViewModel::toggle,
+
+        onRefresh = browserViewModel::refresh,
     )
 }

@@ -19,22 +19,22 @@ import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun TaskPeekOverview(
-    uiState: TaskPeekUiState,
+internal fun TasksSummaryOverview(
+    uiState: TasksSummaryUiState,
     modifier: Modifier = Modifier
 ) {
     when {
         uiState.isLoading -> LoadingIndicator(modifier = modifier)
         uiState.error != null -> ErrorContainer(message = uiState.error, modifier = modifier)
-        uiState.isEmpty -> TaskPeekEmptyState(modifier = modifier)
-        else -> TaskPeekList(groups = uiState.groups, modifier = modifier)
+        uiState.isEmpty -> TasksSummaryEmptyState(modifier = modifier)
+        else -> TasksSummaryList(groups = uiState.groups, modifier = modifier)
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TaskPeekList(
-    groups: List<TaskPeekGroup>,
+private fun TasksSummaryList(
+    groups: List<TasksSummaryGroup>,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -42,17 +42,17 @@ private fun TaskPeekList(
     ) {
         groups.forEach { group ->
             stickyHeader(key = "header-${group.taskListId}") {
-                TaskPeekHeader(title = group.taskListName)
+                TasksSummaryHeader(title = group.taskListName)
             }
             items(group.tasks, key = { it.mainTaskId }) { row ->
-                TaskPeekItemRow(row = row)
+                TasksSummaryItemRow(row = row)
             }
         }
     }
 }
 
 @Composable
-private fun TaskPeekHeader(
+private fun TasksSummaryHeader(
     title: String,
     modifier: Modifier = Modifier
 ) {
@@ -73,7 +73,7 @@ private fun TaskPeekHeader(
 }
 
 @Composable
-private fun TaskPeekEmptyState(
+private fun TasksSummaryEmptyState(
     modifier: Modifier = Modifier
 ) {
     Box(

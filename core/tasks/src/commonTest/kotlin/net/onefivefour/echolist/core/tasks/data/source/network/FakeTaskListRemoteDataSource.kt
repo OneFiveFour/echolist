@@ -8,8 +8,8 @@ import tasks.v1.GetMainTaskRequest
 import tasks.v1.GetMainTaskResponse
 import tasks.v1.GetTaskListRequest
 import tasks.v1.GetTaskListResponse
-import tasks.v1.ListMainTaskPeekRequest
-import tasks.v1.ListMainTaskPeekResponse
+import tasks.v1.ListMainTasksSummaryRequest
+import tasks.v1.ListMainTasksSummaryResponse
 import tasks.v1.ListTaskListsRequest
 import tasks.v1.ListTaskListsResponse
 import tasks.v1.ListUpcomingMainTasksRequest
@@ -23,7 +23,7 @@ internal class FakeTaskListRemoteDataSource : TaskListRemoteDataSource {
     var getTaskListResult: Result<GetTaskListResponse> = Result.success(GetTaskListResponse())
     var getMainTaskResult: Result<GetMainTaskResponse> = Result.success(GetMainTaskResponse())
     var listTaskListsResult: Result<ListTaskListsResponse> = Result.success(ListTaskListsResponse())
-    var listMainTaskPeekResult: Result<ListMainTaskPeekResponse> = Result.success(ListMainTaskPeekResponse())
+    var listMainTasksSummaryResult: Result<ListMainTasksSummaryResponse> = Result.success(ListMainTasksSummaryResponse())
     var listUpcomingMainTasksResult: Result<ListUpcomingMainTasksResponse> =
         Result.success(ListUpcomingMainTasksResponse())
     var updateTaskListResult: Result<UpdateTaskListResponse> = Result.success(UpdateTaskListResponse())
@@ -33,7 +33,7 @@ internal class FakeTaskListRemoteDataSource : TaskListRemoteDataSource {
     var lastGetRequest: GetTaskListRequest? = null
     var lastGetMainTaskRequest: GetMainTaskRequest? = null
     var lastListRequest: ListTaskListsRequest? = null
-    var lastPeekRequest: ListMainTaskPeekRequest? = null
+    var lastPeekRequest: ListMainTasksSummaryRequest? = null
     var lastUpcomingRequest: ListUpcomingMainTasksRequest? = null
     var lastUpdateRequest: UpdateTaskListRequest? = null
     var lastDeleteRequest: DeleteTaskListRequest? = null
@@ -58,9 +58,9 @@ internal class FakeTaskListRemoteDataSource : TaskListRemoteDataSource {
         return listTaskListsResult.getOrThrow()
     }
 
-    override suspend fun listMainTaskPeek(request: ListMainTaskPeekRequest): ListMainTaskPeekResponse {
+    override suspend fun listMainTasksSummary(request: ListMainTasksSummaryRequest): ListMainTasksSummaryResponse {
         lastPeekRequest = request
-        return listMainTaskPeekResult.getOrThrow()
+        return listMainTasksSummaryResult.getOrThrow()
     }
 
     override suspend fun listUpcomingMainTasks(request: ListUpcomingMainTasksRequest): ListUpcomingMainTasksResponse {

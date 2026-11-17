@@ -7,7 +7,7 @@ import kotlinx.datetime.LocalDate
  * directory. Subtasks are intentionally omitted. Entries are returned grouped
  * per task list and, within each task list, in stored task order.
  */
-data class MainTaskPeek(
+data class MainTasksSummary(
     val mainTaskId: String,
     val description: String,
     val isDone: Boolean,

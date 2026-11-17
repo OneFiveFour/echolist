@@ -3,7 +3,7 @@ package net.onefivefour.echolist.feature.browser.ui
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import kotlinx.datetime.LocalDate
-import net.onefivefour.echolist.core.tasks.domain.model.MainTaskPeek
+import net.onefivefour.echolist.core.tasks.domain.model.MainTasksSummary
 
 class GroupVisibleTasksTest : FunSpec({
     fun peek(
@@ -12,7 +12,7 @@ class GroupVisibleTasksTest : FunSpec({
         dueDate: LocalDate? = null,
         listId: String,
         listName: String
-    ) = MainTaskPeek(id, "desc-$id", isDone, dueDate, listId, listName)
+    ) = MainTasksSummary(id, "desc-$id", isDone, dueDate, listId, listName)
 
     test("groups by task list preserving server order and dropping done tasks") {
         val result = groupVisibleTasks(
@@ -25,16 +25,16 @@ class GroupVisibleTasksTest : FunSpec({
         )
 
         result shouldBe listOf(
-            TaskPeekGroup(
+            TasksSummaryGroup(
                 "l1", "List 1",
                 listOf(
-                    TaskPeekRow("a", "desc-a", false, null),
-                    TaskPeekRow("d", "desc-d", false, null)
+                    TasksSummaryRow("a", "desc-a", false, null),
+                    TasksSummaryRow("d", "desc-d", false, null)
                 )
             ),
-            TaskPeekGroup(
+            TasksSummaryGroup(
                 "l2", "List 2",
-                listOf(TaskPeekRow("c", "desc-c", false, LocalDate(2026, 1, 1)))
+                listOf(TasksSummaryRow("c", "desc-c", false, LocalDate(2026, 1, 1)))
             )
         )
     }
@@ -48,7 +48,7 @@ class GroupVisibleTasksTest : FunSpec({
         )
 
         result shouldBe listOf(
-            TaskPeekGroup("l2", "Visible", listOf(TaskPeekRow("b", "desc-b", false, null)))
+            TasksSummaryGroup("l2", "Visible", listOf(TasksSummaryRow("b", "desc-b", false, null)))
         )
     }
 

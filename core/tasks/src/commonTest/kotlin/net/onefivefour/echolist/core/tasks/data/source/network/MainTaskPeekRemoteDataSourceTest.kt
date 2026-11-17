@@ -5,15 +5,15 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import net.onefivefour.echolist.core.networking.data.client.ConnectRpcClient
 import net.onefivefour.echolist.core.networking.data.error.NetworkException
-import tasks.v1.ListMainTaskPeekRequest
-import tasks.v1.ListMainTaskPeekResponse
-import tasks.v1.MainTaskPeek
+import tasks.v1.ListMainTasksSummaryRequest
+import tasks.v1.ListMainTasksSummaryResponse
+import tasks.v1.MainTasksSummary
 
-class MainTaskPeekRemoteDataSourceTest : FunSpec({
+class MainTasksSummaryRemoteDataSourceTest : FunSpec({
     test("uses the peek RPC path and real Wire request and response adapters") {
-        val response = ListMainTaskPeekResponse(
+        val response = ListMainTasksSummaryResponse(
             tasks = listOf(
-                MainTaskPeek(
+                MainTasksSummary(
                     main_task_id = "task-1",
                     description = "Milch",
                     is_done = false,
@@ -23,19 +23,19 @@ class MainTaskPeekRemoteDataSourceTest : FunSpec({
                 )
             )
         )
-        val client = RecordingPeekClient(Result.success(ListMainTaskPeekResponse.ADAPTER.encode(response)))
+        val client = RecordingPeekClient(Result.success(ListMainTasksSummaryResponse.ADAPTER.encode(response)))
         val source = TaskListRemoteDataSourceImpl(client)
 
-        source.listMainTaskPeek(ListMainTaskPeekRequest(parent_dir = "projects")) shouldBe response
-        client.path shouldBe "/tasks.v1.TaskListService/ListMainTaskPeek"
-        ListMainTaskPeekRequest.ADAPTER.decode(requireNotNull(client.requestBytes)).parent_dir shouldBe "projects"
+        source.listMainTasksSummary(ListMainTasksSummaryRequest(parent_dir = "projects")) shouldBe response
+        client.path shouldBe "/tasks.v1.TaskListService/ListMainTasksSummary"
+        ListMainTasksSummaryRequest.ADAPTER.decode(requireNotNull(client.requestBytes)).parent_dir shouldBe "projects"
         client.calls shouldBe 1
     }
 
     test("decodes an empty protobuf response as an empty response") {
         val source = TaskListRemoteDataSourceImpl(RecordingPeekClient(Result.success(byteArrayOf())))
 
-        source.listMainTaskPeek(ListMainTaskPeekRequest(parent_dir = "")) shouldBe ListMainTaskPeekResponse()
+        source.listMainTasksSummary(ListMainTasksSummaryRequest(parent_dir = "")) shouldBe ListMainTasksSummaryResponse()
     }
 
     test("propagates client failures") {
@@ -43,7 +43,7 @@ class MainTaskPeekRemoteDataSourceTest : FunSpec({
         val source = TaskListRemoteDataSourceImpl(RecordingPeekClient(Result.failure(failure)))
 
         shouldThrow<NetworkException.ClientError> {
-            source.listMainTaskPeek(ListMainTaskPeekRequest(parent_dir = ""))
+            source.listMainTasksSummary(ListMainTasksSummaryRequest(parent_dir = ""))
         } shouldBe failure
     }
 })
