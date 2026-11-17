@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import net.onefivefour.echolist.core.session.domain.AuthEvent
 import net.onefivefour.echolist.core.session.domain.AuthEventBus
@@ -15,12 +14,12 @@ class AuthViewModel(
     private val authEventBus: AuthEventBus
 ) : ViewModel() {
 
-    private val _authState = MutableStateFlow<AuthState>(AuthState.Loading)
-    val authState: StateFlow<AuthState> = _authState.asStateFlow()
+    val authState: StateFlow<AuthState>
+        field = MutableStateFlow<AuthState>(AuthState.Loading)
 
     init {
         // Check storage for existing access token
-        _authState.value = if (authRepository.isAuthenticated()) {
+        authState.value = if (authRepository.isAuthenticated()) {
             AuthState.Authenticated
         } else {
             AuthState.Unauthenticated
@@ -31,7 +30,7 @@ class AuthViewModel(
             authEventBus.events.collect { event ->
                 when (event) {
                     AuthEvent.ReAuthRequired -> {
-                        _authState.value = AuthState.Unauthenticated
+                        authState.value = AuthState.Unauthenticated
                     }
                 }
             }
@@ -39,6 +38,6 @@ class AuthViewModel(
     }
 
     fun onAuthenticated() {
-        _authState.value = AuthState.Authenticated
+        authState.value = AuthState.Authenticated
     }
 }

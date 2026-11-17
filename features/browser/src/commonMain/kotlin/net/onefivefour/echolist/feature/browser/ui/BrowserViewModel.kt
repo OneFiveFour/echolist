@@ -7,9 +7,7 @@ import net.onefivefour.echolist.feature.browser.resources.home_title
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import net.onefivefour.echolist.feature.browser.domain.model.FileEntry
@@ -25,16 +23,16 @@ internal class BrowserViewModel(
     private val directoryChangeNotifier: DirectoryChangeNotifier
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(
-        BrowserUiState(
-            breadcrumbs = emptyList(),
-            isLoading = true
+    val uiState: StateFlow<BrowserUiState>
+        field = MutableStateFlow(
+            BrowserUiState(
+                breadcrumbs = emptyList(),
+                isLoading = true
+            )
         )
-    )
-    val uiState: StateFlow<BrowserUiState> = _uiState.asStateFlow()
 
-    private val _navigateBack = MutableSharedFlow<Unit>()
-    val navigateBack: SharedFlow<Unit> = _navigateBack.asSharedFlow()
+    val navigateBack: SharedFlow<Unit>
+        field = MutableSharedFlow<Unit>()
 
     init {
         viewModelScope.launch {
@@ -56,35 +54,35 @@ internal class BrowserViewModel(
      */
     fun clearErrorAndReload() {
         viewModelScope.launch {
-            _uiState.update { it.copy(error = null) }
+            uiState.update { it.copy(error = null) }
             loadData()
         }
     }
 
     fun refresh() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isRefreshing = true) }
+            uiState.update { it.copy(isRefreshing = true) }
             try {
                 loadData()
             } finally {
-                _uiState.update { it.copy(isRefreshing = false) }
+                uiState.update { it.copy(isRefreshing = false) }
             }
         }
     }
 
     fun onDeleteCurrentFolderClick() {
-        if (!_uiState.value.canDeleteCurrentFolder || _uiState.value.isDeletingFolder) return
+        if (!uiState.value.canDeleteCurrentFolder || uiState.value.isDeletingFolder) return
 
         viewModelScope.launch {
-            _uiState.update { it.copy(isDeletingFolder = true, error = null) }
+            uiState.update { it.copy(isDeletingFolder = true, error = null) }
             val result = fileRepository.deleteFolder(DeleteFolderParams(folderPath = parentDir))
             result.fold(
                 onSuccess = {
-                    _uiState.update { it.copy(isDeletingFolder = false) }
-                    _navigateBack.emit(Unit)
+                    uiState.update { it.copy(isDeletingFolder = false) }
+                    navigateBack.emit(Unit)
                 },
                 onFailure = { exception ->
-                    _uiState.update {
+                    uiState.update {
                         it.copy(
                             isDeletingFolder = false,
                             error = exception.message
@@ -97,13 +95,13 @@ internal class BrowserViewModel(
 
     private suspend fun loadData() {
         val breadcrumbs = resolveBreadcrumbs()
-        _uiState.update { current ->
+        uiState.update { current ->
             current.copy(
                 breadcrumbs = breadcrumbs
             )
         }
         val result = fileRepository.listFiles(parentDir)
-        _uiState.update { current ->
+        uiState.update { current ->
             result.fold(
                 onSuccess = { entries ->
                     current.copy(

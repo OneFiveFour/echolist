@@ -6,8 +6,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import net.onefivefour.echolist.feature.browser.domain.model.UpdateFolderParams
@@ -19,34 +17,34 @@ internal class RenameFolderViewModel(
     private val fileRepository: FileRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(RenameFolderUiState())
-    val uiState: StateFlow<RenameFolderUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<RenameFolderUiState>
+        field = MutableStateFlow(RenameFolderUiState())
 
-    private val _navigateToFolder = MutableSharedFlow<String>()
-    val navigateToFolder: SharedFlow<String> = _navigateToFolder.asSharedFlow()
+    val navigateToFolder: SharedFlow<String>
+        field = MutableSharedFlow<String>()
 
     fun showDialog() {
         val currentName = parentDir.trimEnd('/').substringAfterLast('/')
-        _uiState.update {
+        uiState.update {
             RenameFolderUiState(isVisible = true, folderName = currentName)
         }
     }
 
     fun dismissDialog() {
-        _uiState.update {
+        uiState.update {
             RenameFolderUiState()
         }
     }
 
     fun onNameChange(value: String) {
-        _uiState.update { it.copy(folderName = value, error = null) }
+        uiState.update { it.copy(folderName = value, error = null) }
     }
 
     fun onConfirm() {
-        val trimmedName = _uiState.value.folderName.trim()
+        val trimmedName = uiState.value.folderName.trim()
         if (trimmedName.isBlank()) return
 
-        _uiState.update { it.copy(isLoading = true) }
+        uiState.update { it.copy(isLoading = true) }
 
         viewModelScope.launch {
             val normalizedPath = normalizePath(parentDir)
@@ -55,11 +53,11 @@ internal class RenameFolderViewModel(
             )
             result.fold(
                 onSuccess = { folder ->
-                    _uiState.update { RenameFolderUiState() }
-                    _navigateToFolder.emit(normalizePath(folder.path))
+                    uiState.update { RenameFolderUiState() }
+                    navigateToFolder.emit(normalizePath(folder.path))
                 },
                 onFailure = { exception ->
-                    _uiState.update {
+                    uiState.update {
                         it.copy(isLoading = false, error = exception.message)
                     }
                 }

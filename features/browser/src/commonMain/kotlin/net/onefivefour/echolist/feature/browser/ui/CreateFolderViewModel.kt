@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import net.onefivefour.echolist.feature.browser.domain.model.CreateFolderParams
@@ -15,30 +14,30 @@ internal class CreateFolderViewModel(
     private val fileRepository: FileRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(CreateFolderUiState())
-    val uiState: StateFlow<CreateFolderUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<CreateFolderUiState>
+        field = MutableStateFlow(CreateFolderUiState())
 
     fun showDialog() {
-        _uiState.update {
+        uiState.update {
             CreateFolderUiState(isVisible = true)
         }
     }
 
     fun dismissDialog() {
-        _uiState.update {
+        uiState.update {
             CreateFolderUiState()
         }
     }
 
     fun onNameChange(value: String) {
-        _uiState.update { it.copy(folderName = value, error = null) }
+        uiState.update { it.copy(folderName = value, error = null) }
     }
 
     fun onConfirm() {
-        val trimmedName = _uiState.value.folderName.trim()
+        val trimmedName = uiState.value.folderName.trim()
         if (trimmedName.isBlank()) return
 
-        _uiState.update { it.copy(isLoading = true) }
+        uiState.update { it.copy(isLoading = true) }
 
         viewModelScope.launch {
             val result = fileRepository.createFolder(
@@ -46,10 +45,10 @@ internal class CreateFolderViewModel(
             )
             result.fold(
                 onSuccess = {
-                    _uiState.update { CreateFolderUiState() }
+                    uiState.update { CreateFolderUiState() }
                 },
                 onFailure = { exception ->
-                    _uiState.update {
+                    uiState.update {
                         it.copy(isLoading = false, error = exception.message)
                     }
                 }

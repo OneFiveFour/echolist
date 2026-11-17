@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.DateTimeUnit
@@ -37,16 +37,16 @@ internal class RemindersSummaryViewModel(
     private val notificationSyncHandler: NotificationSyncHandler,
     private val clock: Clock = Clock.System
 ) : ViewModel() {
-    private val state = MutableStateFlow(RemindersSummaryUiState())
-    val uiState = state.asStateFlow()
+    val uiState: StateFlow<RemindersSummaryUiState>
+        field = MutableStateFlow(RemindersSummaryUiState())
 
     init {
         load()
     }
 
     fun load() {
-        if (state.value.currentlyChangingTaskIds.isNotEmpty()) return
-        state.update { it.copy(isLoading = true, error = null) }
+        if (uiState.value.currentlyChangingTaskIds.isNotEmpty()) return
+        uiState.update { it.copy(isLoading = true, error = null) }
         viewModelScope.launch {
             try {
                 // The API cutoff is inclusive; only dates after today belong in this screen.
@@ -56,27 +56,27 @@ internal class RemindersSummaryViewModel(
                     .sortedBy { it.dueDate }
                 val enabledTaskIds = tasks.filter { notifications.isEnabled(it.taskId) }
                     .mapTo(mutableSetOf()) { it.taskId }
-                state.update { it.copy(isLoading = false, tasks = tasks, enabledTaskIds = enabledTaskIds) }
+                uiState.update { it.copy(isLoading = false, tasks = tasks, enabledTaskIds = enabledTaskIds) }
             } catch (error: CancellationException) {
                 throw error
             } catch (error: Exception) {
-                state.update { it.copy(isLoading = false, error = NotificationError.Load) }
+                uiState.update { it.copy(isLoading = false, error = NotificationError.Load) }
             }
         }
     }
 
     fun setEnabled(taskId: String, isEnabled: Boolean) {
-        if (state.value.isLoading || taskId in state.value.currentlyChangingTaskIds || state.value.tasks.none {
+        if (uiState.value.isLoading || taskId in uiState.value.currentlyChangingTaskIds || uiState.value.tasks.none {
                 it.taskId == taskId
             }
         ) {
             return
         }
-        state.update { it.copy(currentlyChangingTaskIds = it.currentlyChangingTaskIds + taskId, error = null) }
+        uiState.update { it.copy(currentlyChangingTaskIds = it.currentlyChangingTaskIds + taskId, error = null) }
         viewModelScope.launch {
             try {
                 notifications.setEnabled(taskId, isEnabled)
-                state.update { current ->
+                uiState.update { current ->
                     current.copy(
                         enabledTaskIds = if (isEnabled) {
                             current.enabledTaskIds + taskId
@@ -87,7 +87,7 @@ internal class RemindersSummaryViewModel(
                 }
                 if (isEnabled) {
                     if (!permissionChecker.isGranted() && !permissionRequester.request()) {
-                        state.update { it.copy(error = NotificationError.Permission) }
+                        uiState.update { it.copy(error = NotificationError.Permission) }
                     }
                     // Restore known reminders even if the network is unavailable, then fetch metadata.
                     notifications.restore()
@@ -96,9 +96,9 @@ internal class RemindersSummaryViewModel(
             } catch (error: CancellationException) {
                 throw error
             } catch (error: Exception) {
-                state.update { it.copy(error = NotificationError.Save) }
+                uiState.update { it.copy(error = NotificationError.Save) }
             } finally {
-                state.update { it.copy(currentlyChangingTaskIds = it.currentlyChangingTaskIds - taskId) }
+                uiState.update { it.copy(currentlyChangingTaskIds = it.currentlyChangingTaskIds - taskId) }
             }
         }
     }

@@ -10,8 +10,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import net.onefivefour.echolist.core.session.domain.AuthRepository
@@ -23,21 +21,21 @@ internal class LoginViewModel(
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
-    private val _loginUiState = MutableStateFlow(LoginUiState())
-    val loginUiState: StateFlow<LoginUiState> = _loginUiState.asStateFlow()
+    val loginUiState: StateFlow<LoginUiState>
+        field = MutableStateFlow(LoginUiState())
 
-    private val _loginSuccess = MutableSharedFlow<Unit>()
-    val loginSuccess: SharedFlow<Unit> = _loginSuccess.asSharedFlow()
+    val loginSuccess: SharedFlow<Unit>
+        field = MutableSharedFlow<Unit>()
 
     init {
         val storedUrl = authRepository.getBaseUrl()
         if (storedUrl != null) {
-            _loginUiState.update { it.copy(backendUrl = storedUrl) }
+            loginUiState.update { it.copy(backendUrl = storedUrl) }
         }
     }
 
     fun onBackendUrlChanged(value: String) {
-        _loginUiState.update { it.copy(
+        loginUiState.update { it.copy(
             backendUrl = value,
             backendUrlError = null,
             authError = null
@@ -45,7 +43,7 @@ internal class LoginViewModel(
     }
 
     fun onUsernameChanged(value: String) {
-        _loginUiState.update { it.copy(
+        loginUiState.update { it.copy(
             username = value,
             usernameError = null,
             authError = null
@@ -53,7 +51,7 @@ internal class LoginViewModel(
     }
 
     fun onPasswordChanged(value: String) {
-        _loginUiState.update { it.copy(
+        loginUiState.update { it.copy(
             password = value,
             passwordError = null,
             authError = null
@@ -61,13 +59,13 @@ internal class LoginViewModel(
     }
 
     fun onLoginClick() {
-        val current = _loginUiState.value
+        val current = loginUiState.value
 
         if (current.isLoading) {
             return
         }
 
-        _loginUiState.update { it.copy(
+        loginUiState.update { it.copy(
             isLoading = true,
             authError = null
         ) }
@@ -87,7 +85,7 @@ internal class LoginViewModel(
             }
 
             if (backendUrlError != null || usernameError != null || passwordError != null) {
-                _loginUiState.update {
+                loginUiState.update {
                     it.copy(
                         isLoading = false,
                         backendUrlError = backendUrlError,
@@ -106,14 +104,14 @@ internal class LoginViewModel(
 
             result.fold(
                 onSuccess = {
-                    _loginUiState.update { it.copy(isLoading = false) }
-                    _loginSuccess.emit(Unit)
+                    loginUiState.update { it.copy(isLoading = false) }
+                    loginSuccess.emit(Unit)
                 },
                 onFailure = { throwable ->
                     val authError = (throwable as? AuthFailure)?.error
                         ?: AuthError.Unknown(throwable.message ?: "Unknown error occurred")
 
-                    _loginUiState.update {
+                    loginUiState.update {
                         it.copy(
                             isLoading = false,
                             authError = authError

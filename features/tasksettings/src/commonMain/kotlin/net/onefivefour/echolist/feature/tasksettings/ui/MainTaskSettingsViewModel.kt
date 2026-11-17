@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import net.onefivefour.echolist.core.notifications.domain.NotificationPermissionChecker
@@ -25,16 +24,16 @@ internal class MainTaskSettingsViewModel(
     private val resultBus: net.onefivefour.echolist.core.tasks.domain.TaskSettingsResultSink
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<MainTaskSettingsUiState>(
-        MainTaskSettingsUiState.Ready(
-            selectedDueDate = currentDueDate,
-            recurrenceState = rruleToRecurrenceState(currentRecurrence),
-            initialDateMillis = dueDateToUtcMillis(currentDueDate),
-            isNotificationEnabled = currentIsNotificationEnabled,
-            isNotificationToggleEnabled = currentDueDate.isNotBlank()
+    val uiState: StateFlow<MainTaskSettingsUiState>
+        field = MutableStateFlow<MainTaskSettingsUiState>(
+            MainTaskSettingsUiState.Ready(
+                selectedDueDate = currentDueDate,
+                recurrenceState = rruleToRecurrenceState(currentRecurrence),
+                initialDateMillis = dueDateToUtcMillis(currentDueDate),
+                isNotificationEnabled = currentIsNotificationEnabled,
+                isNotificationToggleEnabled = currentDueDate.isNotBlank()
+            )
         )
-    )
-    val uiState: StateFlow<MainTaskSettingsUiState> = _uiState.asStateFlow()
 
     fun onDateSelected(dateMillis: Long) {
         val dueDate = utcMillisToDueDate(dateMillis)
@@ -86,7 +85,7 @@ internal class MainTaskSettingsViewModel(
     }
 
     private fun updateReady(transform: (MainTaskSettingsUiState.Ready) -> MainTaskSettingsUiState.Ready) {
-        _uiState.update { current ->
+        uiState.update { current ->
             when (current) {
                 is MainTaskSettingsUiState.Ready -> transform(current)
                 is MainTaskSettingsUiState.Loading -> current
@@ -95,7 +94,7 @@ internal class MainTaskSettingsViewModel(
     }
 
     private fun confirm(): Boolean {
-        val currentState = _uiState.value as? MainTaskSettingsUiState.Ready ?: return false
+        val currentState = uiState.value as? MainTaskSettingsUiState.Ready ?: return false
 
         if (currentState.recurrenceState != RecurrenceState.Off && currentState.selectedDueDate.isBlank()) {
             updateReady { it.copy(showDueDateRequiredError = true) }
@@ -122,7 +121,7 @@ internal class MainTaskSettingsViewModel(
 
     fun onScreenLeaving() {
         viewModelScope.launch {
-            val state = _uiState.value as? MainTaskSettingsUiState.Ready ?: return@launch
+            val state = uiState.value as? MainTaskSettingsUiState.Ready ?: return@launch
 
             if (!state.isNotificationEnabled || state.selectedDueDate.isBlank()) {
                 return@launch

@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import net.onefivefour.echolist.core.tasks.domain.model.MainTasksSummary
@@ -15,18 +14,18 @@ internal class TasksSummaryViewModel(
     private val taskListRepository: TaskListRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(TasksSummaryUiState())
-    val uiState: StateFlow<TasksSummaryUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<TasksSummaryUiState>
+        field = MutableStateFlow(TasksSummaryUiState())
 
     init {
         load()
     }
 
     private fun load() {
-        _uiState.update { it.copy(isLoading = true, error = null) }
+        uiState.update { it.copy(isLoading = true, error = null) }
         viewModelScope.launch {
             val result = taskListRepository.listMainTasksSummary(parentDir)
-            _uiState.update { current ->
+            uiState.update { current ->
                 result.fold(
                     onSuccess = { tasks ->
                         current.copy(

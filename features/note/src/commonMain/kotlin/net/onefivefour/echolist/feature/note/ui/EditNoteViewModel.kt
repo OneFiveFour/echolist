@@ -8,8 +8,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import net.onefivefour.echolist.feature.note.domain.model.CreateNoteParams
@@ -23,18 +21,18 @@ internal class EditNoteViewModel(
 
     private val titleState = TextFieldState()
 
-    private val _uiState = MutableStateFlow(
-        EditNoteUiState(
-            titleState = titleState,
-            mode = mode,
-            isLoading = mode is EditNoteMode.Edit,
-            isPreview = mode is EditNoteMode.Edit
+    val uiState: StateFlow<EditNoteUiState>
+        field = MutableStateFlow(
+            EditNoteUiState(
+                titleState = titleState,
+                mode = mode,
+                isLoading = mode is EditNoteMode.Edit,
+                isPreview = mode is EditNoteMode.Edit
+            )
         )
-    )
-    val uiState: StateFlow<EditNoteUiState> = _uiState.asStateFlow()
 
-    private val _navigateBack = MutableSharedFlow<Unit>()
-    val navigateBack: SharedFlow<Unit> = _navigateBack.asSharedFlow()
+    val navigateBack: SharedFlow<Unit>
+        field = MutableSharedFlow<Unit>()
 
     init {
         if (mode is EditNoteMode.Edit) {
@@ -43,15 +41,15 @@ internal class EditNoteViewModel(
     }
 
     fun onPreviewToggle() {
-        _uiState.update { it.copy(isPreview = !it.isPreview) }
+        uiState.update { it.copy(isPreview = !it.isPreview) }
     }
 
     fun onBeginEdit() {
-        _uiState.update { it.copy(isPreview = false) }
+        uiState.update { it.copy(isPreview = false) }
     }
 
     fun onToolbarAction(action: MarkdownToolbarAction) {
-        val contentState = _uiState.value.contentState
+        val contentState = uiState.value.contentState
         val text = contentState.text.toString()
         val formatted = MarkdownFormatter.apply(
             action = action,
@@ -66,31 +64,31 @@ internal class EditNoteViewModel(
     }
 
     fun onDeleteClick() {
-        val editMode = _uiState.value.mode as? EditNoteMode.Edit ?: return
+        val editMode = uiState.value.mode as? EditNoteMode.Edit ?: return
 
-        _uiState.update { it.copy(isSaving = true, error = null) }
+        uiState.update { it.copy(isSaving = true, error = null) }
 
         viewModelScope.launch {
             notesRepository.deleteNote(editMode.noteId).fold(
                 onSuccess = {
-                    _uiState.update { it.copy(isSaving = false) }
-                    _navigateBack.emit(Unit)
+                    uiState.update { it.copy(isSaving = false) }
+                    navigateBack.emit(Unit)
                 },
                 onFailure = { e ->
-                    _uiState.update { it.copy(isSaving = false, error = e.message) }
+                    uiState.update { it.copy(isSaving = false, error = e.message) }
                 }
             )
         }
     }
 
     fun onSaveClick() {
-        val currentMode = _uiState.value.mode
+        val currentMode = uiState.value.mode
         val trimmedTitle = titleState.text.toString().trim()
         if (trimmedTitle.isBlank()) return
 
-        val content = _uiState.value.contentState.text.toString()
+        val content = uiState.value.contentState.text.toString()
 
-        _uiState.update { it.copy(isSaving = true, error = null) }
+        uiState.update { it.copy(isSaving = true, error = null) }
 
         viewModelScope.launch {
             val result = when (currentMode) {
@@ -111,11 +109,11 @@ internal class EditNoteViewModel(
             }
             result.fold(
                 onSuccess = {
-                    _uiState.update { it.copy(isSaving = false) }
-                    _navigateBack.emit(Unit)
+                    uiState.update { it.copy(isSaving = false) }
+                    navigateBack.emit(Unit)
                 },
                 onFailure = { e ->
-                    _uiState.update { it.copy(isSaving = false, error = e.message) }
+                    uiState.update { it.copy(isSaving = false, error = e.message) }
                 }
             )
         }
@@ -129,14 +127,14 @@ internal class EditNoteViewModel(
                     titleState.edit {
                         replace(0, length, note.title)
                     }
-                    _uiState.value.contentState.edit {
+                    uiState.value.contentState.edit {
                         replace(0, length, note.content)
                         selection = TextRange(note.content.length)
                     }
-                    _uiState.update { it.copy(isLoading = false, error = null) }
+                    uiState.update { it.copy(isLoading = false, error = null) }
                 },
                 onFailure = { e ->
-                    _uiState.update { it.copy(isLoading = false, error = e.message) }
+                    uiState.update { it.copy(isLoading = false, error = e.message) }
                 }
             )
         }

@@ -3,7 +3,6 @@ package net.onefivefour.echolist.core.notifications.data
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 
 /**
  * Bridge between ViewModel-layer coroutines and Activity-lifecycle permission handling.
@@ -14,8 +13,8 @@ import kotlinx.coroutines.flow.asSharedFlow
  */
 class PermissionResultBridge {
     private var pendingResult: CompletableDeferred<Boolean>? = null
-    private val _requests = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
-    val requests: SharedFlow<Unit> = _requests.asSharedFlow()
+    val requests: SharedFlow<Unit>
+        field = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
     /**
      * Called by the requester. Suspends until the Activity handles the permission flow.
@@ -25,7 +24,7 @@ class PermissionResultBridge {
     suspend fun awaitPermission(): Boolean {
         val deferred = CompletableDeferred<Boolean>()
         pendingResult = deferred
-        _requests.emit(Unit)
+        requests.emit(Unit)
         return deferred.await()
     }
 
