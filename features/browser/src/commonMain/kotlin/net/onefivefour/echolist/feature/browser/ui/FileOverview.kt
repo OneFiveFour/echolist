@@ -1,66 +1,56 @@
 package net.onefivefour.echolist.feature.browser.ui
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.*
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.window.core.layout.WindowSizeClass
 import net.onefivefour.echolist.feature.browser.domain.model.FileEntry
 import net.onefivefour.echolist.feature.browser.domain.model.FileMetadata
 import net.onefivefour.echolist.feature.browser.domain.model.ItemType
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
+import net.onefivefour.echolist.feature.browser.resources.*
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun FileOverview(
-    fileEntries: List<FileEntry>,
-    isLoading: Boolean,
-    error: String?,
-    onFolderClick: (path: String) -> Unit,
-    onNoteClick: (noteId: String) -> Unit,
-    onTaskClick: (taskListId: String) -> Unit,
-    modifier: Modifier = Modifier
+    fileEntries: List<FileEntry>, isLoading: Boolean, error: String?,
+    onFolderClick: (String) -> Unit, onNoteClick: (String) -> Unit, onTaskClick: (String) -> Unit,
+    modifier: Modifier = Modifier, isWide: Boolean = false
 ) {
-    LazyColumn(
+    val spacing = if (isWide) EchoListTheme.dimensions.m else EchoListTheme.dimensions.s
+    val hasTwoColumns = isWide && EchoListTheme.adaptiveInfo.windowSizeClass
+        .isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_LARGE_LOWER_BOUND)
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(if (hasTwoColumns) 2 else 1),
         modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(EchoListTheme.dimensions.s)
+        horizontalArrangement = Arrangement.spacedBy(spacing),
+        verticalArrangement = Arrangement.spacedBy(spacing),
+        contentPadding = PaddingValues(bottom = EchoListTheme.dimensions.l)
     ) {
         when {
-            isLoading -> item(key = "loading") { LoadingIndicator() }
-            error != null -> item(key = "error") { ErrorContainer(message = error) }
-            else -> items(fileEntries) { entry ->
-                when (entry.itemType) {
-                    ItemType.FOLDER -> FolderItem(
-                        title = entry.title,
-                        metadata = entry.metadata as? FileMetadata.Folder,
-                        onClick = { onFolderClick(entry.path) }
-                    )
-
-                    ItemType.NOTE -> {
-                        (entry.metadata as? FileMetadata.Note)?.let { noteMetadata ->
-                            NoteItem(
-                                id = noteMetadata.id,
-                                title = entry.title,
-                                preview = noteMetadata.preview,
-                                onClick = onNoteClick
-                            )
-                        }
-                    }
-
-                    ItemType.TASK_LIST -> {
-                        (entry.metadata as? FileMetadata.TaskList)?.let { taskListMetadata ->
-                            TaskItem(
-                                id = taskListMetadata.id,
-                                title = entry.title,
-                                doneTaskCount = taskListMetadata.doneTaskCount,
-                                totalTaskCount = taskListMetadata.totalTaskCount,
-                                onClick = onTaskClick
-                            )
-                        }
-                    }
-
-                    ItemType.UNSPECIFIED -> {
-                        /* skip */
+            isLoading -> item(key = "loading", span = { GridItemSpan(maxLineSpan) }) { LoadingIndicator() }
+            error != null -> item(key = "error", span = { GridItemSpan(maxLineSpan) }) { ErrorContainer(message = error) }
+            fileEntries.isEmpty() -> item(key = "empty", span = { GridItemSpan(maxLineSpan) }) {
+                Text(stringResource(Res.string.browser_empty), style = EchoListTheme.typography.bodyMedium,
+                    color = EchoListTheme.materialColors.onSurfaceVariant)
+            }
+            else -> {
+                val folders = fileEntries.filter { it.itemType == ItemType.FOLDER }
+                items(folders, key = { it.path }) { entry ->
+                    FolderItem(entry.title, entry.metadata as? FileMetadata.Folder, { onFolderClick(entry.path) }, isWide = isWide)
+                }
+                val files = fileEntries.filter { it.itemType == ItemType.NOTE || it.itemType == ItemType.TASK_LIST }
+                // Fill the unused folder cell so files begin on a new row.
+                if (hasTwoColumns && folders.size % 2 != 0 && files.isNotEmpty()) {
+                    item(key = "folder-boundary") { Spacer(Modifier) }
+                }
+                items(files, key = { it.path }) { entry ->
+                    when (val metadata = entry.metadata) {
+                        is FileMetadata.Note -> NoteItem(metadata.id, entry.title, metadata.preview, onNoteClick, isWide = isWide)
+                        is FileMetadata.TaskList -> TaskItem(metadata.id, entry.title, metadata.doneTaskCount, metadata.totalTaskCount, onTaskClick, isWide = isWide)
+                        else -> Unit
                     }
                 }
             }

@@ -9,4 +9,19 @@
     <string name="task_peek">Task peek</string>
     <string name="task_peek_empty">No open tasks in this folder</string>
     <string name="navigate_back">Navigate back</string>
+    <string name="folder_empty">Empty</string>
+    <string name="folder_item_count">%1$d items</string>
+    <string name="count_overdue">%1$d Overdue</string>
+    <string name="count_due_soon">%1$d Due soon</string>
+    <string name="nav_browse">Browse</string>
+    <string name="nav_due">Due</string>
+    <string name="nav_remind">Remind</string>
+    <string name="nav_reminders">Reminders</string>
+    <string name="your_space">YOUR SPACE</string>
+    <string name="location">LOCATION</string>
+    <string name="create_item">Create item</string>
+    <string name="refresh_browser">Refresh</string>
+    <string name="rename_folder">Rename folder</string>
+    <string name="delete_folder">Delete folder</string>
+    <string name="browser_empty">This folder is empty. Create a folder, note or task list to get started.</string>
 </resources>

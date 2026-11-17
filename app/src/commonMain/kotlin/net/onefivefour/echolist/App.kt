@@ -31,6 +31,7 @@ import net.onefivefour.echolist.core.notifications.domain.ReminderBackgroundSche
 import org.koin.compose.koinInject
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -166,14 +167,15 @@ private fun AuthenticatedNavDisplay(
     settingsChannels: TaskSettingsChannels,
     onDebugReminder: ((String, String) -> Unit)?
 ) {
+    val isBrowserRoute = backStack.lastOrNull() is BrowserRoute
     NavDisplay(
         modifier = Modifier
             .fillMaxSize()
             .padding(
-                start = EchoListTheme.dimensions.l,
-                top = EchoListTheme.dimensions.m,
-                end = EchoListTheme.dimensions.l,
-                bottom = if (canNavigateBack) {
+                start = if (isBrowserRoute) 0.dp else EchoListTheme.dimensions.l,
+                top = if (isBrowserRoute) 0.dp else EchoListTheme.dimensions.m,
+                end = if (isBrowserRoute) 0.dp else EchoListTheme.dimensions.l,
+                bottom = if (isBrowserRoute) 0.dp else if (canNavigateBack) {
                     EchoListTheme.dimensions.xxxl + EchoListTheme.dimensions.xl
                 } else {
                     EchoListTheme.dimensions.m

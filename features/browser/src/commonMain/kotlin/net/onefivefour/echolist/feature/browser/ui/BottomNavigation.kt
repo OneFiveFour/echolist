@@ -1,75 +1,99 @@
 package net.onefivefour.echolist.feature.browser.ui
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import net.onefivefour.echolist.core.designsystem.resources.ic_notifications
-import net.onefivefour.echolist.core.designsystem.ui.components.RoundIconButton
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
-import net.onefivefour.echolist.feature.browser.resources.Res
-import net.onefivefour.echolist.feature.browser.resources.create_folder
-import net.onefivefour.echolist.feature.browser.resources.create_note
-import net.onefivefour.echolist.feature.browser.resources.create_task_list
-import net.onefivefour.echolist.feature.browser.resources.ic_arrow_back
-import net.onefivefour.echolist.feature.browser.resources.ic_create_folder
-import net.onefivefour.echolist.feature.browser.resources.ic_create_note
-import net.onefivefour.echolist.feature.browser.resources.ic_create_task_list
-import net.onefivefour.echolist.feature.browser.resources.ic_task_peek
-import net.onefivefour.echolist.feature.browser.resources.navigate_back
-import net.onefivefour.echolist.feature.browser.resources.task_notifications
-import net.onefivefour.echolist.feature.browser.resources.task_peek
+import net.onefivefour.echolist.feature.browser.resources.*
+import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import net.onefivefour.echolist.core.designsystem.resources.Res as SharedRes
 
 @Composable
-internal fun BottomNavigation(
-    createItemCallbacks: CreateItemCallbacks = CreateItemCallbacks(),
-    onOpenTaskNotifications: () -> Unit = {},
-    onTaskPeekClick: () -> Unit = {},
-    canNavigateBack: Boolean = false,
-    onBackClick: () -> Unit = {}
+internal fun BrowserNavButton(
+    label: String,
+    icon: DrawableResource,
+    isSelected: Boolean,
+    isWide: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    hasDueBadge: Boolean = false
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(EchoListTheme.dimensions.s, Alignment.CenterHorizontally),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        RoundIconButton(
-            iconRes = SharedRes.drawable.ic_notifications,
-            onClick = onOpenTaskNotifications,
-            contentDescription = stringResource(Res.string.task_notifications)
-        )
-        RoundIconButton(
-            iconRes = Res.drawable.ic_create_folder,
-            onClick = createItemCallbacks.onCreateFolder,
-            contentDescription = stringResource(Res.string.create_folder)
-        )
-        RoundIconButton(
-            iconRes = Res.drawable.ic_create_note,
-            onClick = createItemCallbacks.onCreateNote,
-            contentDescription = stringResource(Res.string.create_note)
-        )
-        RoundIconButton(
-            iconRes = Res.drawable.ic_create_task_list,
-            onClick = createItemCallbacks.onCreateTaskList,
-            contentDescription = stringResource(Res.string.create_task_list)
-        )
-        RoundIconButton(
-            iconRes = Res.drawable.ic_task_peek,
-            onClick = onTaskPeekClick,
-            contentDescription = stringResource(Res.string.task_peek)
-        )
-        if (canNavigateBack) {
-            RoundIconButton(
-                iconRes = Res.drawable.ic_arrow_back,
-                onClick = onBackClick,
-                containerColor = EchoListTheme.materialColors.primary,
-                contentColor = EchoListTheme.materialColors.onPrimary,
-                contentDescription = stringResource(Res.string.navigate_back)
-            )
+    val colors = EchoListTheme.materialColors
+    val contentColor = if (isSelected) { if (isWide) colors.onPrimary else colors.primary } else colors.onSurfaceVariant
+    val containerColor = if (isSelected) colors.primary.copy(alpha = if (isWide) 1f else 0.1f) else colors.surface
+    val buttonModifier = modifier.height(if (isWide) 48.dp else 54.dp).clip(EchoListTheme.shapes.medium)
+        .background(containerColor).clickable(onClick = onClick).testTag("nav-$label")
+    if (isWide) {
+        Row(buttonModifier.fillMaxWidth().padding(horizontal = EchoListTheme.dimensions.m),
+            horizontalArrangement = Arrangement.spacedBy(EchoListTheme.dimensions.m), verticalAlignment = Alignment.CenterVertically) {
+            Icon(painterResource(icon), null, Modifier.size(19.dp), tint = contentColor)
+            Text(label, Modifier.weight(1f), style = EchoListTheme.typography.bodyMedium.copy(letterSpacing = 0.sp, fontSize = 14.sp), color = contentColor)
+            if (hasDueBadge) {
+                // TODO backend: supply the global due-task count.
+                Box(Modifier.size(22.dp).background(EchoListTheme.echoListColorScheme.taskColor, CircleShape), contentAlignment = Alignment.Center) {
+                    Text("4", style = EchoListTheme.typography.labelSmall.copy(letterSpacing = 0.sp, fontSize = 10.sp), color = colors.onPrimary)
+                }
+            }
+        }
+    } else {
+        Column(buttonModifier, horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+            Icon(painterResource(icon), null, Modifier.size(21.dp), tint = contentColor)
+            Text(label, Modifier.padding(top = 2.dp), style = EchoListTheme.typography.labelSmall.copy(letterSpacing = 0.sp, fontSize = 9.sp, lineHeight = 12.sp, fontWeight = FontWeight.SemiBold), color = contentColor)
+        }
+    }
+}
+
+@Composable
+internal fun CreateItemButton(
+    createItemCallbacks: CreateItemCallbacks,
+    isWide: Boolean
+) {
+    var isMenuExpanded by remember { mutableStateOf(false) }
+    Box {
+        Surface(onClick = { isMenuExpanded = true }, shape = EchoListTheme.shapes.extraLarge,
+            color = EchoListTheme.materialColors.primary, shadowElevation = 12.dp,
+            modifier = Modifier.size(if (isWide) 58.dp else 52.dp).testTag("browser-create")) {
+            Box(contentAlignment = Alignment.Center) {
+                Icon(painterResource(Res.drawable.browser_plus), stringResource(Res.string.create_item), Modifier.size(24.dp), tint = EchoListTheme.materialColors.onPrimary)
+            }
+        }
+        DropdownMenu(expanded = isMenuExpanded, onDismissRequest = { isMenuExpanded = false },
+            containerColor = EchoListTheme.materialColors.surface) {
+            for ((label, action) in listOf(
+                stringResource(Res.string.create_folder) to createItemCallbacks.onCreateFolder,
+                stringResource(Res.string.create_note) to createItemCallbacks.onCreateNote,
+                stringResource(Res.string.create_task_list) to createItemCallbacks.onCreateTaskList
+            )) {
+                DropdownMenuItem(modifier = Modifier.testTag("create-$label"), text = { Text(label) }, onClick = { isMenuExpanded = false; action() })
+            }
+        }
+    }
+}
+
+@Composable
+internal fun BottomNavigation(createItemCallbacks: CreateItemCallbacks, onOpenTaskNotifications: () -> Unit,
+    onBrowseClick: () -> Unit, onDueClick: () -> Unit, isDueSelected: Boolean) {
+    Surface(shape = androidx.compose.foundation.shape.RoundedCornerShape(22.dp),
+        color = EchoListTheme.materialColors.surface, shadowElevation = 16.dp,
+        border = BorderStroke(EchoListTheme.dimensions.borderWidth, EchoListTheme.materialColors.outlineVariant)) {
+        Row(Modifier.fillMaxWidth().padding(6.dp), verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(EchoListTheme.dimensions.xs)) {
+            BrowserNavButton(stringResource(Res.string.nav_browse), Res.drawable.browser_browse, !isDueSelected, false, onBrowseClick, Modifier.weight(1f))
+            BrowserNavButton(stringResource(Res.string.nav_due), Res.drawable.browser_due, isDueSelected, false, onDueClick, Modifier.weight(1f))
+            BrowserNavButton(stringResource(Res.string.nav_remind), Res.drawable.browser_remind, false, false, onOpenTaskNotifications, Modifier.weight(1f))
+            CreateItemButton(createItemCallbacks, false)
         }
     }
 }

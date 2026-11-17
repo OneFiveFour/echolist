@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import net.onefivefour.echolist.feature.browser.domain.model.FileEntry
+import net.onefivefour.echolist.feature.browser.domain.model.ItemType
 import net.onefivefour.echolist.feature.browser.domain.model.DeleteFolderParams
 import net.onefivefour.echolist.core.files.domain.DirectoryChangeNotifier
 import net.onefivefour.echolist.feature.browser.domain.repository.FileRepository
@@ -106,7 +108,7 @@ internal class BrowserViewModel(
                 onSuccess = { entries ->
                     current.copy(
                         breadcrumbs = breadcrumbs,
-                        fileEntries = entries,
+                        fileEntries = sortBrowserEntries(entries),
                         isLoading = false,
                         canDeleteCurrentFolder = parentDir.isNotBlank() && entries.isEmpty(),
                         canRenameCurrentFolder = parentDir.isNotBlank(),
@@ -149,3 +151,13 @@ internal fun buildBreadcrumbs(parentDir: String, homeTitle: String): List<Breadc
     }
     return breadcrumbs
 }
+
+/** Folders sort by name; files share a chronological order regardless of their type.
+ * Zero is the protocol fallback for a missing updated_at; equal dates retain server order.
+ */
+internal fun sortBrowserEntries(entries: List<FileEntry>) =
+    entries.sortedWith(compareBy<FileEntry> {
+        it.itemType != ItemType.FOLDER
+    }.thenBy {
+        if (it.itemType == ItemType.FOLDER) it.title.lowercase() else ""
+    }.thenBy { it.lastModifiedAt })

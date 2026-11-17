@@ -87,6 +87,19 @@ its large introduction sidebar is shown from Expanded width (840 dp); Compact
 and Medium use the form-only layout. Persistent input/focus state stays above
 adaptive branches and content scrolls when height is insufficient.
 
+The browser shows bottom navigation on Compact/Medium windows and a persistent sidebar
+from Expanded width. Its file grid becomes two columns from Large width; narrower windows
+keep one column. The browser owns its insets so the sidebar can reach the window edge,
+while other routes retain their existing app padding. Folder cards have a fixed compact
+height; note/task-list cards are taller. Browse and Due switch between the file list and
+the existing directory task peek; Remind opens Task Notifications.
+
+Browser entries sort folders first by case-insensitive name, then notes and task lists
+together by ascending backend `updated_at`. Equal timestamps preserve server order;
+missing timestamps use the protocol's epoch fallback (`0`). Shared `DueCountPill` components
+render urgency summaries. Per-list urgency counts and the sidebar due badge are explicit
+UI placeholders until backend count fields are available.
+
 ## Navigation and results
 
 `app` defines `BrowserRoute`, `EditNoteRoute`, `EditTaskListRoute`, `MainTaskSettingsRoute` and `TaskNotificationsRoute`. The browser route preserves the former serialized HomeRoute name for saved-state compatibility.

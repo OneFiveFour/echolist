@@ -5,7 +5,15 @@ internal data class FileEntry(
     val title: String,
     val itemType: ItemType,
     val metadata: FileMetadata?
-)
+) {
+    /** Unix timestamp from backend metadata, or deterministic epoch fallback when unavailable. */
+    val lastModifiedAt: Long
+        get() = when (val value = metadata) {
+            is FileMetadata.Note -> value.updatedAt
+            is FileMetadata.TaskList -> value.updatedAt
+            else -> 0L
+        }
+}
 
 internal enum class ItemType {
     UNSPECIFIED,
