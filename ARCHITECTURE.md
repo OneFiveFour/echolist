@@ -89,7 +89,12 @@ and Medium use the form-only layout. Persistent input/focus state stays above
 adaptive branches and content scrolls when height is insufficient.
 
 The browser shows bottom navigation on Compact/Medium windows and a persistent sidebar
-from Expanded width. Its file grid becomes two columns from Large width; narrower windows
+from Expanded width. `NavigationSuiteScaffold` owns navigation placement with an explicit
+width-only Bar/Rail selection, preserving this boundary even in short windows or tabletop
+posture. Its component override uses `NavigationSuiteScaffoldLayout` with the existing
+custom floating bottom bar and 264-dp sidebar, including breadcrumbs and the divider.
+The scaffold reserves navigation space; content does not add a duplicate bottom spacer.
+Its file grid becomes two columns from Large width; narrower windows
 keep one column. The browser owns its insets so the sidebar can reach the window edge,
 while other routes retain their existing app padding. Folder cards have a fixed compact
 height; note/task-list cards are taller. Due opens the separate Tasks Summary screen for the current directory;

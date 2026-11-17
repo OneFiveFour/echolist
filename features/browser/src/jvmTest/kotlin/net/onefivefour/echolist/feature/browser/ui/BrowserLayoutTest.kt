@@ -23,7 +23,7 @@ class BrowserLayoutTest : FunSpec({
     test("phone and desktop layouts render with compact folders, navigation and working create menu") {
         SwingUtilities.invokeAndWait {
             for (isDarkTheme in listOf(false, true)) {
-                for ((width, height) in listOf(402 to 874, 1440 to 1024, 320 to 640, 840 to 700)) {
+                for ((width, height) in listOf(402 to 874, 1440 to 1024, 320 to 640, 600 to 700, 839 to 700, 840 to 700, 840 to 400)) {
                     var dueClicks = 0
                     var reminderClicks = 0
                     var createClicks = 0
@@ -38,18 +38,21 @@ class BrowserLayoutTest : FunSpec({
                         }
                     }.use { scene ->
                         scene.render().use { image ->
-                            File("build/browser-$width-${if (isDarkTheme) "dark" else "light"}.png")
+                            File("build/browser-$width-$height-${if (isDarkTheme) "dark" else "light"}.png")
                                 .writeBytes(requireNotNull(image.encodeToData()).bytes)
                         }
                         val nodes = scene.browserNodes()
                         val isDesktop = width >= 840
                         (nodes.tagged("browser-sidebar") != null) shouldBe isDesktop
-                        val folder = requireNotNull(nodes.tagged("browser-folder"))
-                        val file = requireNotNull(nodes.tagged("browser-file"))
-                        (folder.boundsInRoot.height < file.boundsInRoot.height) shouldBe true
-                        val folders = nodes.filter { it.config.getOrNull(SemanticsProperties.TestTag) == "browser-folder" }
-                        (folders[0].boundsInRoot.top == folders[1].boundsInRoot.top) shouldBe (width >= 1200)
-                        (file.boundsInRoot.top >= folders.last().boundsInRoot.bottom) shouldBe true
+                        // Short windows need not compose off-screen lazy grid items.
+                        if (height >= 640) {
+                            val folder = requireNotNull(nodes.tagged("browser-folder"))
+                            val file = requireNotNull(nodes.tagged("browser-file"))
+                            (folder.boundsInRoot.height < file.boundsInRoot.height) shouldBe true
+                            val folders = nodes.filter { it.config.getOrNull(SemanticsProperties.TestTag) == "browser-folder" }
+                            (folders[0].boundsInRoot.top == folders[1].boundsInRoot.top) shouldBe (width >= 1200)
+                            (file.boundsInRoot.top >= folders.last().boundsInRoot.bottom) shouldBe true
+                        }
                         nodes.tagged("nav-Due")!!.config[SemanticsActions.OnClick].action!!.invoke()
                         dueClicks shouldBe 1
                         nodes.tagged(if (isDesktop) "nav-Reminders" else "nav-Remind")!!.config[SemanticsActions.OnClick].action!!.invoke()

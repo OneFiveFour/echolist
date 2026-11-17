@@ -2,8 +2,6 @@ package net.onefivefour.echolist.feature.browser.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Refresh
@@ -12,7 +10,6 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -52,28 +49,34 @@ internal fun BrowserScreen(
         .isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)
     val colors = EchoListTheme.materialColors
 
-    Row(
-        Modifier
-            .fillMaxSize()
-            .background(colors.background)
-    ) {
-        if (isDesktop) {
-            DesktopNavRail(
-                colors = colors,
-                navToTasksSummary = navToTasksSummary,
-                navToRemindersSummary = navToRemindersSummary,
-                browserUiState = browserUiState
-            )
-
-            Box(
-                Modifier
-                    .width(EchoListTheme.dimensions.borderWidth)
-                    .fillMaxHeight()
-                    .background(colors.outlineVariant)
-            )
+    BrowserNavigationScaffold(
+        isDesktop = isDesktop,
+        navigation = {
+            if (isDesktop) {
+                Row {
+                    DesktopNavRail(
+                        colors = colors,
+                        navToTasksSummary = navToTasksSummary,
+                        navToRemindersSummary = navToRemindersSummary,
+                        browserUiState = browserUiState
+                    )
+                    Box(
+                        Modifier.width(EchoListTheme.dimensions.borderWidth)
+                            .fillMaxHeight().background(colors.outlineVariant)
+                    )
+                }
+            } else {
+                Box(Modifier.padding(EchoListTheme.dimensions.m)) {
+                    BottomNavigation(
+                        createItemCallbacks = createItemCallbacks,
+                        onOpenRemindersSummary = navToRemindersSummary,
+                        navigateToTasksSummary = navToTasksSummary
+                    )
+                }
+            }
         }
-
-        Box(Modifier.weight(1f).fillMaxHeight()) {
+    ) {
+        Box(Modifier.fillMaxSize()) {
             Column(
                 Modifier.fillMaxSize().padding(
                     horizontal = if (isDesktop) 80.dp else 20.dp,
@@ -176,9 +179,6 @@ internal fun BrowserScreen(
                     }
                 }
 
-                if (!isDesktop) {
-                    Spacer(Modifier.height(80.dp))
-                }
             }
 
             if (isDesktop) {
@@ -188,18 +188,6 @@ internal fun BrowserScreen(
                         .padding(end = 68.dp, bottom = EchoListTheme.dimensions.xl)
                 ) {
                     CreateItemButton(createItemCallbacks, true)
-                }
-            } else {
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(horizontal = EchoListTheme.dimensions.m, vertical = EchoListTheme.dimensions.m)
-                ) {
-                    BottomNavigation(
-                        createItemCallbacks = createItemCallbacks,
-                        onOpenRemindersSummary = navToRemindersSummary,
-                        navigateToTasksSummary = navToTasksSummary
-                    )
                 }
             }
         }
