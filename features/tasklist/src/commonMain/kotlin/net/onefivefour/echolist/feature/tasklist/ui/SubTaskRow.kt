@@ -16,7 +16,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import net.onefivefour.echolist.core.designsystem.ui.components.ElTextField
-import net.onefivefour.echolist.core.designsystem.ui.components.EchoListBackground
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 
 @Composable
@@ -75,16 +74,14 @@ private fun SubTaskRowPreview() {
         UiSubTask(id = "preview-sub-1", description = "Review copy", isDone = false)
     }
     EchoListTheme {
-        EchoListBackground {
-            SubTaskRow(
-                subTask = subTask,
-                shouldRequestFocus = false,
-                onFocusHandled = {},
-                onKeyboardAction = {},
-                onFocusLost = {},
-                onCheckedChange = {}
-            )
-        }
+        SubTaskRow(
+            subTask = subTask,
+            shouldRequestFocus = false,
+            onFocusHandled = {},
+            onKeyboardAction = {},
+            onFocusLost = {},
+            onCheckedChange = {}
+        )
     }
 }
 
@@ -95,15 +92,13 @@ private fun SubTaskRowDonePreview() {
         UiSubTask(id = "preview-sub-2", description = "Draft checklist", isDone = true)
     }
     EchoListTheme {
-        EchoListBackground {
-            SubTaskRow(
-                subTask = subTask,
-                shouldRequestFocus = false,
-                onFocusHandled = {},
-                onKeyboardAction = {},
-                onFocusLost = {},
-                onCheckedChange = {}
-            )
-        }
+        SubTaskRow(
+            subTask = subTask,
+            shouldRequestFocus = false,
+            onFocusHandled = {},
+            onKeyboardAction = {},
+            onFocusLost = {},
+            onCheckedChange = {}
+        )
     }
 }

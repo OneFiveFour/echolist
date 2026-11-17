@@ -1,5 +1,9 @@
 package net.onefivefour.echolist.core.designsystem.ui.theme
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
@@ -13,6 +17,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import net.onefivefour.echolist.core.designsystem.ui.theme.colorscheme.EchoListDefaultTheme
 import org.koin.compose.koinInject
 import org.koin.mp.KoinPlatform
@@ -99,8 +104,16 @@ fun EchoListTheme(
         MaterialTheme(
             colorScheme = materialColorScheme,
             typography = typography,
-            shapes = EchoListTheme.shapes,
-            content = content
-        )
+            shapes = EchoListTheme.shapes
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(echoListColorScheme.background)
+                    .systemBarsPadding()
+            ) {
+                content()
+            }
+        }
     }
 }

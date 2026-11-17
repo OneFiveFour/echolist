@@ -18,7 +18,6 @@ import java.io.File
 import java.lang.reflect.Modifier as JavaModifier
 import javax.imageio.ImageIO
 import javax.swing.SwingUtilities
-import net.onefivefour.echolist.core.designsystem.ui.components.EchoListBackground
 import net.onefivefour.echolist.core.designsystem.ui.theme.colorscheme.EchoListDefaultTheme
 
 class FoundationIntegrationTest : FunSpec({
@@ -52,29 +51,27 @@ class FoundationIntegrationTest : FunSpec({
                     else EchoListDefaultTheme.materialColorSchemeLight
                 val image = renderComposeScene(900, 500) {
                     EchoListTheme(isDarkTheme = isDarkTheme, themeManager = manager) {
-                        EchoListBackground {
-                            Column(
-                                modifier = Modifier.fillMaxSize().padding(32.dp),
-                                verticalArrangement = Arrangement.spacedBy(18.dp)
-                            ) {
-                                val scale = EchoListTheme.typeScale
-                                val material = EchoListTheme.typography
-                                material.displayLarge shouldBe scale.display
-                                material.titleLarge shouldBe scale.titleLarge
-                                material.titleMedium shouldBe scale.title
-                                material.bodyMedium shouldBe scale.body
-                                material.bodySmall shouldBe scale.bodySmall
-                                material.labelMedium shouldBe scale.label
-                                for ((text, style) in listOf(
-                                    "A clearer day" to scale.display,
-                                    "Plans and thoughts" to scale.titleLarge,
-                                    "Weekend errands" to scale.title,
-                                    "Keep the details close, calm, and easy to scan." to scale.body,
-                                    "Updated a few minutes ago · Äöü ß" to scale.bodySmall,
-                                    "DUE TOMORROW" to scale.label
-                                )) {
-                                    Text(text, style = style, color = EchoListTheme.materialColors.onBackground)
-                                }
+                        Column(
+                            modifier = Modifier.fillMaxSize().padding(32.dp),
+                            verticalArrangement = Arrangement.spacedBy(18.dp)
+                        ) {
+                            val scale = EchoListTheme.typeScale
+                            val material = EchoListTheme.typography
+                            material.displayLarge shouldBe scale.display
+                            material.titleLarge shouldBe scale.titleLarge
+                            material.titleMedium shouldBe scale.title
+                            material.bodyMedium shouldBe scale.body
+                            material.bodySmall shouldBe scale.bodySmall
+                            material.labelMedium shouldBe scale.label
+                            for ((text, style) in listOf(
+                                "A clearer day" to scale.display,
+                                "Plans and thoughts" to scale.titleLarge,
+                                "Weekend errands" to scale.title,
+                                "Keep the details close, calm, and easy to scan." to scale.body,
+                                "Updated a few minutes ago · Äöü ß" to scale.bodySmall,
+                                "DUE TOMORROW" to scale.label
+                            )) {
+                                Text(text, style = style, color = EchoListTheme.materialColors.onBackground)
                             }
                         }
                     }

@@ -30,7 +30,6 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import java.io.File
 import javax.swing.SwingUtilities
-import net.onefivefour.echolist.core.designsystem.ui.components.EchoListBackground
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.core.designsystem.ui.theme.ThemeManager
 import net.onefivefour.echolist.core.designsystem.ui.theme.colorscheme.EchoListDefaultTheme
@@ -57,7 +56,7 @@ class LoginLayoutTest : FunSpec({
                 )) {
                     ImageComposeScene(width, height, density = Density(1f, fontScale)) {
                         EchoListTheme(isDarkTheme = isDarkTheme, themeManager = ThemeManager(listOf(EchoListDefaultTheme))) {
-                            EchoListBackground { LoginScreen(state, {}, {}, {}, {}) }
+                            LoginScreen(state, {}, {}, {}, {})
                         }
                     }.use { scene ->
                         scene.render().use { image ->
@@ -112,7 +111,7 @@ class LoginLayoutTest : FunSpec({
                     val state = mutableStateOf(LoginUiState())
                     ImageComposeScene(width, height, density = Density(1f, fontScale)) {
                         EchoListTheme(isDarkTheme = isDarkTheme, themeManager = ThemeManager(listOf(EchoListDefaultTheme))) {
-                            EchoListBackground { LoginScreen(state.value, {}, {}, {}, {}) }
+                            LoginScreen(state.value, {}, {}, {}, {})
                         }
                     }.use { scene ->
                         scene.render().close()

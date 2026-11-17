@@ -6,7 +6,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import net.onefivefour.echolist.core.designsystem.ui.components.EchoListBackground
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 
 /**
@@ -42,13 +41,11 @@ internal fun WeeklyDetailContent(
 @Composable
 private fun WeeklyDetailContentPreview() {
     EchoListTheme {
-        EchoListBackground {
-            WeeklyDetailContent(
-                everyNWeeks = 1,
-                onWeekCountChanged = {},
-                isError = false
-            )
-        }
+        WeeklyDetailContent(
+            everyNWeeks = 1,
+            onWeekCountChanged = {},
+            isError = false
+        )
     }
 }
 
@@ -56,12 +53,10 @@ private fun WeeklyDetailContentPreview() {
 @Composable
 private fun WeeklyDetailContentMultiWeekPreview() {
     EchoListTheme {
-        EchoListBackground {
-            WeeklyDetailContent(
-                everyNWeeks = 3,
-                onWeekCountChanged = {},
-                isError = false
-            )
-        }
+        WeeklyDetailContent(
+            everyNWeeks = 3,
+            onWeekCountChanged = {},
+            isError = false
+        )
     }
 }

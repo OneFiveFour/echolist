@@ -45,7 +45,6 @@ import net.onefivefour.echolist.app.resources.ic_arrow_back
 import net.onefivefour.echolist.app.resources.navigate_back
 import net.onefivefour.echolist.ui.AuthState
 import net.onefivefour.echolist.ui.AuthViewModel
-import net.onefivefour.echolist.core.designsystem.ui.components.EchoListBackground
 import net.onefivefour.echolist.core.designsystem.ui.components.RoundIconButton
 import net.onefivefour.echolist.feature.login.ui.LoginFeature
 import net.onefivefour.echolist.ui.navigation.EditNoteRoute
@@ -64,40 +63,40 @@ import org.jetbrains.compose.resources.stringResource
 fun App(
     notificationTarget: TaskListNotificationTarget? = null,
     onNotificationTargetConsumed: () -> Unit = {},
-    onDebugReminder: ((String, String) -> Unit)? = null
+    onDebugReminder: ((String, String) -> Unit)? = null,
+    overlayContent: @Composable () -> Unit = {}
 ) {
     EchoListTheme {
-        EchoListBackground {
-            val authViewModel = koinViewModel<AuthViewModel>()
-            val authState by authViewModel.authState.collectAsStateWithLifecycle()
-            val settingsChannels = koinViewModel<TaskSettingsChannels>()
-            val notifications = koinInject<NotificationCoordinator>()
-            val reminderWork = koinInject<ReminderBackgroundScheduler>()
-            val reminderScope = rememberCoroutineScope()
-            LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
-                reminderScope.launch {
-                    notifications.refreshSession()
-                    notifications.restore()
-                    if (authState == AuthState.Authenticated) reminderWork.requestSync()
-                }
-            }
-            LaunchedEffect(authState) {
-                if (authState == AuthState.Unauthenticated) settingsChannels.clearEditors()
+        val authViewModel = koinViewModel<AuthViewModel>()
+        val authState by authViewModel.authState.collectAsStateWithLifecycle()
+        val settingsChannels = koinViewModel<TaskSettingsChannels>()
+        val notifications = koinInject<NotificationCoordinator>()
+        val reminderWork = koinInject<ReminderBackgroundScheduler>()
+        val reminderScope = rememberCoroutineScope()
+        LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+            reminderScope.launch {
                 notifications.refreshSession()
                 notifications.restore()
                 if (authState == AuthState.Authenticated) reminderWork.requestSync()
             }
-
-            when (authState) {
-                AuthState.Loading -> Unit
-                AuthState.Unauthenticated -> UnauthenticatedApp(authViewModel)
-                AuthState.Authenticated -> AuthenticatedApp(
-                    notificationTarget,
-                    onNotificationTargetConsumed,
-                    onDebugReminder
-                )
-            }
         }
+        LaunchedEffect(authState) {
+            if (authState == AuthState.Unauthenticated) settingsChannels.clearEditors()
+            notifications.refreshSession()
+            notifications.restore()
+            if (authState == AuthState.Authenticated) reminderWork.requestSync()
+        }
+
+        when (authState) {
+            AuthState.Loading -> Unit
+            AuthState.Unauthenticated -> UnauthenticatedApp(authViewModel)
+            AuthState.Authenticated -> AuthenticatedApp(
+                notificationTarget,
+                onNotificationTargetConsumed,
+                onDebugReminder
+            )
+        }
+        overlayContent()
     }
 }
 

@@ -15,7 +15,6 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
-import net.onefivefour.echolist.core.designsystem.ui.components.EchoListBackground
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 
 /**
@@ -82,17 +81,15 @@ internal fun NumberInputField(
 @Composable
 private fun NumberInputFieldPreview() {
     EchoListTheme {
-        EchoListBackground {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                NumberInputField(
-                    value = 3,
-                    onValueChange = {},
-                    isError = false
-                )
-            }
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            NumberInputField(
+                value = 3,
+                onValueChange = {},
+                isError = false
+            )
         }
     }
 }

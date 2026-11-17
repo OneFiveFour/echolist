@@ -17,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.tooling.preview.Preview
 import net.onefivefour.echolist.core.designsystem.ui.components.EditTitle
-import net.onefivefour.echolist.core.designsystem.ui.components.EchoListBackground
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 
 @Composable
@@ -100,23 +99,21 @@ internal fun EditNoteScreen(
 @Composable
 private fun EditNoteScreenPreview() {
     EchoListTheme {
-        EchoListBackground {
-            EditNoteScreen(
-                uiState = EditNoteUiState(
-                    titleState = TextFieldState(initialText = "Title"),
-                    contentState = TextFieldState(initialText = "Content"),
-                    mode = EditNoteMode.Edit(noteId = "preview-note-id"),
-                    isLoading = false,
-                    isSaving = false,
-                    isPreview = true
-                ),
+        EditNoteScreen(
+            uiState = EditNoteUiState(
+                titleState = TextFieldState(initialText = "Title"),
+                contentState = TextFieldState(initialText = "Content"),
+                mode = EditNoteMode.Edit(noteId = "preview-note-id"),
+                isLoading = false,
+                isSaving = false,
+                isPreview = true
+            ),
 
-                onPreviewToggle = {},
-                onToolbarAction = {},
-                onSaveClick = {},
-                onDeleteClick = {},
-                onBeginEdit = {}
-            )
-        }
+            onPreviewToggle = {},
+            onToolbarAction = {},
+            onSaveClick = {},
+            onDeleteClick = {},
+            onBeginEdit = {}
+        )
     }
 }

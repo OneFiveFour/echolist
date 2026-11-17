@@ -62,8 +62,7 @@ Future themes remain swappable through `ColorTheme` / `ThemeManager`.
 | warning | #D99A08 | #F4C95D |
 | onWarning | #302000 | #362A00 |
 
-`background` is identical in Material and EchoList color schemes. Use
-`EchoListBackground` for the shared solid background and system bar insets.
+`background` is identical in Material and EchoList color schemes. `EchoListTheme` provides the shared solid background and system bar insets.
 The old gradient component and its three gradient tokens have been removed.
 
 Every Material color role absent from Figma is explicitly **Color.Magenta** in

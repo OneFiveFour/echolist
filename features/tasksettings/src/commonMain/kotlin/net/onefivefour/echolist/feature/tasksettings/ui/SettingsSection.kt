@@ -10,7 +10,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import net.onefivefour.echolist.core.designsystem.ui.components.EchoListBackground
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 
 /**
@@ -58,17 +57,15 @@ internal fun SettingsSection(
 @Composable
 private fun SettingsSectionPreview() {
     EchoListTheme {
-        EchoListBackground {
-            SettingsSection(
-                title = "Due date",
-                modifier = Modifier.padding(EchoListTheme.dimensions.l)
-            ) {
-                Text(
-                    text = "Section content",
-                    style = EchoListTheme.typography.bodyMedium,
-                    color = EchoListTheme.materialColors.onSurface
-                )
-            }
+        SettingsSection(
+            title = "Due date",
+            modifier = Modifier.padding(EchoListTheme.dimensions.l)
+        ) {
+            Text(
+                text = "Section content",
+                style = EchoListTheme.typography.bodyMedium,
+                color = EchoListTheme.materialColors.onSurface
+            )
         }
     }
 }

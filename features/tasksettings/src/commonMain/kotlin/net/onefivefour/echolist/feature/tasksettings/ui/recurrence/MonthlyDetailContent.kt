@@ -7,7 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import net.onefivefour.echolist.core.designsystem.ui.components.EchoListBackground
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 
 /**
@@ -65,16 +64,14 @@ internal fun MonthlyDetailContent(
 @Composable
 private fun MonthlyDetailContentPreview() {
     EchoListTheme {
-        EchoListBackground {
-            MonthlyDetailContent(
-                everyNMonths = 1,
-                dayOfMonth = 15,
-                onMonthIntervalChanged = {},
-                onDayOfMonthChanged = {},
-                isMonthIntervalError = false,
-                isDayOfMonthError = false
-            )
-        }
+        MonthlyDetailContent(
+            everyNMonths = 1,
+            dayOfMonth = 15,
+            onMonthIntervalChanged = {},
+            onDayOfMonthChanged = {},
+            isMonthIntervalError = false,
+            isDayOfMonthError = false
+        )
     }
 }
 
@@ -82,15 +79,13 @@ private fun MonthlyDetailContentPreview() {
 @Composable
 private fun MonthlyDetailContentMultiMonthPreview() {
     EchoListTheme {
-        EchoListBackground {
-            MonthlyDetailContent(
-                everyNMonths = 3,
-                dayOfMonth = 1,
-                onMonthIntervalChanged = {},
-                onDayOfMonthChanged = {},
-                isMonthIntervalError = false,
-                isDayOfMonthError = false
-            )
-        }
+        MonthlyDetailContent(
+            everyNMonths = 3,
+            dayOfMonth = 1,
+            onMonthIntervalChanged = {},
+            onDayOfMonthChanged = {},
+            isMonthIntervalError = false,
+            isDayOfMonthError = false
+        )
     }
 }

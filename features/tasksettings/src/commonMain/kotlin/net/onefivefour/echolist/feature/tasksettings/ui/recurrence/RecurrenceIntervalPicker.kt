@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import net.onefivefour.echolist.core.designsystem.ui.components.EchoListBackground
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 
 @Composable
@@ -60,13 +59,11 @@ internal fun RecurrenceIntervalPicker(
 @Composable
 private fun RecurrenceIntervalPickerPreview() {
     EchoListTheme {
-        EchoListBackground {
-            RecurrenceIntervalPicker(
-                selectedInterval = RecurrenceInterval.Off,
-                onIntervalSelected = {},
-                modifier = Modifier.padding(EchoListTheme.dimensions.l)
-            )
-        }
+        RecurrenceIntervalPicker(
+            selectedInterval = RecurrenceInterval.Off,
+            onIntervalSelected = {},
+            modifier = Modifier.padding(EchoListTheme.dimensions.l)
+        )
     }
 }
 
@@ -74,12 +71,10 @@ private fun RecurrenceIntervalPickerPreview() {
 @Composable
 private fun RecurrenceIntervalPickerWeeklyPreview() {
     EchoListTheme {
-        EchoListBackground {
-            RecurrenceIntervalPicker(
-                selectedInterval = RecurrenceInterval.Weekly,
-                onIntervalSelected = {},
-                modifier = Modifier.padding(EchoListTheme.dimensions.l)
-            )
-        }
+        RecurrenceIntervalPicker(
+            selectedInterval = RecurrenceInterval.Weekly,
+            onIntervalSelected = {},
+            modifier = Modifier.padding(EchoListTheme.dimensions.l)
+        )
     }
 }

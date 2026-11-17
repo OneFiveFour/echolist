@@ -97,9 +97,7 @@ class MainActivity : ComponentActivity() {
                 notificationTarget = notificationTarget,
                 onNotificationTargetConsumed = { notificationTarget = null },
                 onDebugReminder = debugReminder
-            )
-
-            EchoListTheme {
+            ) {
                 // Rationale dialog — explains why notifications are needed
                 if (showRationaleDialog) {
                     NotificationRationaleDialog(
