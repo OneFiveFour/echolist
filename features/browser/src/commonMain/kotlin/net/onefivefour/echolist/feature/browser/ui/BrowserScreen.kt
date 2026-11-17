@@ -29,7 +29,7 @@ import net.onefivefour.echolist.core.designsystem.resources.Res as SharedRes
 internal fun BrowserScreen(
     browserUiState: BrowserUiState,
     onRefresh: () -> Unit = {},
-    onOpenTaskNotifications: () -> Unit = {},
+    onOpenRemindersSummary: () -> Unit = {},
     onFolderClick: (path: String) -> Unit = {},
     onNoteClick: (noteId: String) -> Unit = {},
     onTaskClick: (taskListId: String) -> Unit = {},
@@ -92,7 +92,7 @@ internal fun BrowserScreen(
                         icon = Res.drawable.browser_remind,
                         isSelected = false,
                         isWide = true,
-                        onClick = onOpenTaskNotifications
+                        onClick = onOpenRemindersSummary
                     )
                     Spacer(Modifier.height(40.dp))
                     Text(
@@ -228,7 +228,7 @@ internal fun BrowserScreen(
                 ) {
                     BottomNavigation(
                         createItemCallbacks = createItemCallbacks,
-                        onOpenTaskNotifications = onOpenTaskNotifications,
+                        onOpenRemindersSummary = onOpenRemindersSummary,
                         navigateToTasksSummary = navigateToTasksSummary
                     )
                 }

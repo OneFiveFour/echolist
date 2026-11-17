@@ -1,0 +1,8 @@
+<resources>
+    <string name="reminders_summary_title">Reminders Summary</string>
+    <string name="reminders_summary_empty">No upcoming tasks</string>
+    <string name="reminders_summary_load_error">Could not load tasks.</string>
+    <string name="reminders_summary_save_error">Could not update notification settings.</string>
+    <string name="reminders_summary_permission_denied">Allow notifications in your device or browser settings to receive reminders.</string>
+    <string name="retry">Retry</string>
+</resources>

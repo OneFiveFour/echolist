@@ -11,4 +11,4 @@ kotlin.sourceSets.getByName("commonMain").dependencies {
     implementation(libs.kotlinx.datetime)
 }
 
-compose.resources { packageOfResClass = "net.onefivefour.echolist.feature.tasknotifications.resources" }
+compose.resources { packageOfResClass = "net.onefivefour.echolist.feature.reminderssummary.resources" }

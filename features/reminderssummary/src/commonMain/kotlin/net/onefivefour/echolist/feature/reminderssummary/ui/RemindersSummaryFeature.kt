@@ -1,4 +1,4 @@
-package net.onefivefour.echolist.feature.tasknotifications.ui
+package net.onefivefour.echolist.feature.reminderssummary.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,23 +28,23 @@ import net.onefivefour.echolist.core.designsystem.ui.components.relativeDueDateT
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.core.tasks.domain.DueDateUrgencyCalculator
 import net.onefivefour.echolist.core.tasks.domain.model.DueDateUrgency
-import net.onefivefour.echolist.feature.tasknotifications.resources.Res
-import net.onefivefour.echolist.feature.tasknotifications.resources.retry
-import net.onefivefour.echolist.feature.tasknotifications.resources.task_notifications_empty
-import net.onefivefour.echolist.feature.tasknotifications.resources.task_notifications_load_error
-import net.onefivefour.echolist.feature.tasknotifications.resources.task_notifications_permission_denied
-import net.onefivefour.echolist.feature.tasknotifications.resources.task_notifications_save_error
-import net.onefivefour.echolist.feature.tasknotifications.resources.task_notifications_title
+import net.onefivefour.echolist.feature.reminderssummary.resources.Res
+import net.onefivefour.echolist.feature.reminderssummary.resources.retry
+import net.onefivefour.echolist.feature.reminderssummary.resources.reminders_summary_empty
+import net.onefivefour.echolist.feature.reminderssummary.resources.reminders_summary_load_error
+import net.onefivefour.echolist.feature.reminderssummary.resources.reminders_summary_permission_denied
+import net.onefivefour.echolist.feature.reminderssummary.resources.reminders_summary_save_error
+import net.onefivefour.echolist.feature.reminderssummary.resources.reminders_summary_title
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
 
 @Composable
-fun TaskNotificationsFeature() {
-    val viewModel = koinViewModel<TaskNotificationsViewModel>()
+fun RemindersSummaryFeature() {
+    val viewModel = koinViewModel<RemindersSummaryViewModel>()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    TaskNotifications(
+    RemindersSummary(
         state = state,
         onToggle = viewModel::setEnabled,
         onRetry = viewModel::load
@@ -52,8 +52,8 @@ fun TaskNotificationsFeature() {
 }
 
 @Composable
-internal fun TaskNotifications(
-    state: TaskNotificationsUiState,
+internal fun RemindersSummary(
+    state: RemindersSummaryUiState,
     onToggle: (String, Boolean) -> Unit,
     onRetry: () -> Unit
 ) {
@@ -68,7 +68,7 @@ internal fun TaskNotifications(
         verticalArrangement = Arrangement.spacedBy(EchoListTheme.dimensions.l)
     ) {
         Text(
-            text = stringResource(Res.string.task_notifications_title),
+            text = stringResource(Res.string.reminders_summary_title),
             style = EchoListTheme.typography.titleLarge,
             color = EchoListTheme.materialColors.primary
         )
@@ -76,9 +76,9 @@ internal fun TaskNotifications(
             Text(
                 text = stringResource(
                     when (error) {
-                        NotificationError.Load -> Res.string.task_notifications_load_error
-                        NotificationError.Save -> Res.string.task_notifications_save_error
-                        NotificationError.Permission -> Res.string.task_notifications_permission_denied
+                        NotificationError.Load -> Res.string.reminders_summary_load_error
+                        NotificationError.Save -> Res.string.reminders_summary_save_error
+                        NotificationError.Permission -> Res.string.reminders_summary_permission_denied
                     }
                 ),
                 style = EchoListTheme.typography.bodyMedium,
@@ -92,7 +92,7 @@ internal fun TaskNotifications(
             CircularProgressIndicator(color = EchoListTheme.materialColors.primary)
         } else if (state.tasks.isEmpty() && state.error == null) {
             Text(
-                text = stringResource(Res.string.task_notifications_empty),
+                text = stringResource(Res.string.reminders_summary_empty),
                 style = EchoListTheme.typography.bodyMedium,
                 color = EchoListTheme.materialColors.onBackground
             )

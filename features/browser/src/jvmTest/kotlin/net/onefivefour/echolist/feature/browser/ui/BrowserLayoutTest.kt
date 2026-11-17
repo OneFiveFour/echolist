@@ -32,7 +32,7 @@ class BrowserLayoutTest : FunSpec({
                             BrowserScreen(
                                 browserUiState = BrowserUiState(listOf(BreadcrumbItem("Home", "")), fileEntries = sampleEntries()),
                                 navigateToTasksSummary = { dueClicks++ },
-                                onOpenTaskNotifications = { reminderClicks++ },
+                                onOpenRemindersSummary = { reminderClicks++ },
                                 createItemCallbacks = CreateItemCallbacks(onCreateNote = { createClicks++ })
                             )
                         }

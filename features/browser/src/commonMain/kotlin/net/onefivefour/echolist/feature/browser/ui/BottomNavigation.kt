@@ -85,7 +85,7 @@ internal fun CreateItemButton(
 @Composable
 internal fun BottomNavigation(
     createItemCallbacks: CreateItemCallbacks,
-    onOpenTaskNotifications: () -> Unit,
+    onOpenRemindersSummary: () -> Unit,
     navigateToTasksSummary: () -> Unit
 ) {
     Surface(shape = androidx.compose.foundation.shape.RoundedCornerShape(22.dp),
@@ -114,7 +114,7 @@ internal fun BottomNavigation(
                 icon = Res.drawable.browser_remind,
                 isSelected = false,
                 isWide = false,
-                onClick = onOpenTaskNotifications,
+                onClick = onOpenRemindersSummary,
                 modifier = Modifier.weight(1f)
             )
             CreateItemButton(createItemCallbacks, false)

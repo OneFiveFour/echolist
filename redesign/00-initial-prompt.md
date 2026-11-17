@@ -184,7 +184,7 @@ expect, each with a one-line summary of what it does:
 8. **Main Task Settings** — configure a single task's scheduling: due date via a
    calendar, recurrence mode (none/daily/weekly/monthly/yearly) with mode-specific
    refinement fields, and a reminder toggle.
-9. **Task Notifications** — a cross-folder list of all tasks that can remind the
+9. **Reminders Summary** — a cross-folder list of all tasks that can remind the
    user, with a per-task reminder toggle and due-date context.
 
 Items 4 and 9 are cross-folder overviews that sit alongside the browser rather

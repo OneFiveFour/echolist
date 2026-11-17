@@ -12,7 +12,7 @@ Initial implementation (no review.json present).
   single-line ellipsized title, right-aligned due date, empty/loading/error states).
 - BrowserScreen swaps FileOverview <-> TasksSummaryOverview based on `tasksSummaryUiState.isVisible`.
   Toggle wired internally in BrowserFeature (App.kt no longer passes a no-op onTasksSummaryClick).
-- Test doubles updated across core:tasks and features/tasklist, features/tasknotifications.
+- Test doubles updated across core:tasks and features/tasklist, features/reminderssummary.
 
 ## Verification (all passing)
 - ./gradlew verifyArchitecture

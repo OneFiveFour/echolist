@@ -1,4 +1,4 @@
-package net.onefivefour.echolist.feature.tasknotifications.ui
+package net.onefivefour.echolist.feature.reminderssummary.ui
 
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
@@ -32,7 +32,7 @@ import kotlin.time.Clock
 import kotlin.time.Instant
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class TaskNotificationsViewModelTest : FunSpec({
+class RemindersSummaryViewModelTest : FunSpec({
     val dispatcher = StandardTestDispatcher()
     beforeEach { Dispatchers.setMain(dispatcher) }
     afterEach { Dispatchers.resetMain() }
@@ -207,7 +207,7 @@ private class NotificationFixture {
     )
 
     fun viewModel() =
-        TaskNotificationsViewModel(
+        RemindersSummaryViewModel(
             repository,
             coordinator,
             permission,

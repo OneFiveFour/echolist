@@ -8,7 +8,7 @@ kotlin {
         commonMain.dependencies {
             implementation(project(":features:browser"))
             implementation(project(":features:taskssummary"))
-            implementation(project(":features:tasknotifications"))
+            implementation(project(":features:reminderssummary"))
             implementation(project(":features:login"))
             implementation(project(":features:note"))
             implementation(project(":features:tasklist"))

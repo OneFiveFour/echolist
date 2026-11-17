@@ -1,4 +1,4 @@
-# Screen Brief — Task Notifications / Reminders
+# Screen Brief — Reminders Summary / Reminders
 
 > Attach: `dark-notifications-settings.png`, `light-notification-settings.png`.
 > Screenshots are scope reference only, not a design target. Paste the block
@@ -12,7 +12,7 @@ Use the approved color palette and type scale from the design-system foundation
 step, follow the unified layout grid and placement rules established on the
 Folder Browser, and keep to the global rules from the master context.
 
-Design the **Task Notifications** screen. It is a cross-folder overview of all
+Design the **Reminders Summary** screen. It is a cross-folder overview of all
 tasks that have a reminder, letting the user see and toggle reminders in one
 place. It is reached from the folder browser.
 

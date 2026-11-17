@@ -1,4 +1,4 @@
-package net.onefivefour.echolist.feature.tasknotifications.ui
+package net.onefivefour.echolist.feature.reminderssummary.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -21,7 +21,7 @@ import kotlin.time.Clock
 
 internal enum class NotificationError { Load, Save, Permission }
 
-internal data class TaskNotificationsUiState(
+internal data class RemindersSummaryUiState(
     val isLoading: Boolean = true,
     val tasks: List<UpcomingMainTask> = emptyList(),
     val enabledTaskIds: Set<String> = emptySet(),
@@ -29,7 +29,7 @@ internal data class TaskNotificationsUiState(
     val error: NotificationError? = null
 )
 
-internal class TaskNotificationsViewModel(
+internal class RemindersSummaryViewModel(
     private val taskListRepository: TaskListRepository,
     private val notifications: NotificationCoordinator,
     private val permissionChecker: NotificationPermissionChecker,
@@ -37,7 +37,7 @@ internal class TaskNotificationsViewModel(
     private val notificationSyncHandler: NotificationSyncHandler,
     private val clock: Clock = Clock.System
 ) : ViewModel() {
-    private val state = MutableStateFlow(TaskNotificationsUiState())
+    private val state = MutableStateFlow(RemindersSummaryUiState())
     val uiState = state.asStateFlow()
 
     init {

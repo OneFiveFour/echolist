@@ -10,7 +10,7 @@ import net.onefivefour.echolist.feature.login.di.loginModule
 import net.onefivefour.echolist.feature.note.di.noteModule
 import net.onefivefour.echolist.feature.tasklist.di.taskListModule
 import net.onefivefour.echolist.feature.tasksettings.di.taskSettingsModule
-import net.onefivefour.echolist.feature.tasknotifications.di.taskNotificationsModule
+import net.onefivefour.echolist.feature.reminderssummary.di.remindersSummaryModule
 import net.onefivefour.echolist.ui.AuthViewModel
 import net.onefivefour.echolist.ui.navigation.TaskSettingsChannels
 import org.koin.core.module.Module
@@ -36,5 +36,5 @@ val appModules: List<Module> = listOf(
     noteModule,
     taskListModule,
     taskSettingsModule,
-    taskNotificationsModule
+    remindersSummaryModule
 )

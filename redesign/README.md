@@ -34,7 +34,7 @@ prompt plus German usage notes about which screenshots to attach.
 | 06 | `06-note-edit.md` | Note Edit (edit mode) |
 | 07 | `07-tasklist-edit.md` | Task List (incl. auto-delete states) |
 | 08 | `08-maintask-settings.md` | Main Task Settings (due date/recurrence/reminder) |
-| 09 | `09-task-notifications.md` | Task Notifications / Reminders (cross-folder) |
+| 09 | `09-reminders-summary.md` | Reminders Summary / Reminders (cross-folder) |
 | 99 | `99-shared-components.md` | Shared component library (paste last) |
 
 ## Core principles baked into every brief

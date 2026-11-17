@@ -35,7 +35,7 @@ plugins {
 
 include(":app", ":apps:android", ":apps:desktop", ":apps:web")
 include(
-    ":features:tasknotifications",
+    ":features:reminderssummary",
     ":features:taskssummary",
     ":features:browser",
     ":features:tasklist",

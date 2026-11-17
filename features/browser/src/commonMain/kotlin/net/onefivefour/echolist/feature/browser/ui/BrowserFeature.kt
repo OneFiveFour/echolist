@@ -15,7 +15,7 @@ fun BrowserFeature(
     onFolderRenamed: (String) -> Unit,
     onOpenNote: (String?) -> Unit,
     onOpenTaskList: (String?) -> Unit,
-    onOpenTaskNotifications: () -> Unit,
+    onOpenRemindersSummary: () -> Unit,
     navigateToTasksSummary: () -> Unit,
     onBackClick: () -> Unit = {}
 ) {
@@ -82,7 +82,7 @@ fun BrowserFeature(
         onNoteClick = { onOpenNote(it) },
         onTaskClick = { onOpenTaskList(it) },
 
-        onOpenTaskNotifications = onOpenTaskNotifications,
+        onOpenRemindersSummary = onOpenRemindersSummary,
         navigateToTasksSummary = navigateToTasksSummary,
 
         onRefresh = browserViewModel::refresh,

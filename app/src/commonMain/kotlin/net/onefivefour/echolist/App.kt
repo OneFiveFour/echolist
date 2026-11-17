@@ -3,8 +3,8 @@ package net.onefivefour.echolist
 import net.onefivefour.echolist.feature.tasklist.ui.TaskListFeature
 
 import net.onefivefour.echolist.feature.tasksettings.ui.TaskSettingsFeature
-import net.onefivefour.echolist.feature.tasknotifications.ui.TaskNotificationsFeature
-import net.onefivefour.echolist.ui.navigation.TaskNotificationsRoute
+import net.onefivefour.echolist.feature.reminderssummary.ui.RemindersSummaryFeature
+import net.onefivefour.echolist.ui.navigation.RemindersSummaryRoute
 import net.onefivefour.echolist.core.tasks.domain.model.TaskSettingsChanges
 
 import net.onefivefour.echolist.feature.note.ui.NoteFeature
@@ -190,14 +190,14 @@ private fun AuthenticatedNavDisplay(
                     },
                     onOpenNote = { backStack.add(EditNoteRoute(browserRoute.parentDir, it)) },
                     onOpenTaskList = { backStack.add(EditTaskListRoute(browserRoute.parentDir, it)) },
-                    onOpenTaskNotifications = { backStack.add(TaskNotificationsRoute) },
+                    onOpenRemindersSummary = { backStack.add(RemindersSummaryRoute) },
                     navigateToTasksSummary = { backStack.add(TasksSummaryRoute(browserRoute.parentDir)) },
                     onBackClick = { backStack.removeLastOrNull() }
                 )
             }
 
-            entry<TaskNotificationsRoute> {
-                TaskNotificationsFeature()
+            entry<RemindersSummaryRoute> {
+                RemindersSummaryFeature()
             }
 
             entry<EditNoteRoute> { route ->
