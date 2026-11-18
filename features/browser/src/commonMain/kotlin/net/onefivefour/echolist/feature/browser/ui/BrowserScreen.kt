@@ -3,11 +3,12 @@ package net.onefivefour.echolist.feature.browser.ui
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.text.TextStyle
 import androidx.window.core.layout.WindowSizeClass
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
+import net.onefivefour.echolist.feature.browser.ui.desktop.DesktopBrowserHeading
 import net.onefivefour.echolist.feature.browser.ui.desktop.DesktopBrowserLayout
 import net.onefivefour.echolist.feature.browser.ui.desktop.DesktopBrowserNavigation
+import net.onefivefour.echolist.feature.browser.ui.phone.PhoneBrowserHeading
 import net.onefivefour.echolist.feature.browser.ui.phone.PhoneBrowserLayout
 import net.onefivefour.echolist.feature.browser.ui.phone.PhoneBrowserNavigation
 
@@ -37,12 +38,13 @@ internal fun BrowserScreen(
     val isDesktop = EchoListTheme.adaptiveInfo.windowSizeClass
         .isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)
     val gridState = rememberLazyGridState()
-    val toolbar: @Composable (TextStyle) -> Unit = { titleStyle ->
+    val toolbar: @Composable () -> Unit = {
         BrowserToolbar(
             browserUiState = browserUiState,
-            titleStyle = titleStyle,
-            canNavigateBack = canNavigateBack,
-            onBack = onBack,
+            heading = {
+                if (isDesktop) DesktopBrowserHeading(browserUiState.breadcrumbs)
+                else PhoneBrowserHeading(browserUiState.breadcrumbs)
+            },
             onRefresh = onRefresh,
             onRenameCurrentFolderClick = onRenameCurrentFolderClick,
             onDeleteCurrentFolderClick = onDeleteCurrentFolderClick
@@ -87,12 +89,15 @@ internal fun BrowserScreen(
         if (isDesktop) {
             DesktopBrowserLayout(
                 createItemCallbacks = createItemCallbacks,
+                canNavigateBack = canNavigateBack,
+                onBack = onBack,
                 toolbar = toolbar,
                 content = files
             )
         } else {
             PhoneBrowserLayout(
-                breadcrumbs = browserUiState.breadcrumbs,
+                canNavigateBack = canNavigateBack,
+                onBack = onBack,
                 toolbar = toolbar,
                 content = files
             )

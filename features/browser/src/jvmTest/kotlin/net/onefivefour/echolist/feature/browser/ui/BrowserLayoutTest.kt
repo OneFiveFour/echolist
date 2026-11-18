@@ -69,6 +69,66 @@ class BrowserLayoutTest : FunSpec({
             }
         }
     }
+    test("navigation shows only the current folder as a heading and keeps breadcrumbs informational") {
+        SwingUtilities.invokeAndWait {
+            val path = listOf(
+                BreadcrumbItem("Home", ""),
+                BreadcrumbItem("Projects", "Projects"),
+                BreadcrumbItem("Product launch", "Projects/Product launch")
+            )
+            for (isDarkTheme in listOf(false, true)) {
+                for (width in listOf(320, 402, 840, 1440)) {
+                    for (depth in 1..3) {
+                        val breadcrumbs = path.take(depth)
+                        val isHome = depth == 1
+                        val isDesktop = width >= 840
+                        var backClicks = 0
+                        ImageComposeScene(width, 874) {
+                            EchoListTheme(isDarkTheme = isDarkTheme, themeManager = ThemeManager(listOf(EchoListDefaultTheme))) {
+                                BrowserScreen(
+                                    browserUiState = BrowserUiState(breadcrumbs),
+                                    canNavigateBack = !isHome,
+                                    onBack = { backClicks++ }
+                                )
+                            }
+                        }.use { scene ->
+                            scene.render().use { image ->
+                                File("build/browser-navigation-$width-$depth-${if (isDarkTheme) "dark" else "light"}.png")
+                                    .writeBytes(requireNotNull(image.encodeToData()).bytes)
+                            }
+                            val nodes = scene.browserNodes()
+                            val heading = requireNotNull(nodes.tagged("browser-heading"))
+                            heading.config[SemanticsProperties.Text].single().text shouldBe breadcrumbs.last().label
+                            (nodes.tagged("browser-home-icon") != null) shouldBe isHome
+                            (heading.config.getOrNull(SemanticsActions.OnClick) == null) shouldBe true
+                            val hint = nodes.tagged("browser-breadcrumbs")
+                            (hint != null) shouldBe (!isDesktop && !isHome)
+                            if (hint != null) {
+                                hint.config[SemanticsProperties.Text].single().text shouldBe
+                                    breadcrumbs.dropLast(1).joinToString("") { it.label + " › " }
+                                (hint.boundsInRoot.bottom <= heading.boundsInRoot.top) shouldBe true
+                                hint.hasClickActionInSubtree() shouldBe false
+                            }
+                            if (isDesktop) {
+                                val location = requireNotNull(nodes.tagged("browser-location"))
+                                location.hasClickActionInSubtree() shouldBe false
+                            }
+                            val back = nodes.tagged("browser-back")
+                            (back != null) shouldBe !isHome
+                            if (back != null) {
+                                (back.boundsInRoot.top > heading.boundsInRoot.bottom) shouldBe true
+                                (back.boundsInRoot.right <= width) shouldBe true
+                                (back.boundsInRoot.bottom <= 874) shouldBe true
+                                back.config[SemanticsActions.OnClick].action!!.invoke()
+                                backClicks shouldBe 1
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 })
 
 private fun sampleEntries(): List<FileEntry> = listOf(
@@ -88,3 +148,6 @@ private fun ImageComposeScene.browserNodes(): List<SemanticsNode> {
 private fun List<SemanticsNode>.tagged(tag: String) = firstOrNull {
     it.config.getOrNull(SemanticsProperties.TestTag) == tag
 }
+
+private fun SemanticsNode.hasClickActionInSubtree(): Boolean =
+    config.getOrNull(SemanticsActions.OnClick) != null || children.any { it.hasClickActionInSubtree() }
