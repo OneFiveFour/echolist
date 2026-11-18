@@ -128,9 +128,9 @@ Expanded width or greater; Compact and Medium share the form-only layout.
 Additional size classes do not require inventing additional Login layouts.
 
 Keep UI state and focus owners above adaptive branches. Login uses one form at
-one stable composition location so input state, password visibility and focus
-survive size-class transitions. Content scrolls when viewport/keyboard height
-is insufficient. Previews and renders only need `EchoListTheme`; resizing tests
+a stable composition location, with padding and arrangement defined in `ui.desktop`
+and `ui.phone`, so input state, password visibility and focus survive size-class
+transitions. Content scrolls when viewport/keyboard height is insufficient. Previews and renders only need `EchoListTheme`; resizing tests
 must change platform `LocalWindowInfo` as well as render constraints, since the
 official APIs intentionally use the window rather than a child layout's size.
 

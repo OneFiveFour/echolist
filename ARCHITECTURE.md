@@ -86,7 +86,11 @@ future navigation/list-detail screens can consume the same information with
 the official adaptive navigation and pane scaffolds. Login is a special case:
 its large introduction sidebar is shown from Expanded width (840 dp); Compact
 and Medium use the form-only layout. Persistent input/focus state stays above
-adaptive branches and content scrolls when height is insufficient.
+adaptive branches and content scrolls when height is insufficient. Login and browser
+keep window-specific layout parts in `ui.desktop` and `ui.phone`, with shared
+forms, controls and content in `ui`. Login keeps one shared form container at a stable
+composition location and selects padding and arrangement from those packages to
+retain field state and focus on resize.
 
 The browser shows bottom navigation on Compact/Medium windows and a persistent sidebar
 from Expanded width. `NavigationSuiteScaffold` owns navigation placement with an explicit
