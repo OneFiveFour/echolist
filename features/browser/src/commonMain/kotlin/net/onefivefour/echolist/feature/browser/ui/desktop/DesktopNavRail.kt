@@ -1,4 +1,7 @@
-package net.onefivefour.echolist.feature.browser.ui
+package net.onefivefour.echolist.feature.browser.ui.desktop
+
+import net.onefivefour.echolist.feature.browser.ui.BrowserNavButton
+import net.onefivefour.echolist.feature.browser.ui.BrowserUiState
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

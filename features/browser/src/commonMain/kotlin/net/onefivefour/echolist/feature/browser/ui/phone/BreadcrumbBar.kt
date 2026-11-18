@@ -1,4 +1,6 @@
-package net.onefivefour.echolist.feature.browser.ui
+package net.onefivefour.echolist.feature.browser.ui.phone
+
+import net.onefivefour.echolist.feature.browser.ui.BreadcrumbItem
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll

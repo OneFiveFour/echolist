@@ -17,7 +17,8 @@ import org.jetbrains.compose.resources.stringResource
 internal fun FileOverview(
     fileEntries: List<FileEntry>, isLoading: Boolean, error: String?,
     onFolderClick: (String) -> Unit, onNoteClick: (String) -> Unit, onTaskClick: (String) -> Unit,
-    modifier: Modifier = Modifier, isDesktop: Boolean = false
+    modifier: Modifier = Modifier, isDesktop: Boolean = false,
+    gridState: LazyGridState = rememberLazyGridState()
 ) {
     val spacing = if (isDesktop) EchoListTheme.dimensions.m else EchoListTheme.dimensions.s
     val hasTwoColumns = isDesktop && EchoListTheme.adaptiveInfo.windowSizeClass
@@ -25,6 +26,7 @@ internal fun FileOverview(
     LazyVerticalGrid(
         columns = GridCells.Fixed(if (hasTwoColumns) 2 else 1),
         modifier = modifier.fillMaxSize(),
+        state = gridState,
         horizontalArrangement = Arrangement.spacedBy(spacing),
         verticalArrangement = Arrangement.spacedBy(spacing),
         contentPadding = PaddingValues(bottom = EchoListTheme.dimensions.l)
