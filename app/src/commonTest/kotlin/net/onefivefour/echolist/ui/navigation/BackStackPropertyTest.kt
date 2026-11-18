@@ -56,22 +56,58 @@ class BackStackPropertyTest : FunSpec({
             PropTestConfig(iterations = 20),
             Arb.list(Arb.int(1..10).map { "folder-$it" }, 2..10)
         ) { paths ->
-            val stack = paths.map { BrowserRoute(it) }.toMutableList()
-            val targetIndex = (0 until stack.size).random()
-            val targetPath = stack[targetIndex].parentDir
+            for (targetPath in paths) {
+                val stack = paths.map<String, NavKey> { BrowserRoute(it) }.toMutableList()
+                val entriesBefore = stack.toList()
+                val index = paths.indexOfLast { it == targetPath }
+
+                stack.navigateToBrowserFolder(targetPath)
+
+                stack.last() shouldBe BrowserRoute(targetPath)
+                stack.size shouldBe index + 1
+                stack shouldBe entriesBefore.subList(0, index + 1)
+            }
+        }
+    }
+
+    test("a breadcrumb absent from the stack becomes active and back restores the previous directory") {
+        for (targetPath in listOf("", "Projects", "Projects/Planning")) {
+            val initial = listOf<NavKey>(BrowserRoute(), BrowserRoute("Projects/Planning/Release"))
+            // For Home, simulate a restored deep entry without a root route.
+            val stack = (if (targetPath.isEmpty()) initial.drop(1) else initial).toMutableList()
             val entriesBefore = stack.toList()
 
-            val index = stack.indexOfLast { it.parentDir == targetPath }
-            if (index >= 0) {
-                while (stack.size > index + 1) stack.removeLast()
-            } else {
-                stack.add(BrowserRoute(targetPath))
-            }
+            stack.navigateToBrowserFolder(targetPath)
 
-            stack.last() shouldBe BrowserRoute(targetPath)
-            stack.size shouldBe index + 1
-            stack shouldBe entriesBefore.subList(0, index + 1)
+            stack shouldBe entriesBefore + BrowserRoute(targetPath)
+            stack.removeLastOrNull()
+            stack shouldBe entriesBefore
         }
+    }
+
+    test("jumping across multiple levels allows opening a different branch and jumping Home") {
+        val stack = mutableListOf<NavKey>(
+            BrowserRoute(), BrowserRoute("Projects"), BrowserRoute("Projects/Planning"),
+            BrowserRoute("Projects/Planning/Release")
+        )
+        stack.navigateToBrowserFolder("Projects")
+        stack shouldBe listOf(BrowserRoute(), BrowserRoute("Projects"))
+        stack.navigateToBrowserFolder("Projects/Other")
+        stack.last() shouldBe BrowserRoute("Projects/Other")
+        stack.navigateToBrowserFolder("")
+        stack shouldBe listOf(BrowserRoute())
+    }
+
+    test("selecting the current folder is a no-op and does not match an editor with the same parent") {
+        val stack = mutableListOf<NavKey>(BrowserRoute(), BrowserRoute("Projects"))
+        val initial = stack.toList()
+        stack.navigateToBrowserFolder("Projects")
+        stack shouldBe initial
+
+        stack.add(EditNoteRoute("Projects/Planning", "note"))
+        val withEditor = stack.toList()
+        stack.navigateToBrowserFolder("Projects/Planning")
+        stack shouldBe withEditor + BrowserRoute("Projects/Planning")
     }
 
     test("Property 4: back on multi-entry stack removes top entry") {

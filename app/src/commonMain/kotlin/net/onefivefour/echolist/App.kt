@@ -52,6 +52,7 @@ import net.onefivefour.echolist.ui.navigation.EditTaskListRoute
 import net.onefivefour.echolist.ui.navigation.TaskSettingsChannels
 import net.onefivefour.echolist.feature.taskssummary.ui.TasksSummaryFeature
 import net.onefivefour.echolist.ui.navigation.TasksSummaryRoute
+import net.onefivefour.echolist.ui.navigation.navigateToBrowserFolder
 import net.onefivefour.echolist.ui.navigation.BrowserRoute
 import net.onefivefour.echolist.ui.navigation.MainTaskSettingsRoute
 import net.onefivefour.echolist.ui.navigation.echoListSavedStateConfig
@@ -199,7 +200,7 @@ private fun AuthenticatedNavDisplay(
                     onFolderRenamed = { newPath ->
                         backStack[backStack.lastIndex] = BrowserRoute(newPath)
                     },
-                    navToFolder = { backStack.add(BrowserRoute(it)) },
+                    navToFolder = { backStack.navigateToBrowserFolder(it) },
                     navToNote = { backStack.add(EditNoteRoute(browserRoute.parentDir, it)) },
                     navToTaskList = { backStack.add(EditTaskListRoute(browserRoute.parentDir, it)) },
                     navToRemindersSummary = { backStack.add(RemindersSummaryRoute) },
