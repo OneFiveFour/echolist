@@ -26,15 +26,10 @@ internal fun CreateItemButton(
                 Icon(painterResource(Res.drawable.browser_plus), stringResource(Res.string.create_item), Modifier.size(24.dp), tint = EchoListTheme.materialColors.onPrimary)
             }
         }
-        DropdownMenu(expanded = isMenuExpanded, onDismissRequest = { isMenuExpanded = false },
-            containerColor = EchoListTheme.materialColors.surface) {
-            for ((label, action) in listOf(
-                stringResource(Res.string.create_folder) to createItemCallbacks.onCreateFolder,
-                stringResource(Res.string.create_note) to createItemCallbacks.onCreateNote,
-                stringResource(Res.string.create_task_list) to createItemCallbacks.onCreateTaskList
-            )) {
-                DropdownMenuItem(modifier = Modifier.testTag("create-$label"), text = { Text(label) }, onClick = { isMenuExpanded = false; action() })
-            }
-        }
+        CreateItemMenu(
+            isExpanded = isMenuExpanded,
+            onDismiss = { isMenuExpanded = false },
+            createItemCallbacks = createItemCallbacks
+        )
     }
 }
