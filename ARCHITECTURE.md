@@ -108,7 +108,10 @@ A separate floating back action sits above the phone navigation or desktop creat
 Its file grid becomes two columns from Large width; narrower windows
 keep one column. The browser owns its insets so the sidebar can reach the window edge,
 while other routes retain their existing app padding. Folder cards have a fixed compact
-height; note/task-list cards are taller. Due opens the separate Tasks Summary screen for the current directory;
+height; note/task-list cards are taller. Empty loaded folders use the shared
+`EmptyFolderContent` illustration, explanation and Create here action, with adaptive
+spacing and scrolling in short windows. Create here and the floating plus button
+share the same folder/note/task-list menu; loading and error states take precedence. Due opens the separate Tasks Summary screen for the current directory;
 Remind opens Reminders Summary. Tasks Summary owns its UI, ViewModel and tests,
 loads on entry without visibility/toggle state, and reuses TaskListRepository in core:tasks.
 

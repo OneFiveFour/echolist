@@ -20,5 +20,7 @@
     <string name="refresh_browser">Refresh</string>
     <string name="rename_folder">Rename folder</string>
     <string name="delete_folder">Delete folder</string>
-    <string name="browser_empty">This folder is empty. Create a folder, note or task list to get started.</string>
+    <string name="browser_empty_title">Room for something new</string>
+    <string name="browser_empty">This folder is empty. Add a folder, note, or task list when you’re ready.</string>
+    <string name="browser_empty_create">Create here</string>
 </resources>

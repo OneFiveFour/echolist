@@ -147,6 +147,79 @@ class BrowserLayoutTest : FunSpec({
         }
     }
 
+    test("empty folders show the designed content and all create actions in both layouts") {
+        SwingUtilities.invokeAndWait {
+            for (isDarkTheme in listOf(false, true)) {
+                for ((width, height) in listOf(402 to 874, 1440 to 1024, 320 to 640, 840 to 400)) {
+                    val clicks = mutableListOf<String>()
+                    ImageComposeScene(width, height) {
+                        EchoListTheme(isDarkTheme = isDarkTheme, themeManager = ThemeManager(listOf(EchoListDefaultTheme))) {
+                            BrowserScreen(
+                                browserUiState = BrowserUiState(listOf(BreadcrumbItem("Home", ""), BreadcrumbItem("Empty", "Empty"))),
+                                createItemCallbacks = CreateItemCallbacks(
+                                    onCreateFolder = { clicks.add("folder") },
+                                    onCreateNote = { clicks.add("note") },
+                                    onCreateTaskList = { clicks.add("task") }
+                                )
+                            )
+                        }
+                    }.use { scene ->
+                        scene.render().use { image ->
+                            File("build/browser-empty-$width-$height-${if (isDarkTheme) "dark" else "light"}.png")
+                                .writeBytes(requireNotNull(image.encodeToData()).bytes)
+                        }
+                        val nodes = scene.browserNodes()
+                        requireNotNull(nodes.tagged("browser-empty"))
+                        requireNotNull(nodes.tagged("browser-empty-title"))
+                            .config[SemanticsProperties.Text].single().text shouldBe "Room for something new"
+                        val icon = requireNotNull(nodes.tagged("browser-empty-icon"))
+                        icon.boundsInRoot.width shouldBe 34f
+                        icon.boundsInRoot.height shouldBe 34f
+                        if (height < 500) {
+                            val scroll = nodes.first {
+                                it.config.getOrNull(SemanticsActions.ScrollBy) != null && it.boundsInRoot.left >= 264
+                            }
+                            scroll.config[SemanticsActions.ScrollBy].action!!.invoke(0f, 1000f)
+                            scene.render().close()
+                        }
+                        val create = requireNotNull(scene.browserNodes().tagged("browser-empty-create"))
+                        (create.boundsInRoot.bottom <= height) shouldBe true
+                        (create.boundsInRoot.left >= 0) shouldBe true
+                        (create.boundsInRoot.right <= width) shouldBe true
+                        for (label in listOf("New folder", "New note", "New task list")) {
+                            requireNotNull(scene.browserNodes().tagged("browser-empty-create"))
+                                .config[SemanticsActions.OnClick].action!!.invoke()
+                            scene.render().close()
+                            requireNotNull(scene.browserNodes().tagged("create-$label"))
+                                .config[SemanticsActions.OnClick].action!!.invoke()
+                            scene.render().close()
+                        }
+                        clicks shouldBe listOf("folder", "note", "task")
+                    }
+                }
+            }
+        }
+    }
+
+    test("loading errors and populated folders do not show the empty-folder action") {
+        SwingUtilities.invokeAndWait {
+            for (state in listOf(
+                BrowserUiState(emptyList(), isLoading = true),
+                BrowserUiState(emptyList(), error = "Unavailable"),
+                BrowserUiState(emptyList(), fileEntries = sampleEntries())
+            )) {
+                ImageComposeScene(402, 874) {
+                    EchoListTheme(themeManager = ThemeManager(listOf(EchoListDefaultTheme))) {
+                        BrowserScreen(browserUiState = state)
+                    }
+                }.use { scene ->
+                    scene.render().close()
+                    (scene.browserNodes().tagged("browser-empty") == null) shouldBe true
+                }
+            }
+        }
+    }
+
 })
 
 private fun sampleEntries(): List<FileEntry> = listOf(

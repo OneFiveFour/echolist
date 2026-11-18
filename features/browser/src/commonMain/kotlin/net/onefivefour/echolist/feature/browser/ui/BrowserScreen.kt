@@ -63,7 +63,8 @@ internal fun BrowserScreen(
                 onNoteClick = onNoteClick,
                 onTaskClick = onTaskClick,
                 isDesktop = isDesktop,
-                gridState = gridState
+                gridState = gridState,
+                createItemCallbacks = createItemCallbacks
             )
         }
     }
