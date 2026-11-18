@@ -1,4 +1,4 @@
-package net.onefivefour.echolist.feature.login.ui
+package net.onefivefour.echolist.feature.login.ui.desktop
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
