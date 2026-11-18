@@ -98,6 +98,10 @@ width-only Bar/Rail selection, preserving this boundary even in short windows or
 posture. Its component override uses `NavigationSuiteScaffoldLayout` with the existing
 custom floating bottom bar and 264-dp sidebar, including breadcrumbs and the divider.
 The scaffold reserves navigation space; content does not add a duplicate bottom spacer.
+The header shows only the current folder as its large title, with a house icon only at
+Home. Phone shows a small, non-interactive ancestor path above nested folder titles;
+desktop shows the non-interactive location trail in its sidebar.
+A separate floating back action sits above the phone navigation or desktop create button.
 Its file grid becomes two columns from Large width; narrower windows
 keep one column. The browser owns its insets so the sidebar can reach the window edge,
 while other routes retain their existing app padding. Folder cards have a fixed compact
