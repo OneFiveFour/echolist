@@ -8,10 +8,13 @@ import net.onefivefour.echolist.feature.browser.ui.BreadcrumbItem
 import net.onefivefour.echolist.feature.browser.ui.BrowserHeading
 
 @Composable
-internal fun PhoneBrowserHeading(breadcrumbs: List<BreadcrumbItem>) {
+internal fun PhoneBrowserHeading(
+    breadcrumbs: List<BreadcrumbItem>,
+    onFolderClick: (String) -> Unit
+) {
     Column {
         if (breadcrumbs.size > 1) {
-            BreadcrumbBar(breadcrumbs)
+            BreadcrumbBar(breadcrumbs, onFolderClick)
         }
         BrowserHeading(
             breadcrumbs,

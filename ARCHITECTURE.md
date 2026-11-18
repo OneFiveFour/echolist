@@ -99,8 +99,11 @@ posture. Its component override uses `NavigationSuiteScaffoldLayout` with the ex
 custom floating bottom bar and 264-dp sidebar, including breadcrumbs and the divider.
 The scaffold reserves navigation space; content does not add a duplicate bottom spacer.
 The header shows only the current folder as its large title, with a house icon only at
-Home. Phone shows a small, non-interactive ancestor path above nested folder titles;
-desktop shows the non-interactive location trail in its sidebar.
+Home. Phone shows a small, clickable ancestor path above nested folder titles;
+desktop shows a clickable ancestor trail in its sidebar. Selecting a visited directory
+pops back to its last matching BrowserRoute; a directory absent from the stack is pushed
+as a new active route. Selecting the current directory is a no-op. Both presentations use the same
+folder-navigation callback and backstack behavior.
 A separate floating back action sits above the phone navigation or desktop create button.
 Its file grid becomes two columns from Large width; narrower windows
 keep one column. The browser owns its insets so the sidebar can reach the window edge,

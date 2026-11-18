@@ -43,7 +43,7 @@ internal fun BrowserScreen(
             browserUiState = browserUiState,
             heading = {
                 if (isDesktop) DesktopBrowserHeading(browserUiState.breadcrumbs)
-                else PhoneBrowserHeading(browserUiState.breadcrumbs)
+                else PhoneBrowserHeading(browserUiState.breadcrumbs, onFolderClick)
             },
             onRefresh = onRefresh,
             onRenameCurrentFolderClick = onRenameCurrentFolderClick,

@@ -69,7 +69,7 @@ class BrowserLayoutTest : FunSpec({
             }
         }
     }
-    test("navigation shows the current folder and allows ancestor clicks only on desktop") {
+    test("navigation shows the current folder and allows ancestor clicks on phone and desktop") {
         SwingUtilities.invokeAndWait {
             val path = listOf(
                 BreadcrumbItem("Home", ""),
@@ -109,7 +109,12 @@ class BrowserLayoutTest : FunSpec({
                                 hint.config[SemanticsProperties.Text].single().text shouldBe
                                     breadcrumbs.dropLast(1).joinToString("") { it.label + " › " }
                                 (hint.boundsInRoot.bottom <= heading.boundsInRoot.top) shouldBe true
-                                hint.hasClickActionInSubtree() shouldBe false
+                                val links = hint.clickableDescendants()
+                                links.size shouldBe depth - 1
+                                links.forEach { link ->
+                                    link.config[SemanticsActions.OnClick].action!!.invoke()
+                                }
+                                folderClicks shouldBe breadcrumbs.dropLast(1).map { it.parentDir }
                             }
                             if (isDesktop) {
                                 val location = requireNotNull(nodes.tagged("browser-location"))
@@ -164,3 +169,8 @@ private fun List<SemanticsNode>.tagged(tag: String) = firstOrNull {
 
 private fun SemanticsNode.hasClickActionInSubtree(): Boolean =
     config.getOrNull(SemanticsActions.OnClick) != null || children.any { it.hasClickActionInSubtree() }
+
+private fun SemanticsNode.clickableDescendants(): List<SemanticsNode> = children.flatMap { child ->
+    if (child.config.getOrNull(SemanticsActions.OnClick) != null) listOf(child)
+    else child.clickableDescendants()
+}

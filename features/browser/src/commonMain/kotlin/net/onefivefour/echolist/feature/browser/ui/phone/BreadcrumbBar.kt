@@ -6,6 +6,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
@@ -20,10 +24,24 @@ import net.onefivefour.echolist.feature.browser.ui.BreadcrumbItem
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-internal fun BreadcrumbBar(breadcrumbs: List<BreadcrumbItem>) {
+internal fun BreadcrumbBar(
+    breadcrumbs: List<BreadcrumbItem>,
+    onFolderClick: (String) -> Unit
+) {
+    val linkStyles = TextLinkStyles(
+        style = SpanStyle(color = EchoListTheme.materialColors.onSurfaceVariant)
+    )
     val path = buildAnnotatedString {
         breadcrumbs.dropLast(1).forEach { crumb ->
-            append(crumb.label)
+            withLink(
+                LinkAnnotation.Clickable(
+                    tag = crumb.parentDir,
+                    styles = linkStyles,
+                    linkInteractionListener = { onFolderClick(crumb.parentDir) }
+                )
+            ) {
+                append(crumb.label)
+            }
             append(" ")
             appendInlineContent("separator", "›")
             append(" ")
