@@ -1,5 +1,6 @@
 package net.onefivefour.echolist.feature.browser.ui.desktop
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Icon
@@ -7,6 +8,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -16,10 +21,12 @@ import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.feature.browser.resources.*
 import net.onefivefour.echolist.feature.browser.ui.BreadcrumbItem
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun DesktopBreadcrumbs(breadcrumbs: List<BreadcrumbItem>) {
+internal fun DesktopBreadcrumbs(
+    breadcrumbs: List<BreadcrumbItem>,
+    onFolderClick: (String) -> Unit
+) {
     val colors = EchoListTheme.materialColors
     Column(
         modifier = Modifier.padding(horizontal = EchoListTheme.dimensions.s).testTag("browser-location"),
@@ -46,6 +53,14 @@ internal fun DesktopBreadcrumbs(breadcrumbs: List<BreadcrumbItem>) {
                             if (isCurrent) colors.surfaceVariant else colors.surface,
                             EchoListTheme.shapes.small
                         )
+                        .clip(EchoListTheme.shapes.small)
+                        .then(
+                            if (isCurrent) Modifier else Modifier.clickable(role = Role.Button) {
+                                onFolderClick(crumb.parentDir)
+                            }
+                        )
+                        .semantics { selected = isCurrent }
+                        .testTag("browser-breadcrumb-${crumb.parentDir}")
                         .padding(EchoListTheme.dimensions.s),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(EchoListTheme.dimensions.s)

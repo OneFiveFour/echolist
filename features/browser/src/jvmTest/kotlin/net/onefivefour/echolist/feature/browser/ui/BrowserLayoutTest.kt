@@ -69,7 +69,7 @@ class BrowserLayoutTest : FunSpec({
             }
         }
     }
-    test("navigation shows only the current folder as a heading and keeps breadcrumbs informational") {
+    test("navigation shows the current folder and allows ancestor clicks only on desktop") {
         SwingUtilities.invokeAndWait {
             val path = listOf(
                 BreadcrumbItem("Home", ""),
@@ -83,12 +83,14 @@ class BrowserLayoutTest : FunSpec({
                         val isHome = depth == 1
                         val isDesktop = width >= 840
                         var backClicks = 0
+                        val folderClicks = mutableListOf<String>()
                         ImageComposeScene(width, 874) {
                             EchoListTheme(isDarkTheme = isDarkTheme, themeManager = ThemeManager(listOf(EchoListDefaultTheme))) {
                                 BrowserScreen(
                                     browserUiState = BrowserUiState(breadcrumbs),
                                     canNavigateBack = !isHome,
-                                    onBack = { backClicks++ }
+                                    onBack = { backClicks++ },
+                                    onFolderClick = { folderClicks.add(it) }
                                 )
                             }
                         }.use { scene ->
@@ -111,7 +113,18 @@ class BrowserLayoutTest : FunSpec({
                             }
                             if (isDesktop) {
                                 val location = requireNotNull(nodes.tagged("browser-location"))
-                                location.hasClickActionInSubtree() shouldBe false
+                                location.hasClickActionInSubtree() shouldBe !isHome
+                                breadcrumbs.forEachIndexed { index, crumb ->
+                                    val item = requireNotNull(nodes.tagged("browser-breadcrumb-${crumb.parentDir}"))
+                                    val isCurrent = index == breadcrumbs.lastIndex
+                                    item.config[SemanticsProperties.Selected] shouldBe isCurrent
+                                    if (isCurrent) {
+                                        item.hasClickActionInSubtree() shouldBe false
+                                    } else {
+                                        item.config[SemanticsActions.OnClick].action!!.invoke()
+                                    }
+                                }
+                                folderClicks shouldBe breadcrumbs.dropLast(1).map { it.parentDir }
                             }
                             val back = nodes.tagged("browser-back")
                             (back != null) shouldBe !isHome

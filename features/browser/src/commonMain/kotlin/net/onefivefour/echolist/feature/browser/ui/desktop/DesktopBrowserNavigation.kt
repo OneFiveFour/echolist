@@ -11,14 +11,16 @@ import net.onefivefour.echolist.feature.browser.ui.BrowserUiState
 internal fun DesktopBrowserNavigation(
     browserUiState: BrowserUiState,
     navToTasksSummary: () -> Unit,
-    navToRemindersSummary: () -> Unit
+    navToRemindersSummary: () -> Unit,
+    onFolderClick: (String) -> Unit
 ) {
     Row {
         DesktopNavRail(
             colors = EchoListTheme.materialColors,
             navToTasksSummary = navToTasksSummary,
             navToRemindersSummary = navToRemindersSummary,
-            browserUiState = browserUiState
+            browserUiState = browserUiState,
+            onFolderClick = onFolderClick
         )
         Box(
             Modifier.width(EchoListTheme.dimensions.borderWidth)

@@ -74,6 +74,7 @@ internal fun BrowserScreen(
             if (isDesktop) {
                 DesktopBrowserNavigation(
                     browserUiState = browserUiState,
+                    onFolderClick = onFolderClick,
                     navToTasksSummary = navToTasksSummary,
                     navToRemindersSummary = navToRemindersSummary
                 )

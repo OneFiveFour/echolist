@@ -32,7 +32,8 @@ internal fun DesktopNavRail(
     colors: ColorScheme,
     navToTasksSummary: () -> Unit,
     navToRemindersSummary: () -> Unit,
-    browserUiState: BrowserUiState
+    browserUiState: BrowserUiState,
+    onFolderClick: (String) -> Unit
 ) {
     Surface(
         color = colors.surface,
@@ -73,7 +74,7 @@ internal fun DesktopNavRail(
             )
             Spacer(Modifier.height(40.dp))
 
-            DesktopBreadcrumbs(browserUiState.breadcrumbs)
+            DesktopBreadcrumbs(browserUiState.breadcrumbs, onFolderClick)
         }
     }
 }
