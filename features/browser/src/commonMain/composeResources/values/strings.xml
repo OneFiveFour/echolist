@@ -23,4 +23,9 @@
     <string name="browser_empty_title">Room for something new</string>
     <string name="browser_empty">This folder is empty. Add a folder, note, or task list when you’re ready.</string>
     <string name="browser_empty_create">Create here</string>
+    <string name="folder_name">Folder name</string>
+    <string name="folder_create_confirm">Create folder</string>
+    <string name="folder_create_cancel">Cancel folder creation</string>
+    <string name="folder_create_saving">Creating folder</string>
+    <string name="folder_create_failed">Could not create folder. Please try again.</string>
 </resources>

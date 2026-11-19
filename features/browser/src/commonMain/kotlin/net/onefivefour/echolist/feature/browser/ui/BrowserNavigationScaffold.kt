@@ -22,6 +22,7 @@ import net.onefivefour.echolist.feature.browser.ui.phone.PhoneBrowserNavigation
 internal fun BrowserNavigationScaffold(
     isDesktop: Boolean,
     navigation: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
     val scaffoldOverride = object : NavigationSuiteScaffoldOverride {
@@ -40,7 +41,7 @@ internal fun BrowserNavigationScaffold(
     CompositionLocalProvider(LocalNavigationSuiteScaffoldOverride provides scaffoldOverride) {
         NavigationSuiteScaffold(
             navigationSuiteItems = {},
-            modifier = Modifier.fillMaxSize(),
+            modifier = modifier.fillMaxSize(),
             // Preserve Expanded as the boundary, regardless of height or fold posture.
             layoutType = if (isDesktop) NavigationSuiteType.NavigationRail else NavigationSuiteType.NavigationBar,
             containerColor = EchoListTheme.materialColors.background,

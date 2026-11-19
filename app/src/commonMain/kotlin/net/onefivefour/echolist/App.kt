@@ -1,34 +1,19 @@
 package net.onefivefour.echolist
 
-import net.onefivefour.echolist.feature.tasklist.ui.TaskListFeature
-
-import net.onefivefour.echolist.feature.tasksettings.ui.TaskSettingsFeature
-import net.onefivefour.echolist.feature.reminderssummary.ui.RemindersSummaryFeature
-import net.onefivefour.echolist.ui.navigation.RemindersSummaryRoute
-import net.onefivefour.echolist.core.tasks.domain.model.TaskSettingsChanges
-
-import net.onefivefour.echolist.feature.note.ui.NoteFeature
-
-import net.onefivefour.echolist.feature.browser.ui.BrowserFeature
-
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LifecycleEventEffect
-import kotlinx.coroutines.launch
-import net.onefivefour.echolist.core.notifications.domain.NotificationCoordinator
-import net.onefivefour.echolist.core.notifications.domain.NotificationAccountProvider
-import net.onefivefour.echolist.core.notifications.domain.TaskListNotificationTarget
-import net.onefivefour.echolist.ui.navigation.openNotificationTaskList
-import net.onefivefour.echolist.core.notifications.domain.ReminderBackgroundScheduler
-import org.koin.compose.koinInject
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavBackStack
@@ -40,25 +25,39 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
+import kotlinx.coroutines.launch
 import net.onefivefour.echolist.app.resources.Res
 import net.onefivefour.echolist.app.resources.ic_arrow_back
 import net.onefivefour.echolist.app.resources.navigate_back
+import net.onefivefour.echolist.core.designsystem.ui.components.RoundIconButton
+import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
+import net.onefivefour.echolist.core.notifications.domain.NotificationAccountProvider
+import net.onefivefour.echolist.core.notifications.domain.NotificationCoordinator
+import net.onefivefour.echolist.core.notifications.domain.ReminderBackgroundScheduler
+import net.onefivefour.echolist.core.notifications.domain.TaskListNotificationTarget
+import net.onefivefour.echolist.core.tasks.domain.model.TaskSettingsChanges
+import net.onefivefour.echolist.feature.browser.ui.BrowserFeature
+import net.onefivefour.echolist.feature.login.ui.LoginFeature
+import net.onefivefour.echolist.feature.note.ui.NoteFeature
+import net.onefivefour.echolist.feature.reminderssummary.ui.RemindersSummaryFeature
+import net.onefivefour.echolist.feature.tasklist.ui.TaskListFeature
+import net.onefivefour.echolist.feature.tasksettings.ui.TaskSettingsFeature
+import net.onefivefour.echolist.feature.taskssummary.ui.TasksSummaryFeature
 import net.onefivefour.echolist.ui.AuthState
 import net.onefivefour.echolist.ui.AuthViewModel
-import net.onefivefour.echolist.core.designsystem.ui.components.RoundIconButton
-import net.onefivefour.echolist.feature.login.ui.LoginFeature
+import net.onefivefour.echolist.ui.navigation.BrowserRoute
 import net.onefivefour.echolist.ui.navigation.EditNoteRoute
 import net.onefivefour.echolist.ui.navigation.EditTaskListRoute
-import net.onefivefour.echolist.ui.navigation.TaskSettingsChannels
-import net.onefivefour.echolist.feature.taskssummary.ui.TasksSummaryFeature
-import net.onefivefour.echolist.ui.navigation.TasksSummaryRoute
-import net.onefivefour.echolist.ui.navigation.navigateToBrowserFolder
-import net.onefivefour.echolist.ui.navigation.BrowserRoute
 import net.onefivefour.echolist.ui.navigation.MainTaskSettingsRoute
+import net.onefivefour.echolist.ui.navigation.RemindersSummaryRoute
+import net.onefivefour.echolist.ui.navigation.TaskSettingsChannels
+import net.onefivefour.echolist.ui.navigation.TasksSummaryRoute
 import net.onefivefour.echolist.ui.navigation.echoListSavedStateConfig
-import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
-import org.koin.compose.viewmodel.koinViewModel
+import net.onefivefour.echolist.ui.navigation.navigateToBrowserFolder
+import net.onefivefour.echolist.ui.navigation.openNotificationTaskList
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun App(
@@ -126,9 +125,12 @@ private fun AuthenticatedApp(
     onDebugReminder: ((String, String) -> Unit)?
 ) {
     val backStack = rememberNavBackStack(echoListSavedStateConfig, BrowserRoute())
+    var isBrowserNavigationBlocked by remember { mutableStateOf(false) }
+    var discardBrowserDraft by remember { mutableStateOf<() -> Unit>({}) }
     val account = koinInject<NotificationAccountProvider>()
-    LaunchedEffect(notificationTarget) {
-        if (notificationTarget != null) {
+    LaunchedEffect(notificationTarget, isBrowserNavigationBlocked) {
+        if (notificationTarget != null && !isBrowserNavigationBlocked) {
+            discardBrowserDraft()
             backStack.openNotificationTaskList(notificationTarget, account.currentAccountId())
             onNotificationTargetConsumed()
         }
@@ -141,7 +143,12 @@ private fun AuthenticatedApp(
     NavigationBackHandler(
         state = rememberNavigationEventState(NavigationEventInfo.None),
         isBackEnabled = canNavigateBack,
-        onBackCompleted = { backStack.removeLastOrNull() }
+        onBackCompleted = {
+            if (!isBrowserNavigationBlocked) {
+                discardBrowserDraft()
+                backStack.removeLastOrNull()
+            }
+        }
     )
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -149,6 +156,12 @@ private fun AuthenticatedApp(
             backStack = backStack,
             canNavigateBack = canNavigateBack,
             settingsChannels = settingsChannels,
+            isBrowserNavigationBlocked = isBrowserNavigationBlocked,
+            onBrowserNavigationStateChange = { isBlocked, discardDraft ->
+                isBrowserNavigationBlocked = isBlocked
+                discardBrowserDraft = discardDraft
+            },
+            onLeaveBrowser = { discardBrowserDraft() },
             onDebugReminder = onDebugReminder
         )
 
@@ -176,12 +189,20 @@ private fun AuthenticatedNavDisplay(
     backStack: NavBackStack<NavKey>,
     canNavigateBack: Boolean,
     settingsChannels: TaskSettingsChannels,
+    isBrowserNavigationBlocked: Boolean,
+    onBrowserNavigationStateChange: (Boolean, () -> Unit) -> Unit,
+    onLeaveBrowser: () -> Unit,
     onDebugReminder: ((String, String) -> Unit)?
 ) {
     NavDisplay(
         modifier = Modifier.fillMaxSize(),
         backStack = backStack,
-        onBack = { backStack.removeLastOrNull() },
+        onBack = {
+            if (!isBrowserNavigationBlocked) {
+                onLeaveBrowser()
+                backStack.removeLastOrNull()
+            }
+        },
         entryDecorators = listOf(
             rememberSaveableStateHolderNavEntryDecorator(),
             rememberViewModelStoreNavEntryDecorator()
@@ -196,6 +217,11 @@ private fun AuthenticatedNavDisplay(
             entry<BrowserRoute> { browserRoute ->
                 BrowserFeature(
                     selectedFolder = browserRoute.parentDir,
+                    onNavigationStateChange = { isBlocked, discardDraft ->
+                        if (backStack.lastOrNull() == browserRoute) {
+                            onBrowserNavigationStateChange(isBlocked, discardDraft)
+                        }
+                    },
                     canNavigateBack = canNavigateBack,
                     onFolderRenamed = { newPath ->
                         backStack[backStack.lastIndex] = BrowserRoute(newPath)

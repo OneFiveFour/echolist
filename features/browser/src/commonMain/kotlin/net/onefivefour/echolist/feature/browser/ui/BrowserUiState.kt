@@ -10,6 +10,7 @@ internal data class BrowserUiState(
     val isDeletingFolder: Boolean = false,
     val canDeleteCurrentFolder: Boolean = false,
     val canRenameCurrentFolder: Boolean = false,
+    val folderDraft: FolderDraft? = null,
     val error: String? = null
 )
 
@@ -17,3 +18,13 @@ internal data class BreadcrumbItem(
     val label: String,
     val parentDir: String
 )
+
+internal data class FolderDraft(
+    val id: Long,
+    val name: String = "",
+    val isSaving: Boolean = false,
+    val error: String? = null,
+    val focusRequest: Long = 0
+) {
+    val canConfirm: Boolean get() = name.trim().isNotEmpty() && !isSaving
+}

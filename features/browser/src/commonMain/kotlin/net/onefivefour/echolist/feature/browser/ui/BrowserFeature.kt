@@ -1,7 +1,9 @@
 package net.onefivefour.echolist.feature.browser.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.compose.viewmodel.koinViewModel
@@ -17,6 +19,7 @@ fun BrowserFeature(
     navToTaskList: (String?) -> Unit,
     navToRemindersSummary: () -> Unit,
     navToTasksSummary: () -> Unit,
+    onNavigationStateChange: (isBlocked: Boolean, discardDraft: () -> Unit) -> Unit = { _, _ -> },
     onBack: () -> Unit = {}
 ) {
     val browserViewModel = koinViewModel<BrowserViewModel>(key = selectedFolder) {
@@ -35,11 +38,18 @@ fun BrowserFeature(
         }
     }
 
-    val createFolderViewModel = koinViewModel<CreateFolderViewModel>(key = "createFolder-$selectedFolder") {
-        parametersOf(selectedFolder)
+    val isSavingFolder = browserUiState.folderDraft?.isSaving == true
+    SideEffect { onNavigationStateChange(isSavingFolder, browserViewModel::dismissFolderDraft) }
+    DisposableEffect(browserViewModel) {
+        onDispose {
+            onNavigationStateChange(false, {})
+        }
     }
-
-    val createFolderUiState by createFolderViewModel.uiState.collectAsStateWithLifecycle()
+    fun leaveBrowser(action: () -> Unit) {
+        if (browserViewModel.uiState.value.folderDraft?.isSaving == true) return
+        browserViewModel.dismissFolderDraft()
+        action()
+    }
 
     val renameFolderViewModel = koinViewModel<RenameFolderViewModel>(key = "renameFolder-$selectedFolder") {
         parametersOf(selectedFolder)
@@ -55,35 +65,39 @@ fun BrowserFeature(
 
     BrowserScreen(
         browserUiState = browserUiState,
-        createFolderUiState = createFolderUiState,
         renameFolderUiState = renameFolderUiState,
 
         canNavigateBack = canNavigateBack,
-        onBack = onBack,
+        onBack = { leaveBrowser(onBack) },
 
         createItemCallbacks = CreateItemCallbacks(
-            onCreateFolder = createFolderViewModel::showDialog,
-            onCreateNote = { navToNote(null) },
-            onCreateTaskList = { navToTaskList(null) }
+            onCreateFolder = browserViewModel::startFolderDraft,
+            onCreateNote = { leaveBrowser { navToNote(null) } },
+            onCreateTaskList = { leaveBrowser { navToTaskList(null) } }
         ),
 
-        onConfirmCreateFolder = createFolderViewModel::onConfirm,
-        onDismissCreateFolder = createFolderViewModel::onDismissDialog,
+        onConfirmCreateFolder = browserViewModel::confirmFolderDraft,
+        onDismissCreateFolder = browserViewModel::dismissFolderDraft,
 
         onConfirmRenameFolder = renameFolderViewModel::onConfirm,
         onDismissRenameFolder = renameFolderViewModel::onDismissDialog,
-        onRenameCurrentFolderClick = renameFolderViewModel::showDialog,
+        onRenameCurrentFolderClick = {
+            if (!isSavingFolder) {
+                browserViewModel.dismissFolderDraft()
+                renameFolderViewModel.showDialog()
+            }
+        },
         onRenameFolderNameChange = renameFolderViewModel::onNameChange,
-        onFolderNameChange = createFolderViewModel::onNameChange,
+        onFolderNameChange = browserViewModel::onFolderNameChange,
 
         onDeleteCurrentFolderClick = browserViewModel::onDeleteCurrentFolderClick,
 
-        onFolderClick = navToFolder,
-        onNoteClick = { navToNote(it) },
-        onTaskClick = { navToTaskList(it) },
+        onFolderClick = { path -> leaveBrowser { navToFolder(path) } },
+        onNoteClick = { id -> leaveBrowser { navToNote(id) } },
+        onTaskClick = { id -> leaveBrowser { navToTaskList(id) } },
 
-        navToRemindersSummary = navToRemindersSummary,
-        navToTasksSummary = navToTasksSummary,
+        navToRemindersSummary = { leaveBrowser(navToRemindersSummary) },
+        navToTasksSummary = { leaveBrowser(navToTasksSummary) },
 
         onRefresh = browserViewModel::refresh,
     )

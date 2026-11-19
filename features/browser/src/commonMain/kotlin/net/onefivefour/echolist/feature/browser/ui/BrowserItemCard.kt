@@ -2,6 +2,7 @@ package net.onefivefour.echolist.feature.browser.ui
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -28,16 +29,24 @@ internal fun BrowserItemCard(
     accent: Color,
     isFolder: Boolean,
     isDesktop: Boolean,
-    onClick: () -> Unit,
+    onClick: (() -> Unit)?,
     modifier: Modifier = Modifier,
     compactHeight: Dp = 96.dp,
+    titleContent: (@Composable () -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit
 ) {
+    val height = if (isFolder) {
+        if (isDesktop) 76.dp else 68.dp
+    } else if (isDesktop) 118.dp else compactHeight
+    val sizeModifier = if (titleContent != null) Modifier.height(IntrinsicSize.Min) else Modifier.height(height)
+    val clickModifier = if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier
+    val tag = when {
+        titleContent != null -> "browser-folder-draft"
+        isFolder -> "browser-folder"
+        else -> "browser-file"
+    }
     Surface(
-        onClick = onClick,
-        modifier = modifier.fillMaxWidth().height(if (isFolder) {
-            if (isDesktop) 76.dp else 68.dp
-        } else if (isDesktop) 118.dp else compactHeight).testTag(if (isFolder) "browser-folder" else "browser-file"),
+        modifier = modifier.fillMaxWidth().then(clickModifier).then(sizeModifier).testTag(tag),
         shape = EchoListTheme.shapes.large,
         border = BorderStroke(EchoListTheme.dimensions.borderWidth, EchoListTheme.materialColors.outlineVariant),
         color = EchoListTheme.materialColors.surface
@@ -55,9 +64,17 @@ internal fun BrowserItemCard(
                     contentAlignment = Alignment.Center
                 ) { Icon(painterResource(icon), null, Modifier.size(21.dp), tint = accent) }
                 Column(Modifier.weight(1f)) {
-                    Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis,
-                        style = EchoListTheme.typography.titleSmall,
-                        color = EchoListTheme.materialColors.onSurface)
+                    if (titleContent != null) {
+                        titleContent()
+                    } else {
+                        Text(
+                            title,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            style = EchoListTheme.typography.titleSmall,
+                            color = EchoListTheme.materialColors.onSurface
+                        )
+                    }
                     content()
                 }
             }

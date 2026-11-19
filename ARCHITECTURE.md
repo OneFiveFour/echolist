@@ -115,6 +115,22 @@ share the same folder/note/task-list menu; loading and error states take precede
 Remind opens Reminders Summary. Tasks Summary owns its UI, ViewModel and tests,
 loads on entry without visibility/toggle state, and reuses TaskListRepository in core:tasks.
 
+Folder creation uses one local draft at the start of the folder grid, including in
+otherwise empty directories. `BrowserViewModel` owns the draft independently of loaded
+entries. The draft starts with an empty inline title, requests focus and the keyboard,
+and persists only on an explicit valid confirmation (button, Enter or IME Done).
+Confirmation trims the name, hides the keyboard and locks the draft during the request.
+Failures retain the name with an inline error; focus loss does not save. Cancel/Escape or
+leaving the browser discards an unconfirmed draft. Configuration recreation retains
+the ViewModel-owned name and draft without triggering persistence. Browser navigation, including system
+back and incoming reminder navigation, waits while folder creation is saving.
+Successful responses replace the draft using the backend path; local creations are
+merged with refresh results until a server listing acknowledges them. Read revisions
+reject obsolete responses. The shared `BrowserLayout` keeps the file grid at a stable
+composition location across adaptive changes so editing focus survives resizing.
+The former create-folder dialog, state and separate ViewModel have been removed;
+the rename-folder dialog remains independent.
+
 Browser entries sort folders first by case-insensitive name, then notes and task lists
 together by ascending backend `updated_at`. Equal timestamps preserve server order;
 missing timestamps use the protocol's epoch fallback (`0`). Shared `DueCountPill` components

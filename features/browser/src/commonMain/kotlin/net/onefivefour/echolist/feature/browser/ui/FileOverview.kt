@@ -3,6 +3,7 @@ package net.onefivefour.echolist.feature.browser.ui
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.window.core.layout.WindowSizeClass
 import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewPhoneLightDark
@@ -17,11 +18,19 @@ internal fun FileOverview(
     onFolderClick: (String) -> Unit, onNoteClick: (String) -> Unit, onTaskClick: (String) -> Unit,
     modifier: Modifier = Modifier, isDesktop: Boolean = false,
     gridState: LazyGridState = rememberLazyGridState(),
-    createItemCallbacks: CreateItemCallbacks = CreateItemCallbacks()
+    createItemCallbacks: CreateItemCallbacks = CreateItemCallbacks(),
+    folderDraft: FolderDraft? = null,
+    onFolderNameChange: (String) -> Unit = {},
+    onConfirmFolder: () -> Unit = {},
+    onCancelFolder: () -> Unit = {}
 ) {
-    if (!isLoading && error == null && fileEntries.isEmpty()) {
+    if (!isLoading && error == null && fileEntries.isEmpty() && folderDraft == null) {
         EmptyFolderContent(createItemCallbacks, isDesktop, modifier)
         return
+    }
+
+    LaunchedEffect(folderDraft?.id, folderDraft?.focusRequest) {
+        if (folderDraft != null) gridState.scrollToItem(0)
     }
 
     val spacing = if (isDesktop) EchoListTheme.dimensions.m else EchoListTheme.dimensions.s
@@ -36,25 +45,34 @@ internal fun FileOverview(
         verticalArrangement = Arrangement.spacedBy(spacing),
         contentPadding = PaddingValues(bottom = EchoListTheme.dimensions.l)
     ) {
+        if (folderDraft != null) {
+            item(key = "folder-draft-${folderDraft.id}") {
+                FolderDraftItem(folderDraft, onFolderNameChange, onConfirmFolder, onCancelFolder, isDesktop)
+            }
+        }
         when {
             isLoading -> item(key = "loading", span = { GridItemSpan(maxLineSpan) }) { LoadingIndicator() }
-            error != null -> item(key = "error", span = { GridItemSpan(maxLineSpan) }) { ErrorContainer(message = error) }
+            error != null && fileEntries.isEmpty() -> item(key = "error", span = { GridItemSpan(maxLineSpan) }) { ErrorContainer(message = error) }
             else -> {
                 val folders = fileEntries.filter { it.itemType == ItemType.FOLDER }
-                items(folders, key = { it.path }) { entry ->
+                items(folders, key = { "entry:${it.path}" }) { entry ->
                     FolderItem(entry.title, entry.metadata as? FileMetadata.Folder, { onFolderClick(entry.path) }, isDesktop = isDesktop)
                 }
                 val files = fileEntries.filter { it.itemType == ItemType.NOTE || it.itemType == ItemType.TASK_LIST }
                 // Fill the unused folder cell so files begin on a new row.
-                if (hasTwoColumns && folders.size % 2 != 0 && files.isNotEmpty()) {
+                val folderCount = folders.size + if (folderDraft != null) 1 else 0
+                if (hasTwoColumns && folderCount % 2 != 0 && files.isNotEmpty()) {
                     item(key = "folder-boundary") { Spacer(Modifier) }
                 }
-                items(files, key = { it.path }) { entry ->
+                items(files, key = { "entry:${it.path}" }) { entry ->
                     when (val metadata = entry.metadata) {
                         is FileMetadata.Note -> NoteItem(metadata.id, entry.title, metadata.preview, onNoteClick, isDesktop = isDesktop)
                         is FileMetadata.TaskList -> TaskItem(metadata.id, entry.title, metadata.doneTaskCount, metadata.totalTaskCount, onTaskClick, isDesktop = isDesktop)
                         else -> Unit
                     }
+                }
+                if (error != null) {
+                    item(key = "error", span = { GridItemSpan(maxLineSpan) }) { ErrorContainer(message = error) }
                 }
             }
         }

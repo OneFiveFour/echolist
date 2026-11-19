@@ -39,7 +39,7 @@ internal fun BrowserToolbar(
         }
 
         if (browserUiState.canRenameCurrentFolder) {
-            IconButton(onClick = onRenameCurrentFolderClick) {
+            IconButton(onClick = onRenameCurrentFolderClick, enabled = browserUiState.folderDraft?.isSaving != true) {
                 Icon(
                     painter = painterResource(resource = SharedRes.drawable.ic_edit),
                     contentDescription = stringResource(Res.string.rename_folder),
@@ -49,7 +49,7 @@ internal fun BrowserToolbar(
         }
 
         if (browserUiState.canDeleteCurrentFolder) {
-            IconButton(onClick = onDeleteCurrentFolderClick, enabled = !browserUiState.isDeletingFolder) {
+            IconButton(onClick = onDeleteCurrentFolderClick, enabled = !browserUiState.isDeletingFolder && browserUiState.folderDraft == null) {
                 Icon(
                     painter = painterResource(resource = SharedRes.drawable.ic_delete),
                     contentDescription = stringResource(Res.string.delete_folder),

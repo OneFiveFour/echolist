@@ -2,19 +2,23 @@ package net.onefivefour.echolist.feature.browser.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import net.onefivefour.echolist.feature.browser.resources.Res
-import net.onefivefour.echolist.feature.browser.resources.home_title
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import net.onefivefour.echolist.feature.browser.domain.model.FileEntry
-import net.onefivefour.echolist.feature.browser.domain.model.ItemType
-import net.onefivefour.echolist.feature.browser.domain.model.DeleteFolderParams
 import net.onefivefour.echolist.core.files.domain.DirectoryChangeNotifier
+import net.onefivefour.echolist.feature.browser.domain.model.CreateFolderParams
+import net.onefivefour.echolist.feature.browser.domain.model.DeleteFolderParams
+import net.onefivefour.echolist.feature.browser.domain.model.FileEntry
+import net.onefivefour.echolist.feature.browser.domain.model.FileMetadata
+import net.onefivefour.echolist.feature.browser.domain.model.ItemType
 import net.onefivefour.echolist.feature.browser.domain.repository.FileRepository
+import net.onefivefour.echolist.feature.browser.resources.Res
+import net.onefivefour.echolist.feature.browser.resources.folder_create_failed
+import net.onefivefour.echolist.feature.browser.resources.home_title
 import org.jetbrains.compose.resources.getString
 
 internal class BrowserViewModel(
@@ -33,6 +37,78 @@ internal class BrowserViewModel(
 
     val navigateBack: SharedFlow<Unit>
         field = MutableSharedFlow<Unit>()
+
+    private var nextDraftId = 0L
+    private var loadRevision = 0L
+    // Keep successful local creations until a server listing acknowledges them.
+    private val unacknowledgedFolders = mutableMapOf<String, FileEntry>()
+
+    fun startFolderDraft() {
+        val current = uiState.value
+        if (current.isDeletingFolder || current.folderDraft?.isSaving == true) return
+        uiState.update {
+            it.copy(folderDraft = it.folderDraft?.let { draft ->
+                draft.copy(focusRequest = draft.focusRequest + 1)
+            } ?: FolderDraft(id = ++nextDraftId))
+        }
+    }
+
+    fun dismissFolderDraft() {
+        if (uiState.value.folderDraft?.isSaving == true) return
+        uiState.update { it.copy(folderDraft = null) }
+    }
+
+    fun onFolderNameChange(name: String) {
+        uiState.update { current ->
+            val draft = current.folderDraft ?: return@update current
+            if (draft.isSaving) current
+            else current.copy(folderDraft = draft.copy(name = name, error = null))
+        }
+    }
+
+    fun confirmFolderDraft() {
+        val draft = uiState.value.folderDraft ?: return
+        if (!draft.canConfirm) return
+        val name = draft.name.trim()
+        uiState.update { it.copy(folderDraft = draft.copy(name = name, isSaving = true)) }
+        viewModelScope.launch {
+            try {
+                fileRepository.createFolder(CreateFolderParams(parentDir, name)).fold(
+                    onSuccess = { folder ->
+                        val entry = FileEntry(folder.path, folder.name, ItemType.FOLDER, FileMetadata.Folder(0))
+                        unacknowledgedFolders[entry.path] = entry
+                        // Invalidate reads begun before this mutation completed.
+                        loadRevision++
+                        uiState.update { current ->
+                            current.copy(
+                                folderDraft = null,
+                                fileEntries = sortBrowserEntries(current.fileEntries.filterNot { it.path == entry.path } + entry),
+                                isLoading = false,
+                                canDeleteCurrentFolder = false,
+                                error = null
+                            )
+                        }
+                        loadData()
+                    },
+                    onFailure = { exception ->
+                        if (exception is CancellationException) throw exception
+                        val message = exception.message ?: getString(Res.string.folder_create_failed)
+                        uiState.update { current ->
+                            current.copy(
+                                folderDraft = current.folderDraft?.copy(isSaving = false, error = message)
+                            )
+                        }
+                    }
+                )
+            } finally {
+                uiState.update { current ->
+                    if (current.folderDraft?.id == draft.id) {
+                        current.copy(folderDraft = current.folderDraft.copy(isSaving = false))
+                    } else current
+                }
+            }
+        }
+    }
 
     init {
         viewModelScope.launch {
@@ -66,7 +142,7 @@ internal class BrowserViewModel(
     }
 
     fun onDeleteCurrentFolderClick() {
-        if (!uiState.value.canDeleteCurrentFolder || uiState.value.isDeletingFolder) return
+        if (!uiState.value.canDeleteCurrentFolder || uiState.value.isDeletingFolder || uiState.value.folderDraft != null) return
 
         viewModelScope.launch {
             uiState.update { it.copy(isDeletingFolder = true, error = null) }
@@ -89,6 +165,7 @@ internal class BrowserViewModel(
     }
 
     private suspend fun loadData() {
+        val revision = ++loadRevision
         val breadcrumbs = resolveBreadcrumbs()
         uiState.update { current ->
             current.copy(
@@ -96,14 +173,20 @@ internal class BrowserViewModel(
             )
         }
         val result = fileRepository.listFiles(parentDir)
+        if (revision != loadRevision) return
+        val entries = result.getOrNull()?.let { remoteEntries ->
+            remoteEntries.forEach { unacknowledgedFolders.remove(it.path) }
+            remoteEntries + unacknowledgedFolders.values.filter { local -> remoteEntries.none { it.path == local.path } }
+        }
         uiState.update { current ->
             result.fold(
-                onSuccess = { entries ->
+                onSuccess = { _ ->
+                    val loadedEntries = requireNotNull(entries)
                     current.copy(
                         breadcrumbs = breadcrumbs,
-                        fileEntries = sortBrowserEntries(entries),
+                        fileEntries = sortBrowserEntries(loadedEntries),
                         isLoading = false,
-                        canDeleteCurrentFolder = parentDir.isNotBlank() && entries.isEmpty(),
+                        canDeleteCurrentFolder = parentDir.isNotBlank() && loadedEntries.isEmpty(),
                         canRenameCurrentFolder = parentDir.isNotBlank(),
                         error = null
                     )
@@ -111,7 +194,7 @@ internal class BrowserViewModel(
                 onFailure = { exception ->
                     current.copy(
                         breadcrumbs = breadcrumbs,
-                        fileEntries = emptyList(),
+                        fileEntries = current.fileEntries,
                         isLoading = false,
                         canDeleteCurrentFolder = false,
                         canRenameCurrentFolder = parentDir.isNotBlank(),

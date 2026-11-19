@@ -1,23 +1,22 @@
 package net.onefivefour.echolist.feature.browser.ui
 
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.window.core.layout.WindowSizeClass
 import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewDesktopLightDark
 import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewPhoneLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.feature.browser.ui.desktop.DesktopBrowserHeading
-import net.onefivefour.echolist.feature.browser.ui.desktop.DesktopBrowserLayout
 import net.onefivefour.echolist.feature.browser.ui.desktop.DesktopBrowserNavigation
 import net.onefivefour.echolist.feature.browser.ui.phone.PhoneBrowserHeading
-import net.onefivefour.echolist.feature.browser.ui.phone.PhoneBrowserLayout
 import net.onefivefour.echolist.feature.browser.ui.phone.PhoneBrowserNavigation
 
 @Composable
 internal fun BrowserScreen(
     browserUiState: BrowserUiState,
-    createFolderUiState: CreateFolderUiState = CreateFolderUiState(),
     createItemCallbacks: CreateItemCallbacks = CreateItemCallbacks(),
     renameFolderUiState: RenameFolderUiState = RenameFolderUiState(),
     canNavigateBack: Boolean = false,
@@ -66,13 +65,18 @@ internal fun BrowserScreen(
                 onTaskClick = onTaskClick,
                 isDesktop = isDesktop,
                 gridState = gridState,
-                createItemCallbacks = createItemCallbacks
+                createItemCallbacks = createItemCallbacks,
+                folderDraft = browserUiState.folderDraft,
+                onFolderNameChange = onFolderNameChange,
+                onConfirmFolder = onConfirmCreateFolder,
+                onCancelFolder = onDismissCreateFolder
             )
         }
     }
 
     BrowserNavigationScaffold(
         isDesktop = isDesktop,
+        modifier = if (browserUiState.folderDraft != null) Modifier.imePadding() else Modifier,
         navigation = {
             if (isDesktop) {
                 DesktopBrowserNavigation(
@@ -90,30 +94,15 @@ internal fun BrowserScreen(
             }
         }
     ) {
-        if (isDesktop) {
-            DesktopBrowserLayout(
-                createItemCallbacks = createItemCallbacks,
-                canNavigateBack = canNavigateBack,
-                onBack = onBack,
-                toolbar = toolbar,
-                content = files
-            )
-        } else {
-            PhoneBrowserLayout(
-                canNavigateBack = canNavigateBack,
-                onBack = onBack,
-                toolbar = toolbar,
-                content = files
-            )
-        }
+        BrowserLayout(
+            isDesktop = isDesktop,
+            createItemCallbacks = createItemCallbacks,
+            canNavigateBack = canNavigateBack,
+            onBack = onBack,
+            toolbar = toolbar,
+            content = files
+        )
     }
-
-    CreateFolderDialog(
-        uiState = createFolderUiState,
-        onNameChange = onFolderNameChange,
-        onConfirm = onConfirmCreateFolder,
-        onDismiss = onDismissCreateFolder
-    )
 
     RenameFolderDialog(
         uiState = renameFolderUiState,
