@@ -7,7 +7,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 
@@ -25,6 +24,12 @@ fun ElButton(
         onClick = onClick,
         enabled = isEnabled,
         shape = EchoListTheme.shapes.extraLarge,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = colors.primary,
+            contentColor = colors.onPrimary,
+            disabledContainerColor = colors.primary,
+            disabledContentColor = colors.onPrimary
+        ),
         contentPadding = PaddingValues(
             start = dimensions.buttonPaddingStart,
             end = dimensions.buttonPaddingEnd
