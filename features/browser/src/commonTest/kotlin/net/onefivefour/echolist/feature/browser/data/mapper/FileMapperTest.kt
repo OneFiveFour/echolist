@@ -6,6 +6,7 @@ import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import net.onefivefour.echolist.feature.browser.domain.model.CreateFolderParams
 import net.onefivefour.echolist.feature.browser.domain.model.DeleteFolderParams
+import net.onefivefour.echolist.feature.browser.domain.model.FileMetadata
 import net.onefivefour.echolist.feature.browser.domain.model.UpdateFolderParams
 
 /**
@@ -24,7 +25,7 @@ internal class FileMapperTest : FunSpec({
 
         val domain = FileMapper.toDomain(protoFolder)
 
-        domain.path shouldBe "/home/user/documents"
+        domain.path shouldBe "home/user/documents"
         domain.name shouldBe "documents"
     }
 
@@ -37,7 +38,7 @@ internal class FileMapperTest : FunSpec({
 
         val domain = FileMapper.toDomain(response)
 
-        domain.path shouldBe "/home/user/projects"
+        domain.path shouldBe "home/user/projects"
         domain.name shouldBe "projects"
     }
 
@@ -58,7 +59,7 @@ internal class FileMapperTest : FunSpec({
         domainList shouldHaveSize 3
         domainList[0].path shouldBe "/file1.txt"
         domainList[1].path shouldBe "/file2.md"
-        domainList[2].path shouldBe "/folder1"
+        domainList[2].path shouldBe "folder1"
     }
 
     test("toDomain transforms ListFilesResponse with empty entries") {
@@ -78,8 +79,34 @@ internal class FileMapperTest : FunSpec({
 
         val domain = FileMapper.toDomain(response)
 
-        domain.path shouldBe "/home/user/renamed"
+        domain.path shouldBe "home/user/renamed"
         domain.name shouldBe "renamed"
+    }
+
+    test("folder mutation responses and listing entries share one canonical path") {
+        for (canonicalPath in listOf("NO 1", "Projects/NO 1", "Projects/Übung 1")) {
+            for (wirePath in listOf(canonicalPath, "$canonicalPath/", "/$canonicalPath/")) {
+                val folder = `file`.v1.Folder(path = wirePath, name = "Name")
+                FileMapper.toDomain(`file`.v1.CreateFolderResponse(folder = folder)).path shouldBe canonicalPath
+                FileMapper.toDomain(`file`.v1.UpdateFolderResponse(folder = folder)).path shouldBe canonicalPath
+                val listedFolder = `file`.v1.FileEntry(
+                    path = wirePath,
+                    title = "Name",
+                    item_type = `file`.v1.ItemType.ITEM_TYPE_FOLDER,
+                    folder_metadata = `file`.v1.FolderMetadata(child_count = 6)
+                )
+                FileMapper.toDomain(listedFolder).path shouldBe canonicalPath
+                FileMapper.toDomain(listedFolder).metadata shouldBe
+                    FileMetadata.Folder(6)
+            }
+        }
+    }
+
+    test("normalizing folder paths does not change note and task-list paths") {
+        for (type in listOf(`file`.v1.ItemType.ITEM_TYPE_NOTE, `file`.v1.ItemType.ITEM_TYPE_TASK_LIST)) {
+            val entry = `file`.v1.FileEntry(path = "/Projects/NO 1/", title = "NO 1", item_type = type)
+            FileMapper.toDomain(entry).path shouldBe entry.path
+        }
     }
 
     // -- Domain -> Proto transformations --
@@ -128,7 +155,7 @@ internal class FileMapperTest : FunSpec({
 
         val domain = FileMapper.toDomain(protoFolder)
 
-        domain.path shouldBe "/home/user"
+        domain.path shouldBe "home/user"
         domain.name shouldBe ""
     }
 
@@ -140,7 +167,7 @@ internal class FileMapperTest : FunSpec({
 
         val domain = FileMapper.toDomain(protoFolder)
 
-        domain.path shouldBe "/home/user/special-folder_123"
+        domain.path shouldBe "home/user/special-folder_123"
         domain.name shouldBe "special-folder_123"
     }
 

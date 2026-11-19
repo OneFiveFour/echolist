@@ -1,5 +1,6 @@
 package net.onefivefour.echolist.feature.browser.data.mapper
 
+import net.onefivefour.echolist.core.files.domain.normalizePath
 import net.onefivefour.echolist.feature.browser.domain.model.CreateFolderParams
 import net.onefivefour.echolist.feature.browser.domain.model.DeleteFolderParams
 import net.onefivefour.echolist.feature.browser.domain.model.FileEntry
@@ -16,11 +17,13 @@ import `file`.v1.UpdateFolderResponse
 
 /**
  * Maps between Wire-generated file.v1 proto models and domain models.
+ * Folder mutations return trailing slashes while ListFiles omits them. Normalize both
+ * at this boundary so one folder has one identity for navigation and reconciliation.
  */
 internal object FileMapper {
 
     fun toDomain(proto: `file`.v1.Folder): Folder = Folder(
-        path = proto.path,
+        path = normalizePath(proto.path),
         name = proto.name
     )
 
@@ -31,7 +34,7 @@ internal object FileMapper {
         proto.entries.map { toDomain(it) }
 
     fun toDomain(proto: `file`.v1.FileEntry): FileEntry = FileEntry(
-        path = proto.path,
+        path = if (proto.item_type == `file`.v1.ItemType.ITEM_TYPE_FOLDER) normalizePath(proto.path) else proto.path,
         title = proto.title,
         itemType = toDomain(proto.item_type),
         metadata = proto.folder_metadata?.let {

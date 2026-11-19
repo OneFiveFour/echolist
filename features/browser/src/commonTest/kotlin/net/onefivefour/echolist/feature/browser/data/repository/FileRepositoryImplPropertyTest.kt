@@ -1,5 +1,6 @@
 package net.onefivefour.echolist.feature.browser.data.repository
 
+import net.onefivefour.echolist.core.files.domain.normalizePath
 import `file`.v1.CreateFolderResponse
 import `file`.v1.DeleteFolderResponse
 import `file`.v1.ListFilesResponse
@@ -89,7 +90,7 @@ internal class FileRepositoryImplPropertyTest : FunSpec({
 
             result.isSuccess shouldBe true
             val folder = result.getOrThrow()
-            folder.path shouldBe protoFolder.path
+            folder.path shouldBe normalizePath(protoFolder.path)
             folder.name shouldBe protoFolder.name
         }
     }
@@ -167,7 +168,7 @@ internal class FileRepositoryImplPropertyTest : FunSpec({
 
             result.isSuccess shouldBe true
             val folder = result.getOrThrow()
-            folder.path shouldBe protoFolder.path
+            folder.path shouldBe normalizePath(protoFolder.path)
             folder.name shouldBe protoFolder.name
         }
     }

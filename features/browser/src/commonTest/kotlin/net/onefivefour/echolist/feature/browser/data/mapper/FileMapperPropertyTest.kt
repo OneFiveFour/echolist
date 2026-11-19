@@ -1,5 +1,6 @@
 package net.onefivefour.echolist.feature.browser.data.mapper
 
+import net.onefivefour.echolist.core.files.domain.normalizePath
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
@@ -78,19 +79,19 @@ internal class FileMapperPropertyTest : FunSpec({
 
     // -- Property 2: Proto -> Domain field preservation --
 
-    test("Feature: proto-api-update, Property 2: proto Folder -> domain Folder preserves path and name") {
+    test("Feature: proto-api-update, Property 2: proto Folder -> domain Folder normalizes path and preserves name") {
         checkAll(PropTestConfig(iterations = 100), arbProtoFolder) { proto ->
             val domain = FileMapper.toDomain(proto)
-            domain.path shouldBe proto.path
+            domain.path shouldBe normalizePath(proto.path)
             domain.name shouldBe proto.name
         }
     }
 
-    test("Feature: proto-api-update, Property 2: CreateFolderResponse -> domain Folder preserves path and name") {
+    test("Feature: proto-api-update, Property 2: CreateFolderResponse -> domain Folder normalizes path and preserves name") {
         checkAll(PropTestConfig(iterations = 100), arbProtoFolder) { protoFolder ->
             val response = `file`.v1.CreateFolderResponse(folder = protoFolder)
             val domain = FileMapper.toDomain(response)
-            domain.path shouldBe protoFolder.path
+            domain.path shouldBe normalizePath(protoFolder.path)
             domain.name shouldBe protoFolder.name
         }
     }
@@ -110,11 +111,11 @@ internal class FileMapperPropertyTest : FunSpec({
         }
     }
 
-    test("Feature: proto-api-update, Property 2: UpdateFolderResponse -> domain Folder preserves path and name") {
+    test("Feature: proto-api-update, Property 2: UpdateFolderResponse -> domain Folder normalizes path and preserves name") {
         checkAll(PropTestConfig(iterations = 100), arbProtoFolder) { protoFolder ->
             val response = `file`.v1.UpdateFolderResponse(folder = protoFolder)
             val domain = FileMapper.toDomain(response)
-            domain.path shouldBe protoFolder.path
+            domain.path shouldBe normalizePath(protoFolder.path)
             domain.name shouldBe protoFolder.name
         }
     }

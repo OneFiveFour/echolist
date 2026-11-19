@@ -1,5 +1,6 @@
 package net.onefivefour.echolist.feature.browser.data.repository
 
+import net.onefivefour.echolist.core.files.domain.normalizePath
 import `file`.v1.CreateFolderResponse
 import `file`.v1.DeleteFolderResponse
 import `file`.v1.ListFilesResponse
@@ -64,7 +65,7 @@ internal class FileRepositoryImplTest : FunSpec({
 
             result.isSuccess shouldBe true
             val folder = result.getOrThrow()
-            folder.path shouldBe protoFolder.path
+            folder.path shouldBe normalizePath(protoFolder.path)
             folder.name shouldBe protoFolder.name
         }
     }
@@ -133,7 +134,7 @@ internal class FileRepositoryImplTest : FunSpec({
         result.getOrThrow().size shouldBe 3
         result.getOrThrow()[0].path shouldBe "/file1.txt"
         result.getOrThrow()[1].path shouldBe "/file2.md"
-        result.getOrThrow()[2].path shouldBe "/folder1"
+        result.getOrThrow()[2].path shouldBe "folder1"
     }
 
     test("listFiles forwards correct parent_dir to data source") {
@@ -180,7 +181,7 @@ internal class FileRepositoryImplTest : FunSpec({
 
             result.isSuccess shouldBe true
             val folder = result.getOrThrow()
-            folder.path shouldBe protoFolder.path
+            folder.path shouldBe normalizePath(protoFolder.path)
             folder.name shouldBe protoFolder.name
         }
     }
