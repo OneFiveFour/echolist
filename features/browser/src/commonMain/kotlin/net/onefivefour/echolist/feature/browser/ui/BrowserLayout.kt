@@ -4,8 +4,14 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.Dp
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
+
+private data class BrowserLayoutSpacing(
+    val horizontal: Dp,
+    val top: Dp,
+    val contentGap: Dp
+)
 
 /** Keep the content at one composition location when the navigation layout changes. */
 @Composable
@@ -15,34 +21,42 @@ internal fun BrowserLayout(
     canNavigateBack: Boolean,
     onBack: () -> Unit,
     toolbar: @Composable () -> Unit,
-    content: @Composable () -> Unit
+    content: @Composable (PaddingValues) -> Unit
 ) {
-    Box(Modifier.fillMaxSize().padding(horizontal = if (isDesktop) 0.dp else 20.dp)) {
-        Column(Modifier.fillMaxSize().padding(horizontal = if (isDesktop) 80.dp else 0.dp)) {
+    val dimensions = EchoListTheme.dimensions
+    val spacing = if (isDesktop) {
+        BrowserLayoutSpacing(dimensions.xxxl, dimensions.xxxl, dimensions.xxl)
+    } else {
+        BrowserLayoutSpacing(dimensions.xl, dimensions.l, dimensions.xl)
+    }
+    val hasFloatingActions = isDesktop || canNavigateBack
+    val actionCount = if (isDesktop && canNavigateBack) 2 else 1
+    // Reserve scrollable space so the last entry can move clear of the floating actions.
+    val contentPadding = PaddingValues(
+        bottom = if (hasFloatingActions) {
+            dimensions.buttonMinHeight * actionCount +
+                dimensions.m * (actionCount - 1) + dimensions.xl * 2
+        } else {
+            dimensions.l
+        }
+    )
+
+    Box(Modifier.fillMaxSize().padding(horizontal = spacing.horizontal)) {
+        Column(Modifier.fillMaxSize()) {
             Box(
-                Modifier.fillMaxWidth().heightIn(min = if (isDesktop) 152.dp else 112.dp)
-                    .padding(top = if (isDesktop) 40.dp else 16.dp, bottom = if (isDesktop) 24.dp else 12.dp),
+                Modifier.fillMaxWidth().padding(top = spacing.top, bottom = dimensions.m),
                 contentAlignment = Alignment.BottomStart
             ) { toolbar() }
-            Spacer(Modifier.height(if (isDesktop) EchoListTheme.dimensions.xxl else 20.dp))
-            Box(Modifier.weight(1f)) { content() }
+            Spacer(Modifier.height(spacing.contentGap))
+            Box(Modifier.weight(1f)) { content(contentPadding) }
         }
-        if (isDesktop) {
-            Column(
-                Modifier.align(Alignment.BottomEnd).padding(end = 68.dp, bottom = EchoListTheme.dimensions.xl),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(EchoListTheme.dimensions.m)
-            ) {
-                if (canNavigateBack) BrowserBackButton(onBack, size = 52.dp, shape = EchoListTheme.shapes.extraLarge)
-                CreateItemButton(createItemCallbacks, isDesktop = true)
-            }
-        } else if (canNavigateBack) {
-            BrowserBackButton(
-                onBack = onBack,
-                size = 48.dp,
-                shape = EchoListTheme.shapes.large,
-                modifier = Modifier.align(Alignment.BottomEnd).padding(end = 6.dp, bottom = 2.dp)
-            )
+        Column(
+            Modifier.align(Alignment.BottomEnd).padding(bottom = dimensions.xl),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(dimensions.m)
+        ) {
+            if (canNavigateBack) BrowserBackButton(onBack)
+            if (isDesktop) CreateItemButton(createItemCallbacks)
         }
     }
 }

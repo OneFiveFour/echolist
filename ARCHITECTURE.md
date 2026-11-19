@@ -107,8 +107,10 @@ folder-navigation callback and backstack behavior.
 A separate floating back action sits above the phone navigation or desktop create button.
 Its file grid becomes two columns from Large width; narrower windows
 keep one column. The browser owns its insets so the sidebar can reach the window edge,
-while other routes retain their existing app padding. Folder cards have a fixed compact
-height; note/task-list cards are taller. Empty loaded folders use the shared
+while other routes retain their existing app padding. Folder cards have a shared compact minimum
+height; note/task-list cards have a taller minimum. Cards grow with their content
+and use the same spacing and icon sizes in both presentations. `BrowserLayout`
+owns adaptive outer spacing and reserves scrollable space for floating actions. Empty loaded folders use the shared
 `EmptyFolderContent` illustration, explanation and Create here action, with adaptive
 spacing and scrolling in short windows. Create here and the floating plus button
 share the same folder/note/task-list menu; loading and error states take precedence. Due opens the separate Tasks Summary screen for the current directory;

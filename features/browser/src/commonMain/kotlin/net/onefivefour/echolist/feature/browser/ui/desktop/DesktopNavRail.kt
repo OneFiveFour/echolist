@@ -46,10 +46,10 @@ internal fun DesktopNavRail(
     ) {
         Column(
             Modifier
-                .padding(horizontal = 20.dp, vertical = 32.dp)
+                .padding(horizontal = EchoListTheme.dimensions.xl, vertical = EchoListTheme.dimensions.xxl)
                 .verticalScroll(rememberScrollState())
         ) {
-            Spacer(Modifier.height(40.dp))
+            Spacer(Modifier.height(EchoListTheme.dimensions.xxl))
             BrowserNavButton(
                 label = stringResource(resource = Res.string.nav_browse),
                 icon = Res.drawable.browser_browse,
@@ -74,7 +74,7 @@ internal fun DesktopNavRail(
                 isDesktop = true,
                 onClick = navToRemindersSummary
             )
-            Spacer(Modifier.height(40.dp))
+            Spacer(Modifier.height(EchoListTheme.dimensions.xxl))
 
             DesktopBreadcrumbs(browserUiState.breadcrumbs, onFolderClick)
         }

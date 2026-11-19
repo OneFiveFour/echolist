@@ -1,5 +1,6 @@
 package net.onefivefour.echolist.feature.browser.ui
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -46,7 +47,7 @@ internal fun BrowserScreen(
             onDeleteCurrentFolderClick = onDeleteCurrentFolderClick
         )
     }
-    val files: @Composable () -> Unit = {
+    val files: @Composable (PaddingValues) -> Unit = { contentPadding ->
         PullToRefreshBox(
             isRefreshing = browserUiState.isRefreshing,
             onRefresh = onRefresh
@@ -61,6 +62,7 @@ internal fun BrowserScreen(
                 onTaskClick = onTaskClick,
                 isDesktop = isDesktop,
                 gridState = gridState,
+                contentPadding = contentPadding,
                 createItemCallbacks = createItemCallbacks,
                 folderDraft = browserUiState.folderDraft,
                 onFolderNameChange = onFolderNameChange,

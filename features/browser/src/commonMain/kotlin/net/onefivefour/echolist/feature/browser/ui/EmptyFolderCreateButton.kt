@@ -15,7 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import androidx.compose.ui.unit.dp
 import net.onefivefour.echolist.core.designsystem.ui.components.ElButton
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.feature.browser.resources.*
@@ -40,7 +39,7 @@ internal fun EmptyFolderCreateButton(createItemCallbacks: CreateItemCallbacks) {
                 Icon(
                     painterResource(Res.drawable.browser_empty_plus),
                     contentDescription = null,
-                    modifier = Modifier.size(18.dp)
+                    modifier = Modifier.size(EchoListTheme.dimensions.l)
                 )
                 Text(
                     stringResource(Res.string.browser_empty_create),

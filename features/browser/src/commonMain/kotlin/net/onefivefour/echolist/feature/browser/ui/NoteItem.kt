@@ -6,18 +6,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.feature.browser.resources.*
 
 @Composable
 internal fun NoteItem(id: String, title: String, preview: String?, onClick: (String) -> Unit,
-    modifier: Modifier = Modifier, isDesktop: Boolean = false) {
+    modifier: Modifier = Modifier) {
     val color = EchoListTheme.echoListColorScheme.noteColor
-    BrowserItemCard(title, Res.drawable.browser_note, color, false, isDesktop, { onClick(id) }, modifier) {
+    BrowserItemCard(title, Res.drawable.browser_note, color, false, { onClick(id) }, modifier) {
         Spacer(Modifier.height(EchoListTheme.dimensions.s))
-        Box(Modifier.width(30.dp).height(2.dp).background(color))
+        Box(Modifier.width(EchoListTheme.dimensions.xxl).height(EchoListTheme.dimensions.xxs).background(color))
         if (!preview.isNullOrEmpty()) {
             Text(preview, modifier = Modifier.padding(top = EchoListTheme.dimensions.s),
                 style = EchoListTheme.typography.bodySmall,

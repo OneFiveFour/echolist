@@ -200,8 +200,8 @@ class BrowserLayoutTest : FunSpec({
                         requireNotNull(nodes.tagged("browser-empty-title"))
                             .config[SemanticsProperties.Text].single().text shouldBe "Room for something new"
                         val icon = requireNotNull(nodes.tagged("browser-empty-icon"))
-                        icon.boundsInRoot.width shouldBe 34f
-                        icon.boundsInRoot.height shouldBe 34f
+                        icon.boundsInRoot.width shouldBe 32f
+                        icon.boundsInRoot.height shouldBe 32f
                         if (height < 500) {
                             val scroll = nodes.first {
                                 it.config.getOrNull(SemanticsActions.ScrollBy) != null && it.boundsInRoot.left >= 264

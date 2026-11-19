@@ -34,8 +34,7 @@ internal fun FolderDraftItem(
     draft: FolderDraft,
     onNameChange: (String) -> Unit,
     onConfirm: () -> Unit,
-    onCancel: () -> Unit,
-    isDesktop: Boolean
+    onCancel: () -> Unit
 ) {
     var textFieldValue by rememberSaveable(draft.id, stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue(
@@ -79,7 +78,6 @@ internal fun FolderDraftItem(
         icon = Res.drawable.browser_folder,
         accent = EchoListTheme.echoListColorScheme.folderColor,
         isFolder = true,
-        isDesktop = isDesktop,
         onClick = null,
         modifier = Modifier.testTag("browser-folder-draft").onPreviewKeyEvent { event ->
             when {

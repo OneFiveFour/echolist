@@ -15,7 +15,6 @@ import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.feature.browser.resources.*
@@ -43,13 +42,13 @@ internal fun DesktopBreadcrumbs(
             Box {
                 if (index > 0) {
                     Box(
-                        Modifier.offset(x = 10.dp, y = (-7).dp)
-                            .size(width = EchoListTheme.dimensions.borderWidth, height = 10.dp)
+                        Modifier.offset(x = EchoListTheme.dimensions.m, y = -EchoListTheme.dimensions.s)
+                            .size(width = EchoListTheme.dimensions.borderWidth, height = EchoListTheme.dimensions.m)
                             .background(colors.outlineVariant)
                     )
                 }
                 Row(
-                    Modifier.fillMaxWidth().heightIn(min = 34.dp)
+                    Modifier.fillMaxWidth().heightIn(min = EchoListTheme.dimensions.iconSmall)
                         .background(
                             if (isCurrent) colors.surfaceVariant else colors.surface,
                             EchoListTheme.shapes.small
@@ -67,7 +66,7 @@ internal fun DesktopBreadcrumbs(
                     horizontalArrangement = Arrangement.spacedBy(EchoListTheme.dimensions.s)
                 ) {
                     Icon(
-                        painterResource(icon), null, Modifier.size(14.dp),
+                        painterResource(icon), null, Modifier.size(EchoListTheme.dimensions.l),
                         tint = if (isCurrent) colors.onSurface else colors.onSurfaceVariant
                     )
                     Text(

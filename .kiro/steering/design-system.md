@@ -187,6 +187,15 @@ The desktop form has `xxxl` horizontal and `xxl` vertical padding; phone uses
 `xl` side/top padding and `xxxl` bottom padding. The reserved error slot remains
 96 dp (`xxxl * 2`) scaled by font scale. The editorial hero remains independent.
 
+Browser cards share `m` padding, `iconMedium` icon containers and `xl` icons,
+with `m` grid gaps in both layouts. Folder cards have a minimum height of
+`iconMedium + m * 2`; file cards use `xxxl * 2`. All cards can grow with content
+and font scale. Create/back actions use `buttonMinHeight` in both layouts.
+`BrowserLayout` owns adaptive outer spacing and reserves scrollable bottom
+space for floating actions, aligned to the content edge. Navigation placement,
+breadcrumb presentation and the Large-width two-column grid remain adaptive.
+The empty-folder content uses shared `xl` padding and a single maximum text width.
+
 ## Spacing & Sizing Tokens (EchoListDimensions)
 
 | Token       | Value |

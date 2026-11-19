@@ -17,12 +17,12 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun TaskItem(id: String, title: String, doneTaskCount: Int, totalTaskCount: Int,
-    onClick: (String) -> Unit, modifier: Modifier = Modifier, isDesktop: Boolean = false) {
+    onClick: (String) -> Unit, modifier: Modifier = Modifier) {
     val color = EchoListTheme.echoListColorScheme.taskColor
-    BrowserItemCard(title, Res.drawable.browser_tasks, color, false, isDesktop, { onClick(id) }, modifier, compactHeight = 99.dp) {
+    BrowserItemCard(title, Res.drawable.browser_tasks, color, false, { onClick(id) }, modifier) {
         Row(Modifier.padding(top = EchoListTheme.dimensions.s).widthIn(max = 210.dp),
             horizontalArrangement = Arrangement.spacedBy(EchoListTheme.dimensions.s), verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.weight(1f).height(3.dp).clip(EchoListTheme.shapes.small).background(EchoListTheme.materialColors.surfaceVariant)) {
+            Box(Modifier.weight(1f).height(EchoListTheme.dimensions.xs).clip(EchoListTheme.shapes.small).background(EchoListTheme.materialColors.surfaceVariant)) {
                 val progress = if (totalTaskCount > 0) (doneTaskCount.toFloat() / totalTaskCount).coerceIn(0f, 1f) else 0f
                 Box(Modifier.fillMaxWidth(progress).fillMaxHeight().background(color))
             }

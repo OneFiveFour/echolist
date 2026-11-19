@@ -8,11 +8,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.feature.browser.resources.*
 import net.onefivefour.echolist.feature.browser.resources.Res
@@ -24,23 +21,21 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun BrowserBackButton(
     onBack: () -> Unit,
-    size: Dp,
-    shape: Shape,
     modifier: Modifier = Modifier
 ) {
     Surface(
         onClick = onBack,
-        modifier = modifier.size(size).testTag("browser-back"),
-        shape = shape,
+        modifier = modifier.size(EchoListTheme.dimensions.buttonMinHeight).testTag("browser-back"),
+        shape = EchoListTheme.shapes.extraLarge,
         color = EchoListTheme.materialColors.surface,
         border = BorderStroke(EchoListTheme.dimensions.borderWidth, EchoListTheme.materialColors.outlineVariant),
-        shadowElevation = 12.dp
+        shadowElevation = EchoListTheme.dimensions.m
     ) {
         Box(contentAlignment = Alignment.Center) {
             Icon(
                 painterResource(Res.drawable.browser_back),
                 contentDescription = stringResource(Res.string.navigate_back),
-                modifier = Modifier.size(21.dp),
+                modifier = Modifier.size(EchoListTheme.dimensions.xl),
                 tint = EchoListTheme.materialColors.onSurface
             )
         }
@@ -52,9 +47,7 @@ internal fun BrowserBackButton(
 private fun BrowserBackButtonPreview() {
     EchoListTheme(modifier = Modifier) {
         BrowserBackButton(
-            onBack = {},
-            size = 48.dp,
-            shape = EchoListTheme.shapes.large
+            onBack = {}
         )
     }
 }

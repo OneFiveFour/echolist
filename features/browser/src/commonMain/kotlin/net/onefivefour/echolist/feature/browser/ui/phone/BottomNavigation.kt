@@ -6,7 +6,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.feature.browser.resources.*
@@ -21,10 +20,10 @@ internal fun BottomNavigation(
     onOpenRemindersSummary: () -> Unit,
     navigateToTasksSummary: () -> Unit
 ) {
-    Surface(shape = androidx.compose.foundation.shape.RoundedCornerShape(22.dp),
-        color = EchoListTheme.materialColors.surface, shadowElevation = 16.dp,
+    Surface(shape = EchoListTheme.shapes.extraLarge,
+        color = EchoListTheme.materialColors.surface, shadowElevation = EchoListTheme.dimensions.l,
         border = BorderStroke(EchoListTheme.dimensions.borderWidth, EchoListTheme.materialColors.outlineVariant)) {
-        Row(Modifier.fillMaxWidth().padding(6.dp), verticalAlignment = Alignment.CenterVertically,
+        Row(Modifier.fillMaxWidth().padding(EchoListTheme.dimensions.s), verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(EchoListTheme.dimensions.xs)) {
             BrowserNavButton(
                 label = stringResource(resource = Res.string.nav_browse),
@@ -50,7 +49,7 @@ internal fun BottomNavigation(
                 onClick = onOpenRemindersSummary,
                 modifier = Modifier.weight(1f)
             )
-            CreateItemButton(createItemCallbacks, false)
+            CreateItemButton(createItemCallbacks)
         }
     }
 }

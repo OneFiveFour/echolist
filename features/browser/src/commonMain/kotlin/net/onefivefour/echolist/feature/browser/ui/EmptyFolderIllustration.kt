@@ -10,7 +10,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import androidx.compose.ui.unit.dp
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.feature.browser.resources.*
 import net.onefivefour.echolist.feature.browser.resources.Res
@@ -21,7 +20,7 @@ import org.jetbrains.compose.resources.painterResource
 internal fun EmptyFolderIllustration() {
     val folderColor = EchoListTheme.echoListColorScheme.folderColor
     Box(
-        Modifier.size(72.dp).background(
+        Modifier.size(EchoListTheme.dimensions.xxxl + EchoListTheme.dimensions.xl).background(
             folderColor.copy(alpha = 0.12f),
             EchoListTheme.shapes.extraLarge.copy(all = CornerSize(EchoListTheme.dimensions.xl))
         ),
@@ -30,7 +29,7 @@ internal fun EmptyFolderIllustration() {
         Icon(
             painterResource(Res.drawable.browser_empty_folder),
             contentDescription = null,
-            modifier = Modifier.size(34.dp).testTag("browser-empty-icon"),
+            modifier = Modifier.size(EchoListTheme.dimensions.xxl).testTag("browser-empty-icon"),
             tint = folderColor
         )
     }

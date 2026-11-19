@@ -9,7 +9,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.feature.browser.resources.*
@@ -25,7 +24,7 @@ internal fun BrowserHeading(breadcrumbs: List<BreadcrumbItem>, style: TextStyle)
             Icon(
                 painterResource(Res.drawable.browser_home),
                 contentDescription = null,
-                modifier = Modifier.size(25.dp).testTag("browser-home-icon"),
+                modifier = Modifier.size(EchoListTheme.dimensions.xl).testTag("browser-home-icon"),
                 tint = EchoListTheme.materialColors.onSurface
             )
             Spacer(Modifier.width(EchoListTheme.dimensions.s))

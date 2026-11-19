@@ -18,6 +18,7 @@ internal fun FileOverview(
     onFolderClick: (String) -> Unit, onNoteClick: (String) -> Unit, onTaskClick: (String) -> Unit,
     modifier: Modifier = Modifier, isDesktop: Boolean = false,
     gridState: LazyGridState = rememberLazyGridState(),
+    contentPadding: PaddingValues = PaddingValues(bottom = EchoListTheme.dimensions.l),
     createItemCallbacks: CreateItemCallbacks = CreateItemCallbacks(),
     folderDraft: FolderDraft? = null,
     onFolderNameChange: (String) -> Unit = {},
@@ -26,7 +27,7 @@ internal fun FileOverview(
     onFolderLongClick: (String) -> Unit = {}
 ) {
     if (!isLoading && error == null && fileEntries.isEmpty() && folderDraft == null) {
-        EmptyFolderContent(createItemCallbacks, isDesktop, modifier)
+        EmptyFolderContent(createItemCallbacks, modifier.padding(contentPadding))
         return
     }
 
@@ -47,7 +48,7 @@ internal fun FileOverview(
         }
     }
 
-    val spacing = if (isDesktop) EchoListTheme.dimensions.m else EchoListTheme.dimensions.s
+    val spacing = EchoListTheme.dimensions.m
     val hasTwoColumns = isDesktop && EchoListTheme.adaptiveInfo.windowSizeClass
         .isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_LARGE_LOWER_BOUND)
 
@@ -57,12 +58,12 @@ internal fun FileOverview(
         state = gridState,
         horizontalArrangement = Arrangement.spacedBy(spacing),
         verticalArrangement = Arrangement.spacedBy(spacing),
-        contentPadding = PaddingValues(bottom = EchoListTheme.dimensions.l)
+        contentPadding = contentPadding
     ) {
         if (isCreatingFolder) {
             val draft = requireNotNull(folderDraft)
             item(key = "folder-draft-${draft.id}") {
-                FolderDraftItem(draft, onFolderNameChange, onConfirmFolder, onCancelFolder, isDesktop)
+                FolderDraftItem(draft, onFolderNameChange, onConfirmFolder, onCancelFolder)
             }
         }
         when {
@@ -71,13 +72,12 @@ internal fun FileOverview(
             else -> {
                 items(folders, key = { "entry:${it.path}" }) { entry ->
                     if (folderDraft != null && entry.path == original?.path) {
-                        FolderDraftItem(folderDraft, onFolderNameChange, onConfirmFolder, onCancelFolder, isDesktop)
+                        FolderDraftItem(folderDraft, onFolderNameChange, onConfirmFolder, onCancelFolder)
                     } else {
                         FolderItem(
                             entry.title,
                             entry.metadata as? FileMetadata.Folder,
                             { onFolderClick(entry.path) },
-                            isDesktop = isDesktop,
                             onLongClick = { onFolderLongClick(entry.path) }
                         )
                     }
@@ -90,8 +90,8 @@ internal fun FileOverview(
                 }
                 items(files, key = { "entry:${it.path}" }) { entry ->
                     when (val metadata = entry.metadata) {
-                        is FileMetadata.Note -> NoteItem(metadata.id, entry.title, metadata.preview, onNoteClick, isDesktop = isDesktop)
-                        is FileMetadata.TaskList -> TaskItem(metadata.id, entry.title, metadata.doneTaskCount, metadata.totalTaskCount, onTaskClick, isDesktop = isDesktop)
+                        is FileMetadata.Note -> NoteItem(metadata.id, entry.title, metadata.preview, onNoteClick)
+                        is FileMetadata.TaskList -> TaskItem(metadata.id, entry.title, metadata.doneTaskCount, metadata.totalTaskCount, onTaskClick)
                         else -> Unit
                     }
                 }

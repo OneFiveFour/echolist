@@ -27,26 +27,22 @@ import net.onefivefour.echolist.feature.browser.resources.browser_empty
 import net.onefivefour.echolist.feature.browser.resources.browser_empty_title
 import org.jetbrains.compose.resources.stringResource
 
+private val EmptyFolderTextMaxWidth = 340.dp
+
 @Composable
 internal fun EmptyFolderContent(
     createItemCallbacks: CreateItemCallbacks,
-    isDesktop: Boolean,
     modifier: Modifier = Modifier
 ) {
     val dimensions = EchoListTheme.dimensions
-    // The surrounding browser already reserves the header, content margins and navigation.
-    val layoutModifier = if (isDesktop) modifier.heightIn(max = 494.dp) else modifier
-
-    BoxWithConstraints(layoutModifier.fillMaxSize().testTag("browser-empty")) {
+    // Header, navigation and floating-action space are reserved by the surrounding layout.
+    BoxWithConstraints(modifier.fillMaxSize().testTag("browser-empty")) {
         Column(
             Modifier.fillMaxWidth()
                 .verticalScroll(rememberScrollState())
                 .heightIn(min = maxHeight)
                 .padding(
-                    start = if (isDesktop) dimensions.xxxl else dimensions.xl,
-                    end = if (isDesktop) dimensions.xxxl else dimensions.xl,
-                    top = if (isDesktop) dimensions.xxxl else dimensions.xl,
-                    bottom = if (isDesktop) 104.dp else 60.dp
+                    all = dimensions.xl
                 ),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
@@ -63,7 +59,7 @@ internal fun EmptyFolderContent(
             Spacer(Modifier.height(dimensions.s))
             Text(
                 text = stringResource(Res.string.browser_empty),
-                modifier = Modifier.widthIn(max = if (isDesktop) 340.dp else 314.dp),
+                modifier = Modifier.widthIn(max = EmptyFolderTextMaxWidth),
                 style = EchoListTheme.typography.bodySmall,
                 color = EchoListTheme.materialColors.onSurfaceVariant,
                 textAlign = TextAlign.Center
@@ -79,8 +75,7 @@ internal fun EmptyFolderContent(
 private fun EmptyFolderContentPreview() {
     EchoListTheme {
         EmptyFolderContent(
-            createItemCallbacks = CreateItemCallbacks(),
-            isDesktop = false
+            createItemCallbacks = CreateItemCallbacks()
         )
     }
 }

@@ -1,31 +1,37 @@
 package net.onefivefour.echolist.feature.browser.ui
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import androidx.compose.ui.unit.dp
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
-import net.onefivefour.echolist.feature.browser.resources.*
+import net.onefivefour.echolist.feature.browser.resources.Res
+import net.onefivefour.echolist.feature.browser.resources.browser_plus
+import net.onefivefour.echolist.feature.browser.resources.create_item
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun CreateItemButton(
-    createItemCallbacks: CreateItemCallbacks,
-    isDesktop: Boolean
+    createItemCallbacks: CreateItemCallbacks
 ) {
     var isMenuExpanded by remember { mutableStateOf(false) }
+
     Box {
         Surface(onClick = { isMenuExpanded = true }, shape = EchoListTheme.shapes.extraLarge,
-            color = EchoListTheme.materialColors.primary, shadowElevation = 12.dp,
-            modifier = Modifier.size(if (isDesktop) 58.dp else 52.dp).testTag("browser-create")) {
+            color = EchoListTheme.materialColors.primary, shadowElevation = EchoListTheme.dimensions.m,
+            modifier = Modifier.size(EchoListTheme.dimensions.buttonMinHeight).testTag("browser-create")) {
             Box(contentAlignment = Alignment.Center) {
-                Icon(painterResource(Res.drawable.browser_plus), stringResource(Res.string.create_item), Modifier.size(24.dp), tint = EchoListTheme.materialColors.onPrimary)
+                Icon(painterResource(Res.drawable.browser_plus), stringResource(Res.string.create_item), Modifier.size(EchoListTheme.dimensions.xl), tint = EchoListTheme.materialColors.onPrimary)
             }
         }
         CreateItemMenu(
@@ -41,8 +47,7 @@ internal fun CreateItemButton(
 private fun CreateItemButtonPreview() {
     EchoListTheme(modifier = Modifier) {
         CreateItemButton(
-            createItemCallbacks = CreateItemCallbacks(),
-            isDesktop = false
+            createItemCallbacks = CreateItemCallbacks()
         )
     }
 }
