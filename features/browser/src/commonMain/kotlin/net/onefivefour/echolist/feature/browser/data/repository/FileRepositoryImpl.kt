@@ -1,17 +1,18 @@
 package net.onefivefour.echolist.feature.browser.data.repository
 
 import `file`.v1.ListFilesRequest
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import net.onefivefour.echolist.core.files.domain.DirectoryChangeNotifier
 import net.onefivefour.echolist.feature.browser.data.mapper.FileMapper
+import net.onefivefour.echolist.feature.browser.data.source.network.FileRemoteDataSource
 import net.onefivefour.echolist.feature.browser.domain.model.CreateFolderParams
 import net.onefivefour.echolist.feature.browser.domain.model.DeleteFolderParams
 import net.onefivefour.echolist.feature.browser.domain.model.FileEntry
 import net.onefivefour.echolist.feature.browser.domain.model.Folder
 import net.onefivefour.echolist.feature.browser.domain.model.UpdateFolderParams
-import net.onefivefour.echolist.feature.browser.data.source.network.FileRemoteDataSource
-import net.onefivefour.echolist.core.files.domain.DirectoryChangeNotifier
 import net.onefivefour.echolist.feature.browser.domain.repository.FileRepository
 
 internal class FileRepositoryImpl(
@@ -28,6 +29,8 @@ internal class FileRepositoryImpl(
                 val folder = FileMapper.toDomain(response)
                 directoryChangedNotifier.notifyChanged(params.parentDir)
                 Result.success(folder)
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 Result.failure(e)
             }
@@ -39,6 +42,8 @@ internal class FileRepositoryImpl(
                 val request = ListFilesRequest(parent_dir = parentDir)
                 val response = fileRemoteDataSource.listFiles(request)
                 Result.success(FileMapper.toDomain(response))
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 Result.failure(e)
             }
@@ -53,6 +58,8 @@ internal class FileRepositoryImpl(
                 val parentDir = params.folderPath.substringBeforeLast('/', "")
                 directoryChangedNotifier.notifyChanged(parentDir)
                 Result.success(folder)
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 Result.failure(e)
             }
@@ -66,6 +73,8 @@ internal class FileRepositoryImpl(
                 val parentDir = params.folderPath.substringBeforeLast('/', "")
                 directoryChangedNotifier.notifyChanged(parentDir)
                 Result.success(Unit)
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 Result.failure(e)
             }

@@ -4,6 +4,7 @@ import `file`.v1.CreateFolderResponse
 import `file`.v1.DeleteFolderResponse
 import `file`.v1.ListFilesResponse
 import `file`.v1.UpdateFolderResponse
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
@@ -11,13 +12,14 @@ import io.kotest.property.Arb
 import io.kotest.property.arbitrary.arbitrary
 import io.kotest.property.arbitrary.string
 import io.kotest.property.checkAll
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import net.onefivefour.echolist.core.networking.data.error.NetworkException
 import net.onefivefour.echolist.data.FakeDirectoryChangeNotifier
+import net.onefivefour.echolist.feature.browser.data.source.network.FakeFileRemoteDataSource
 import net.onefivefour.echolist.feature.browser.domain.model.CreateFolderParams
 import net.onefivefour.echolist.feature.browser.domain.model.DeleteFolderParams
 import net.onefivefour.echolist.feature.browser.domain.model.UpdateFolderParams
-import net.onefivefour.echolist.feature.browser.data.source.network.FakeFileRemoteDataSource
-import net.onefivefour.echolist.core.networking.data.error.NetworkException
 
 internal class FileRepositoryImplTest : FunSpec({
 
@@ -91,6 +93,22 @@ internal class FileRepositoryImplTest : FunSpec({
 
         result.isFailure shouldBe true
         result.exceptionOrNull().shouldBeInstanceOf<NetworkException.ServerError>()
+    }
+
+    test("repository operations propagate cancellation without reporting a directory change") {
+        val fake = FakeFileRemoteDataSource()
+        val cancellation = CancellationException("Cancelled")
+        fake.createFolderResult = Result.failure(cancellation)
+        fake.listFilesResult = Result.failure(cancellation)
+        fake.updateFolderResult = Result.failure(cancellation)
+        fake.deleteFolderResult = Result.failure(cancellation)
+        val notifier = FakeDirectoryChangeNotifier()
+        val repo = FileRepositoryImpl(fake, notifier, Dispatchers.Unconfined)
+        shouldThrow<CancellationException> { repo.createFolder(CreateFolderParams("", "Ideas")) }
+        shouldThrow<CancellationException> { repo.listFiles("") }
+        shouldThrow<CancellationException> { repo.updateFolder(UpdateFolderParams("Ideas", "Other")) }
+        shouldThrow<CancellationException> { repo.deleteFolder(DeleteFolderParams("Ideas")) }
+        notifier.emissions shouldBe emptyList()
     }
 
     // -- ListFiles --
