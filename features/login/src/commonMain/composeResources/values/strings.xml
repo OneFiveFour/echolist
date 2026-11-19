@@ -11,7 +11,6 @@
     <string name="error_auth_network_description">Unable to connect to the server. Please check your connection.</string>
     <string name="error_auth_unknown">Authentication Failed</string>
     <string name="error_auth_unknown_description">An unexpected error occurred. Please try again.</string>
-    <string name="app_name">EchoList</string>
     <string name="login_backend_url_label">Server address</string>
     <string name="login_username_label">Username</string>
     <string name="login_password_label">Password</string>

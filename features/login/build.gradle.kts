@@ -8,7 +8,6 @@ kotlin.sourceSets.getByName("commonMain").dependencies {
     implementation(libs.koin.compose.viewmodel)
     implementation(libs.kotlinx.coroutines.core)
     implementation(project(":core:session"))
-    implementation(libs.compose.materialIconsExtended)
 }
 kotlin.sourceSets.getByName("commonTest").dependencies { implementation(project(":core:networking")) }
 
