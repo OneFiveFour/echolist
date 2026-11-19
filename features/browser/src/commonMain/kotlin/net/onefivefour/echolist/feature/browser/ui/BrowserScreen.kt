@@ -18,21 +18,17 @@ import net.onefivefour.echolist.feature.browser.ui.phone.PhoneBrowserNavigation
 internal fun BrowserScreen(
     browserUiState: BrowserUiState,
     createItemCallbacks: CreateItemCallbacks = CreateItemCallbacks(),
-    renameFolderUiState: RenameFolderUiState = RenameFolderUiState(),
     canNavigateBack: Boolean = false,
     navToTasksSummary: () -> Unit = {},
     navToRemindersSummary: () -> Unit = {},
     onBack: () -> Unit = {},
     onRefresh: () -> Unit = {},
-    onConfirmCreateFolder: () -> Unit = {},
-    onDismissCreateFolder: () -> Unit = {},
-    onConfirmRenameFolder: () -> Unit = {},
-    onDismissRenameFolder: () -> Unit = {},
-    onRenameCurrentFolderClick: () -> Unit = {},
-    onRenameFolderNameChange: (String) -> Unit = {},
+    onConfirmFolder: () -> Unit = {},
+    onDismissFolder: () -> Unit = {},
     onFolderNameChange: (String) -> Unit = {},
     onDeleteCurrentFolderClick: () -> Unit = {},
     onFolderClick: (path: String) -> Unit = {},
+    onFolderLongClick: (path: String) -> Unit = {},
     onNoteClick: (noteId: String) -> Unit = {},
     onTaskClick: (taskListId: String) -> Unit = {},
 ) {
@@ -47,7 +43,6 @@ internal fun BrowserScreen(
                 else PhoneBrowserHeading(browserUiState.breadcrumbs, onFolderClick)
             },
             onRefresh = onRefresh,
-            onRenameCurrentFolderClick = onRenameCurrentFolderClick,
             onDeleteCurrentFolderClick = onDeleteCurrentFolderClick
         )
     }
@@ -61,6 +56,7 @@ internal fun BrowserScreen(
                 isLoading = browserUiState.isLoading,
                 error = browserUiState.error,
                 onFolderClick = onFolderClick,
+                onFolderLongClick = onFolderLongClick,
                 onNoteClick = onNoteClick,
                 onTaskClick = onTaskClick,
                 isDesktop = isDesktop,
@@ -68,8 +64,8 @@ internal fun BrowserScreen(
                 createItemCallbacks = createItemCallbacks,
                 folderDraft = browserUiState.folderDraft,
                 onFolderNameChange = onFolderNameChange,
-                onConfirmFolder = onConfirmCreateFolder,
-                onCancelFolder = onDismissCreateFolder
+                onConfirmFolder = onConfirmFolder,
+                onCancelFolder = onDismissFolder
             )
         }
     }
@@ -104,12 +100,6 @@ internal fun BrowserScreen(
         )
     }
 
-    RenameFolderDialog(
-        uiState = renameFolderUiState,
-        onNameChange = onRenameFolderNameChange,
-        onConfirm = onConfirmRenameFolder,
-        onDismiss = onDismissRenameFolder
-    )
 }
 
 @PreviewPhoneLightDark

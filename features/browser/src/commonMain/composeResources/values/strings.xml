@@ -28,4 +28,8 @@
     <string name="folder_create_cancel">Cancel folder creation</string>
     <string name="folder_create_saving">Creating folder</string>
     <string name="folder_create_failed">Could not create folder. Please try again.</string>
+    <string name="folder_rename_confirm">Save folder name</string>
+    <string name="folder_rename_cancel">Cancel renaming folder</string>
+    <string name="folder_rename_saving">Renaming folder</string>
+    <string name="folder_rename_failed">Could not rename folder. Please try again.</string>
 </resources>

@@ -10,7 +10,6 @@ internal val browserPreviewState = BrowserUiState(
         BreadcrumbItem("Projects", "Projects"),
         BreadcrumbItem("EchoList", "Projects/EchoList")
     ),
-    canRenameCurrentFolder = true,
     canDeleteCurrentFolder = true,
     fileEntries = listOf(
         FileEntry(

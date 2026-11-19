@@ -13,7 +13,6 @@ import org.koin.core.parameter.parametersOf
 fun BrowserFeature(
     selectedFolder: String,
     canNavigateBack: Boolean = false,
-    onFolderRenamed: (String) -> Unit,
     navToFolder: (String) -> Unit,
     navToNote: (String?) -> Unit,
     navToTaskList: (String?) -> Unit,
@@ -51,21 +50,8 @@ fun BrowserFeature(
         action()
     }
 
-    val renameFolderViewModel = koinViewModel<RenameFolderViewModel>(key = "renameFolder-$selectedFolder") {
-        parametersOf(selectedFolder)
-    }
-
-    val renameFolderUiState by renameFolderViewModel.uiState.collectAsStateWithLifecycle()
-
-    LaunchedEffect(renameFolderViewModel) {
-        renameFolderViewModel.navigateToFolder.collect { newPath ->
-            onFolderRenamed(newPath)
-        }
-    }
-
     BrowserScreen(
         browserUiState = browserUiState,
-        renameFolderUiState = renameFolderUiState,
 
         canNavigateBack = canNavigateBack,
         onBack = { leaveBrowser(onBack) },
@@ -76,22 +62,14 @@ fun BrowserFeature(
             onCreateTaskList = { leaveBrowser { navToTaskList(null) } }
         ),
 
-        onConfirmCreateFolder = browserViewModel::confirmFolderDraft,
-        onDismissCreateFolder = browserViewModel::dismissFolderDraft,
+        onConfirmFolder = browserViewModel::confirmFolderDraft,
+        onDismissFolder = browserViewModel::dismissFolderDraft,
 
-        onConfirmRenameFolder = renameFolderViewModel::onConfirm,
-        onDismissRenameFolder = renameFolderViewModel::onDismissDialog,
-        onRenameCurrentFolderClick = {
-            if (!isSavingFolder) {
-                browserViewModel.dismissFolderDraft()
-                renameFolderViewModel.showDialog()
-            }
-        },
-        onRenameFolderNameChange = renameFolderViewModel::onNameChange,
         onFolderNameChange = browserViewModel::onFolderNameChange,
 
         onDeleteCurrentFolderClick = browserViewModel::onDeleteCurrentFolderClick,
 
+        onFolderLongClick = browserViewModel::startFolderRename,
         onFolderClick = { path -> leaveBrowser { navToFolder(path) } },
         onNoteClick = { id -> leaveBrowser { navToNote(id) } },
         onTaskClick = { id -> leaveBrowser { navToTaskList(id) } },

@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.platform.WindowInfo
 import androidx.compose.ui.semantics.*
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.unit.*
 import androidx.compose.ui.use
 import androidx.lifecycle.Lifecycle
@@ -60,11 +61,11 @@ internal class FolderDraftLayoutTest : FunSpec({
                             BrowserScreen(
                                 state.value,
                                 onFolderNameChange = { state.value = state.value.copy(folderDraft = state.value.folderDraft!!.copy(name = it)) },
-                                onConfirmCreateFolder = {
+                                onConfirmFolder = {
                                     confirmations++
                                     state.value = state.value.copy(folderDraft = state.value.folderDraft!!.copy(isSaving = true))
                                 },
-                                onDismissCreateFolder = { cancellations++ }
+                                onDismissFolder = { cancellations++ }
                             )
                         }
                     }
@@ -108,8 +109,8 @@ internal class FolderDraftLayoutTest : FunSpec({
                     EchoListTheme(themeManager = ThemeManager(listOf(EchoListDefaultTheme))) {
                         BrowserScreen(
                             BrowserUiState(emptyList(), folderDraft = FolderDraft(1, "Ideas")),
-                            onConfirmCreateFolder = { confirmations++ },
-                            onDismissCreateFolder = { cancellations++ }
+                            onConfirmFolder = { confirmations++ },
+                            onDismissFolder = { cancellations++ }
                         )
                     }
                 }.use { scene ->
@@ -190,7 +191,7 @@ internal class FolderDraftLayoutTest : FunSpec({
         }
     }
 
-    test("recreating the browser composition retains the draft while explicit navigation discards it") {
+    test("recreating the browser retains creation and rename drafts while navigation discards them") {
         SwingUtilities.invokeAndWait {
             val dispatcher = StandardTestDispatcher()
             Dispatchers.setMain(dispatcher)
@@ -199,84 +200,173 @@ internal class FolderDraftLayoutTest : FunSpec({
                 scene.render().close()
                 dispatcher.scheduler.advanceUntilIdle()
             }
-            val repository = FakeFileRepository()
-            val storeOwner = object : ViewModelStoreOwner {
-                override val viewModelStore = ViewModelStore()
-            }
-            val application = koinApplication {
-                modules(module {
-                    viewModel { params -> BrowserViewModel(params.get(), repository, FakeDirectoryChangeNotifier()) }
-                    viewModel { params -> RenameFolderViewModel(params.get(), repository) }
-                })
-            }
-            var discardDraft: () -> Unit = {}
-            var navigationCount = 0
-            fun createScene(): ImageComposeScene {
-                val lifecycleOwner = object : LifecycleOwner {
-                    override val lifecycle = LifecycleRegistry.createUnsafe(this).apply {
-                        currentState = Lifecycle.State.RESUMED
+            try {
+                for (isRenaming in listOf(false, true)) {
+                    val repository = FakeFileRepository().apply {
+                        if (isRenaming) listFilesResult = Result.success(listOf(
+                            FileEntry("Projects", "Projects", ItemType.FOLDER, FileMetadata.Folder(3))
+                        ))
                     }
-                }
-                return ImageComposeScene(402, 874) {
-                    CompositionLocalProvider(
-                        LocalViewModelStoreOwner provides storeOwner,
-                        LocalLifecycleOwner provides lifecycleOwner
-                    ) {
-                        KoinIsolatedContext(application) {
-                            EchoListTheme(themeManager = ThemeManager(listOf(EchoListDefaultTheme))) {
-                                BrowserFeature(
-                                    selectedFolder = "",
-                                    onFolderRenamed = {},
-                                    navToFolder = {},
-                                    navToNote = {},
-                                    navToTaskList = {},
-                                    navToRemindersSummary = {},
-                                    navToTasksSummary = { navigationCount++ },
-                                    onNavigationStateChange = { _, discard -> discardDraft = discard }
-                                )
+                    val storeOwner = object : ViewModelStoreOwner {
+                        override val viewModelStore = ViewModelStore()
+                    }
+                    val application = koinApplication {
+                        modules(module {
+                            viewModel { params -> BrowserViewModel(params.get(), repository, FakeDirectoryChangeNotifier()) }
+                        })
+                    }
+                    var discardDraft: () -> Unit = {}
+                    var navigationCount = 0
+                    fun createScene(): ImageComposeScene {
+                        val lifecycleOwner = object : LifecycleOwner {
+                            override val lifecycle = LifecycleRegistry.createUnsafe(this).apply {
+                                currentState = Lifecycle.State.RESUMED
+                            }
+                        }
+                        return ImageComposeScene(402, 874) {
+                            CompositionLocalProvider(
+                                LocalViewModelStoreOwner provides storeOwner,
+                                LocalLifecycleOwner provides lifecycleOwner
+                            ) {
+                                KoinIsolatedContext(application) {
+                                    EchoListTheme(themeManager = ThemeManager(listOf(EchoListDefaultTheme))) {
+                                        BrowserFeature(
+                                            selectedFolder = "",
+                                            navToFolder = { navigationCount++ },
+                                            navToNote = {},
+                                            navToTaskList = {},
+                                            navToRemindersSummary = {},
+                                            navToTasksSummary = { navigationCount++ },
+                                            onNavigationStateChange = { _, discard -> discardDraft = discard }
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
-                }
-            }
-            try {
-                createScene().use { scene ->
-                    repeat(4) { renderScene(scene) }
-                    requireNotNull(scene.draftNodes().taggedDraft("browser-empty-create"))
-                        .config[SemanticsActions.OnClick].action!!.invoke()
-                    renderScene(scene)
-                    requireNotNull(scene.draftNodes().taggedDraft("create-New folder"))
-                        .config[SemanticsActions.OnClick].action!!.invoke()
-                    repeat(3) { renderScene(scene) }
-                    requireNotNull(scene.draftNodes().taggedDraft("folder-draft-name"))
-                        .config[SemanticsActions.SetText].action!!.invoke(AnnotatedString("Kept on rotation"))
-                    repeat(2) { renderScene(scene) }
-                }
-                createScene().use { scene ->
-                    repeat(4) { renderScene(scene) }
-                    requireNotNull(scene.draftNodes().taggedDraft("folder-draft-name"))
-                        .config[SemanticsProperties.EditableText].text shouldBe "Kept on rotation"
-                    repository.lastCreateParams shouldBe null
-                    // The app calls this before system back or incoming notification navigation.
-                    discardDraft()
-                    repeat(3) { renderScene(scene) }
-                    (scene.draftNodes().taggedDraft("folder-draft-name") == null) shouldBe true
-                    requireNotNull(scene.draftNodes().taggedDraft("browser-empty-create"))
-                        .config[SemanticsActions.OnClick].action!!.invoke()
-                    renderScene(scene)
-                    requireNotNull(scene.draftNodes().taggedDraft("create-New folder"))
-                        .config[SemanticsActions.OnClick].action!!.invoke()
-                    repeat(3) { renderScene(scene) }
-                    requireNotNull(scene.draftNodes().taggedDraft("nav-Due"))
-                        .config[SemanticsActions.OnClick].action!!.invoke()
-                    repeat(3) { renderScene(scene) }
-                    navigationCount shouldBe 1
-                    (scene.draftNodes().taggedDraft("folder-draft-name") == null) shouldBe true
+                    fun startEditor(scene: ImageComposeScene) {
+                        if (isRenaming) {
+                            requireNotNull(scene.draftNodes().taggedDraft("browser-folder"))
+                                .config[SemanticsActions.OnLongClick].action!!.invoke()
+                        } else {
+                            requireNotNull(scene.draftNodes().taggedDraft("browser-empty-create"))
+                                .config[SemanticsActions.OnClick].action!!.invoke()
+                            renderScene(scene)
+                            requireNotNull(scene.draftNodes().taggedDraft("create-New folder"))
+                                .config[SemanticsActions.OnClick].action!!.invoke()
+                        }
+                        repeat(3) { renderScene(scene) }
+                    }
+                    try {
+                        createScene().use { scene ->
+                            repeat(4) { renderScene(scene) }
+                            startEditor(scene)
+                            navigationCount shouldBe 0
+                            requireNotNull(scene.draftNodes().taggedDraft("folder-draft-name"))
+                                .config[SemanticsActions.SetText].action!!.invoke(AnnotatedString("Kept on rotation"))
+                            repeat(2) { renderScene(scene) }
+                        }
+                        createScene().use { scene ->
+                            repeat(4) { renderScene(scene) }
+                            requireNotNull(scene.draftNodes().taggedDraft("folder-draft-name"))
+                                .config[SemanticsProperties.EditableText].text shouldBe "Kept on rotation"
+                            repository.lastCreateParams shouldBe null
+                            repository.callLog.any { it.startsWith("updateFolder") } shouldBe false
+                            // The app invokes this before system back or incoming notification navigation.
+                            discardDraft()
+                            repeat(3) { renderScene(scene) }
+                            (scene.draftNodes().taggedDraft("folder-draft-name") == null) shouldBe true
+                            startEditor(scene)
+                            requireNotNull(scene.draftNodes().taggedDraft("nav-Due"))
+                                .config[SemanticsActions.OnClick].action!!.invoke()
+                            repeat(3) { renderScene(scene) }
+                            navigationCount shouldBe 1
+                            (scene.draftNodes().taggedDraft("folder-draft-name") == null) shouldBe true
+                        }
+                    } finally {
+                        storeOwner.viewModelStore.clear()
+                        application.close()
+                    }
                 }
             } finally {
-                storeOwner.viewModelStore.clear()
-                application.close()
                 Dispatchers.resetMain()
+            }
+        }
+    }
+
+    test("longpress edits the existing item in place with its entire name selected in both layouts and themes") {
+        SwingUtilities.invokeAndWait {
+            val entries = listOf("Archive", "Middle", "Zebra").map {
+                FileEntry(it, it, ItemType.FOLDER, FileMetadata.Folder(3))
+            } + FileEntry("note", "Note", ItemType.NOTE, FileMetadata.Note("note", 0, "Preview"))
+            for (isDarkTheme in listOf(false, true)) {
+                for (width in listOf(320, 840, 1440)) {
+                    val keyboard = RecordingKeyboard()
+                    var navigationCount = 0
+                    var confirmations = 0
+                    val state = mutableStateOf(BrowserUiState(emptyList(), fileEntries = entries))
+                    ImageComposeScene(width, 874) {
+                        CompositionLocalProvider(LocalSoftwareKeyboardController provides keyboard) {
+                            EchoListTheme(isDarkTheme = isDarkTheme, themeManager = ThemeManager(listOf(EchoListDefaultTheme))) {
+                                BrowserScreen(
+                                    state.value,
+                                    onFolderClick = { navigationCount++ },
+                                    onFolderLongClick = { path ->
+                                        val original = entries.first { it.path == path }
+                                        state.value = state.value.copy(folderDraft = FolderDraft(
+                                            id = 1, name = original.title, originalEntry = original, originalIndex = 1
+                                        ))
+                                    },
+                                    onFolderNameChange = { name ->
+                                        state.value = state.value.copy(folderDraft = state.value.folderDraft!!.copy(name = name))
+                                    },
+                                    onConfirmFolder = { confirmations++ },
+                                    onDismissFolder = { state.value = state.value.copy(folderDraft = null) }
+                                )
+                            }
+                        }
+                    }.use { scene ->
+                        repeat(3) { scene.render().close() }
+                        val target = scene.draftNodes().filter {
+                            it.config.getOrNull(SemanticsProperties.TestTag) == "browser-folder"
+                        }[1]
+                        val originalPosition = target.boundsInRoot.topLeft
+                        target.config[SemanticsActions.OnLongClick].action!!.invoke()
+                        repeat(3) { scene.render().close() }
+                        val field = requireNotNull(scene.draftNodes().taggedDraft("folder-draft-name"))
+                        field.config[SemanticsProperties.EditableText].text shouldBe "Middle"
+                        field.config[SemanticsProperties.TextSelectionRange] shouldBe TextRange(0, 6)
+                        field.config[SemanticsProperties.Focused] shouldBe true
+                        requireNotNull(scene.draftNodes().taggedDraft("browser-folder-draft"))
+                            .boundsInRoot.topLeft shouldBe originalPosition
+                        scene.draftNodes().count {
+                            it.config.getOrNull(SemanticsProperties.TestTag) == "browser-folder"
+                        } shouldBe 2
+                        keyboard.shows shouldBe 1
+                        navigationCount shouldBe 0
+                        scene.draftNodes().any {
+                            it.config.getOrNull(SemanticsProperties.ContentDescription) == listOf("Save folder name")
+                        } shouldBe true
+                        field.config[SemanticsActions.SetText].action!!.invoke(AnnotatedString("Updated"))
+                        repeat(2) { scene.render().close() }
+                        requireNotNull(scene.draftNodes().taggedDraft("folder-draft-name"))
+                            .config[SemanticsActions.SetSelection].action!!.invoke(2, 2, false)
+                        scene.render().close()
+                        requireNotNull(scene.draftNodes().taggedDraft("folder-draft-name"))
+                            .config[SemanticsProperties.TextSelectionRange] shouldBe TextRange(2)
+                        // A refresh without the original entry must keep the active rename input visible.
+                        state.value = state.value.copy(fileEntries = emptyList(), error = "Offline")
+                        repeat(3) { scene.render().close() }
+                        requireNotNull(scene.draftNodes().taggedDraft("folder-draft-name"))
+                            .config[SemanticsProperties.EditableText].text shouldBe "Updated"
+                        scene.render().use { image ->
+                            File("build/folder-rename-$width-${if (isDarkTheme) "dark" else "light"}.png")
+                                .writeBytes(requireNotNull(image.encodeToData()).bytes)
+                        }
+                        confirmations shouldBe 0
+                        keyboard.shows shouldBe 1
+                    }
+                }
             }
         }
     }

@@ -22,6 +22,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.error
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.ImeAction
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.feature.browser.resources.*
@@ -35,6 +37,12 @@ internal fun FolderDraftItem(
     onCancel: () -> Unit,
     isDesktop: Boolean
 ) {
+    var textFieldValue by rememberSaveable(draft.id, stateSaver = TextFieldValue.Saver) {
+        mutableStateOf(TextFieldValue(
+            text = draft.name,
+            selection = if (draft.isRenaming) TextRange(0, draft.name.length) else TextRange(draft.name.length)
+        ))
+    }
     val focusRequester = remember(draft.id) { FocusRequester() }
     val focusManager = LocalFocusManager.current
     val keyboard = LocalSoftwareKeyboardController.current
@@ -61,7 +69,9 @@ internal fun FolderDraftItem(
             keyboard?.show()
         }
     }
-    val savingLabel = stringResource(Res.string.folder_create_saving)
+    val savingLabel = stringResource(if (draft.isRenaming) Res.string.folder_rename_saving else Res.string.folder_create_saving)
+    val confirmLabel = stringResource(if (draft.isRenaming) Res.string.folder_rename_confirm else Res.string.folder_create_confirm)
+    val cancelLabel = stringResource(if (draft.isRenaming) Res.string.folder_rename_cancel else Res.string.folder_create_cancel)
     val nameLabel = stringResource(Res.string.folder_name)
     val colors = EchoListTheme.materialColors
     BrowserItemCard(
@@ -87,8 +97,11 @@ internal fun FolderDraftItem(
         titleContent = {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 BasicTextField(
-                    value = draft.name,
-                    onValueChange = onNameChange,
+                    value = if (textFieldValue.text == draft.name) textFieldValue else textFieldValue.copy(text = draft.name),
+                    onValueChange = { value ->
+                        textFieldValue = value
+                        if (value.text != draft.name) onNameChange(value.text)
+                    },
                     enabled = !draft.isSaving,
                     singleLine = true,
                     cursorBrush = SolidColor(colors.primary),
@@ -116,12 +129,12 @@ internal fun FolderDraftItem(
                     ) {
                         Icon(
                             Icons.Default.Check,
-                            stringResource(Res.string.folder_create_confirm),
+                            confirmLabel,
                             tint = if (draft.canConfirm) colors.primary else colors.onSurfaceVariant
                         )
                     }
                     IconButton(onClick = { cancel() }, modifier = Modifier.testTag("folder-draft-cancel")) {
-                        Icon(Icons.Default.Close, stringResource(Res.string.folder_create_cancel), tint = colors.onSurfaceVariant)
+                        Icon(Icons.Default.Close, cancelLabel, tint = colors.onSurfaceVariant)
                     }
                 }
             }

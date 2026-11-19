@@ -223,9 +223,6 @@ private fun AuthenticatedNavDisplay(
                         }
                     },
                     canNavigateBack = canNavigateBack,
-                    onFolderRenamed = { newPath ->
-                        backStack[backStack.lastIndex] = BrowserRoute(newPath)
-                    },
                     navToFolder = { backStack.navigateToBrowserFolder(it) },
                     navToNote = { backStack.add(EditNoteRoute(browserRoute.parentDir, it)) },
                     navToTaskList = { backStack.add(EditTaskListRoute(browserRoute.parentDir, it)) },

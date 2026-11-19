@@ -9,7 +9,6 @@ internal data class BrowserUiState(
     val isRefreshing: Boolean = false,
     val isDeletingFolder: Boolean = false,
     val canDeleteCurrentFolder: Boolean = false,
-    val canRenameCurrentFolder: Boolean = false,
     val folderDraft: FolderDraft? = null,
     val error: String? = null
 )
@@ -24,7 +23,10 @@ internal data class FolderDraft(
     val name: String = "",
     val isSaving: Boolean = false,
     val error: String? = null,
-    val focusRequest: Long = 0
+    val focusRequest: Long = 0,
+    val originalEntry: FileEntry? = null,
+    val originalIndex: Int = 0
 ) {
+    val isRenaming: Boolean get() = originalEntry != null
     val canConfirm: Boolean get() = name.trim().isNotEmpty() && !isSaving
 }

@@ -3,6 +3,7 @@ package net.onefivefour.echolist.feature.browser.ui
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -33,13 +34,23 @@ internal fun BrowserItemCard(
     modifier: Modifier = Modifier,
     compactHeight: Dp = 96.dp,
     titleContent: (@Composable () -> Unit)? = null,
+    onLongClick: (() -> Unit)? = null,
+    onLongClickLabel: String? = null,
     content: @Composable ColumnScope.() -> Unit
 ) {
     val height = if (isFolder) {
         if (isDesktop) 76.dp else 68.dp
     } else if (isDesktop) 118.dp else compactHeight
     val sizeModifier = if (titleContent != null) Modifier.height(IntrinsicSize.Min) else Modifier.height(height)
-    val clickModifier = if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier
+    val clickModifier = when {
+        onClick == null -> Modifier
+        onLongClick != null -> Modifier.combinedClickable(
+            onClick = onClick,
+            onLongClick = onLongClick,
+            onLongClickLabel = onLongClickLabel
+        )
+        else -> Modifier.clickable(onClick = onClick)
+    }
     val tag = when {
         titleContent != null -> "browser-folder-draft"
         isFolder -> "browser-folder"

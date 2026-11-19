@@ -20,6 +20,33 @@ import net.onefivefour.echolist.feature.browser.domain.model.FileMetadata
 import net.onefivefour.echolist.feature.browser.domain.model.ItemType
 
 class BrowserLayoutTest : FunSpec({
+    test("folder items expose distinct click and accessible long-click actions") {
+        SwingUtilities.invokeAndWait {
+            var clicks = 0
+            var longClicks = 0
+            ImageComposeScene(402, 200) {
+                EchoListTheme(themeManager = ThemeManager(listOf(EchoListDefaultTheme))) {
+                    FolderItem(
+                        title = "Projects",
+                        metadata = FileMetadata.Folder(3),
+                        onClick = { clicks++ },
+                        onLongClick = { longClicks++ }
+                    )
+                }
+            }.use { scene ->
+                scene.render().close()
+                val folder = requireNotNull(scene.browserNodes().tagged("browser-folder"))
+                folder.config[SemanticsActions.OnLongClick].label shouldBe "Rename folder"
+                folder.config[SemanticsActions.OnLongClick].action!!.invoke()
+                longClicks shouldBe 1
+                clicks shouldBe 0
+                folder.config[SemanticsActions.OnClick].action!!.invoke()
+                clicks shouldBe 1
+                longClicks shouldBe 1
+            }
+        }
+    }
+
     test("phone and desktop layouts render with compact folders, navigation and working create menu") {
         SwingUtilities.invokeAndWait {
             for (isDarkTheme in listOf(false, true)) {

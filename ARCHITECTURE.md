@@ -115,21 +115,36 @@ share the same folder/note/task-list menu; loading and error states take precede
 Remind opens Reminders Summary. Tasks Summary owns its UI, ViewModel and tests,
 loads on entry without visibility/toggle state, and reuses TaskListRepository in core:tasks.
 
-Folder creation uses one local draft at the start of the folder grid, including in
-otherwise empty directories. `BrowserViewModel` owns the draft independently of loaded
-entries. The draft starts with an empty inline title, requests focus and the keyboard,
-and persists only on an explicit valid confirmation (button, Enter or IME Done).
-Confirmation trims the name, hides the keyboard and locks the draft during the request.
-Failures retain the name with an inline error; focus loss does not save. Cancel/Escape or
-leaving the browser discards an unconfirmed draft. Configuration recreation retains
-the ViewModel-owned name and draft without triggering persistence. Browser navigation, including system
-back and incoming reminder navigation, waits while folder creation is saving.
-Successful responses replace the draft using the backend path; local creations are
-merged with refresh results until a server listing acknowledges them. Read revisions
-reject obsolete responses. The shared `BrowserLayout` keeps the file grid at a stable
-composition location across adaptive changes so editing focus survives resizing.
-The former create-folder dialog, state and separate ViewModel have been removed;
-the rename-folder dialog remains independent.
+Folder creation and renaming share one ViewModel-owned inline editor, independent
+of loaded entries. Creation inserts a blank draft at the start of the folder grid,
+including in otherwise empty directories. Long-pressing an existing folder edits
+that item in place, prefilled with its entire name selected. Normal clicks still
+open the folder. The current-folder rename toolbar action has been removed;
+rename a directory through its item in the parent listing.
+
+Both operations request focus and the keyboard, and persist only on explicit valid
+confirmation (button, Enter or IME Done). Confirmation trims the name, hides the
+keyboard and locks editing and browser navigation during the request. Confirming
+an unchanged folder name closes the editor without a redundant request. Failures
+retain the edited name with an inline error; focus loss does not save. Cancel/Escape
+or leaving the browser discards unconfirmed changes. Configuration recreation
+retains the name and editor without triggering persistence. Starting another create
+or rename action preserves and refocuses the active input rather than replacing it.
+System back and incoming reminder navigation also wait while a folder is saving.
+
+`FileMapper` normalizes incoming folder paths to relative paths without leading or
+trailing separators. Create/Update responses include a trailing slash while ListFiles
+omits it; both must identify the same folder before UI reconciliation. Note and task-list
+paths are preserved as supplied by their existing contracts.
+
+Successful responses replace the editor using the backend name and normalized path, preserving
+folder metadata on rename and reapplying the normal listing sort. Local mutations
+are merged with refresh results until the server listing acknowledges them; pending
+renames suppress the old paths, including intermediate paths of successive renames.
+Read revisions reject obsolete responses. A refresh that removes the original folder
+cannot silently discard an active rename editor. The shared `BrowserLayout` keeps
+the grid at a stable composition location across adaptive changes, retaining focus.
+The former create/rename dialogs, states and separate ViewModels have been removed.
 
 Browser entries sort folders first by case-insensitive name, then notes and task lists
 together by ascending backend `updated_at`. Equal timestamps preserve server order;
