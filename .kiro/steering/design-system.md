@@ -180,6 +180,13 @@ these colors (including disabled states), the extra-large shape, medium shadow,
 The URL's `https://` default, saved URL behavior and all business logic remain
 unchanged.
 
+Login form field gaps use `dimensions.l`, the action gap uses `dimensions.xl`,
+and icons and control decorations use shared dimension tokens in both layouts.
+Only heading typography and the outer form arrangement/padding adapt with `isDesktop`.
+The desktop form has `xxxl` horizontal and `xxl` vertical padding; phone uses
+`xl` side/top padding and `xxxl` bottom padding. The reserved error slot remains
+96 dp (`xxxl * 2`) scaled by font scale. The editorial hero remains independent.
+
 ## Spacing & Sizing Tokens (EchoListDimensions)
 
 | Token       | Value |
@@ -191,7 +198,7 @@ unchanged.
 | l           | 16dp  |
 | xl          | 24dp  |
 | xxl         | 32dp  |
-| xxxl        | 40dp  |
+| xxxl        | 48dp  |
 | iconSmall   | 36dp  |
 | iconMedium  | 40dp  |
 | borderWidth | 1dp   |

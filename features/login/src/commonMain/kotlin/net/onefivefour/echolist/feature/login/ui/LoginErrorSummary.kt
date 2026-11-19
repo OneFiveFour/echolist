@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
@@ -60,12 +59,12 @@ internal fun authErrorMessage(error: AuthError): String {
 internal fun LoginErrorSummary(messages: List<String>, modifier: Modifier = Modifier) {
     val colors = EchoListTheme.materialColors
     Row(
-        modifier.fillMaxWidth().heightIn(min = 36.dp),
+        modifier.fillMaxWidth().heightIn(min = EchoListTheme.dimensions.iconSmall),
         verticalAlignment = Alignment.Top,
-        horizontalArrangement = Arrangement.spacedBy(9.dp)
+        horizontalArrangement = Arrangement.spacedBy(EchoListTheme.dimensions.s)
     ) {
         Box(
-            Modifier.size(20.dp).background(colors.error, CircleShape)
+            Modifier.size(EchoListTheme.dimensions.l).background(colors.error, CircleShape)
                 .semantics { testTag = "login-error-icon" },
             contentAlignment = Alignment.Center
         ) {

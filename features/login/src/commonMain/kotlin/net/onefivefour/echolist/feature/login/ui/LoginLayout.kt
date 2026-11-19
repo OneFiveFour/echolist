@@ -36,7 +36,7 @@ internal fun LoginLayout(
             DesktopHeroBanner(Modifier.fillMaxWidth(0.44f).fillMaxHeight())
         }
         BoxWithConstraints(Modifier.weight(1f).fillMaxHeight()) {
-            val layout = if (isDesktop) desktopLoginFormLayout(maxWidth) else phoneLoginFormLayout()
+            val layout = if (isDesktop) desktopLoginFormLayout() else phoneLoginFormLayout()
             LoginFormContainer(scrollState, maxHeight, layout, content)
         }
     }
@@ -90,7 +90,7 @@ private fun LoginLayoutDesktopPreview() {
         LoginLayout(isDesktop = true, scrollState = rememberScrollState()) {
             LoginForm(
                 LoginUiState(backendUrl = "https://echo.example.com", username = "Alex", password = "password"),
-                isDesktop = false,
+                isDesktop = true,
                 isPasswordVisible = false,
                 usernameFocusRequester = remember { FocusRequester() },
                 passwordFocusRequester = remember { FocusRequester() },

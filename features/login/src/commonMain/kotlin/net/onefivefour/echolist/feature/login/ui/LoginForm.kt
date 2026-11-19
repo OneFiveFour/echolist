@@ -35,8 +35,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import net.onefivefour.echolist.core.designsystem.ui.components.ElButton
 import net.onefivefour.echolist.core.designsystem.ui.components.ElFormTextField
 import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
@@ -46,6 +44,7 @@ import net.onefivefour.echolist.feature.login.resources.error_backend_url_requir
 import net.onefivefour.echolist.feature.login.resources.error_password_required
 import net.onefivefour.echolist.feature.login.resources.error_username_required
 import net.onefivefour.echolist.feature.login.resources.hide_password
+import net.onefivefour.echolist.feature.login.resources.login_arrow_forward
 import net.onefivefour.echolist.feature.login.resources.login_backend_url_label
 import net.onefivefour.echolist.feature.login.resources.login_button
 import net.onefivefour.echolist.feature.login.resources.login_heading
@@ -90,11 +89,11 @@ internal fun LoginForm(
         loginUiState.authError?.let { authErrorMessage(it) }
     )
 
-    val errorSlotHeight = 96.dp * LocalDensity.current.fontScale
+    val errorSlotHeight = (EchoListTheme.dimensions.xxxl * 2) * LocalDensity.current.fontScale
 
     Column(
         modifier
-            .padding(bottom = 20.dp)
+            .padding(bottom = EchoListTheme.dimensions.xl)
             .semantics { testTag = "login-form" }
     ) {
 
@@ -135,12 +134,7 @@ internal fun LoginForm(
             }
         }
 
-        val inputFieldSpacing = when {
-            isDesktop -> 19.dp
-            else -> 16.dp
-        }
-
-        Column(verticalArrangement = Arrangement.spacedBy(inputFieldSpacing)) {
+        Column(verticalArrangement = Arrangement.spacedBy(EchoListTheme.dimensions.l)) {
 
             ElFormTextField(
                 value = loginUiState.backendUrl,
@@ -196,7 +190,7 @@ internal fun LoginForm(
 
                     Box(
                         Modifier
-                            .size(36.dp)
+                            .size(EchoListTheme.dimensions.iconSmall)
                             .clickable(onClickLabel = description, onClick = onTogglePassword)
                             .semantics {
                                 contentDescription = description; testTag = "login-visibility"
@@ -207,7 +201,7 @@ internal fun LoginForm(
                             Icon(
                                 painter = painterResource(resource = Res.drawable.visibility_off),
                                 contentDescription = null,
-                                modifier = Modifier.size(19.dp),
+                                modifier = Modifier.size(EchoListTheme.dimensions.l),
                                 tint = colors.onSurfaceVariant
                             )
                         } else {
@@ -224,11 +218,7 @@ internal fun LoginForm(
             )
         }
 
-        val spacerHeight = when {
-            isDesktop -> 26.dp
-            else -> 22.dp
-        }
-        Spacer(Modifier.height(spacerHeight))
+        Spacer(Modifier.height(EchoListTheme.dimensions.xl))
 
         ElButton(
             onClick = onLoginClick,
@@ -247,7 +237,7 @@ internal fun LoginForm(
                     style = typography.labelLarge
                 )
                 Box(
-                    Modifier.size(34.dp).background(
+                    Modifier.size(EchoListTheme.dimensions.xxl).background(
                         colors.onPrimary.copy(alpha = 0.13f),
                         EchoListTheme.shapes.medium
                     ),
@@ -255,17 +245,14 @@ internal fun LoginForm(
                 ) {
                     if (loginUiState.isLoading) {
                         CircularProgressIndicator(
-                            Modifier.size(19.dp), color = colors.onPrimary,
-                            strokeWidth = 2.dp, trackColor = colors.onPrimary.copy(alpha = 0.13f)
+                            Modifier.size(EchoListTheme.dimensions.l), color = colors.onPrimary,
+                            strokeWidth = EchoListTheme.dimensions.xxs, trackColor = colors.onPrimary.copy(alpha = 0.13f)
                         )
                     } else {
-                        Text(
-                            "→",
-                            style = typography.bodyLarge.copy(
-                                fontSize = 20.sp,
-                                lineHeight = 20.sp,
-                                letterSpacing = 0.sp
-                            )
+                        Icon(
+                            painterResource(Res.drawable.login_arrow_forward),
+                            contentDescription = null,
+                            modifier = Modifier.size(EchoListTheme.dimensions.xl)
                         )
                     }
                 }

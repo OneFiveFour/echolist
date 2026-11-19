@@ -6,7 +6,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import androidx.compose.ui.unit.dp
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.feature.login.resources.Res
 import net.onefivefour.echolist.feature.login.resources.login_server
@@ -21,7 +20,7 @@ internal fun LoginFieldIcon(
     Icon(
         painter = painterResource(resource = resource),
         contentDescription = null,
-        modifier = Modifier.size(19.dp),
+        modifier = Modifier.size(EchoListTheme.dimensions.l),
         tint = tint
     )
 }
