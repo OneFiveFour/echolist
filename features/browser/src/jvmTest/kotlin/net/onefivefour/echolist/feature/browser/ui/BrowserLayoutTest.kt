@@ -2,6 +2,8 @@
 
 package net.onefivefour.echolist.feature.browser.ui
 
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.ImageComposeScene
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsNode
@@ -10,7 +12,9 @@ import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.use
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
+import java.io.ByteArrayInputStream
 import java.io.File
+import javax.imageio.ImageIO
 import javax.swing.SwingUtilities
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.core.designsystem.ui.theme.ThemeManager
@@ -20,6 +24,33 @@ import net.onefivefour.echolist.feature.browser.domain.model.FileMetadata
 import net.onefivefour.echolist.feature.browser.domain.model.ItemType
 
 class BrowserLayoutTest : FunSpec({
+    test("refreshing has a visible indicator without diagnostic magenta or a toolbar refresh action") {
+        SwingUtilities.invokeAndWait {
+            for (isDarkTheme in listOf(false, true)) {
+                for (width in listOf(402, 1440)) {
+                    ImageComposeScene(width, 874) {
+                        EchoListTheme(isDarkTheme = isDarkTheme, themeManager = ThemeManager(listOf(EchoListDefaultTheme))) {
+                            BrowserScreen(browserUiState = browserPreviewState.copy(isRefreshing = true))
+                        }
+                    }.use { scene ->
+                        scene.render().use { image ->
+                            val bytes = requireNotNull(image.encodeToData()).bytes
+                            File("build/browser-refresh-$width-${if (isDarkTheme) "dark" else "light"}.png").writeBytes(bytes)
+                            val rendered = ImageIO.read(ByteArrayInputStream(bytes))
+                            val hasMagenta = (0 until rendered.height).any { y ->
+                                (0 until rendered.width).any { x -> rendered.getRGB(x, y) == Color.Magenta.toArgb() }
+                            }
+                            hasMagenta shouldBe false
+                        }
+                        val nodes = scene.browserNodes()
+                        nodes.any { it.config.getOrNull(SemanticsProperties.ProgressBarRangeInfo) != null } shouldBe true
+                        nodes.any { it.config.getOrNull(SemanticsProperties.ContentDescription)?.contains("Refresh") == true } shouldBe false
+                    }
+                }
+            }
+        }
+    }
+
     test("folder items expose distinct click and accessible long-click actions") {
         SwingUtilities.invokeAndWait {
             var clicks = 0

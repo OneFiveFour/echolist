@@ -26,11 +26,11 @@ import javax.swing.SwingUtilities
 import net.onefivefour.echolist.core.designsystem.ui.theme.colorscheme.EchoListDefaultTheme
 
 class FoundationIntegrationTest : FunSpec({
-    test("Material roles absent from Figma remain magenta in both modes, including future roles") {
+    test("Undefined Material roles remain magenta in both modes, including future roles") {
         val definedRoles = setOf(
             "primary", "onPrimary", "secondary", "onSecondary", "background", "onBackground",
             "surface", "onSurface", "surfaceVariant", "onSurfaceVariant", "error", "onError",
-            "outline", "outlineVariant"
+            "outline", "outlineVariant", "surfaceContainerHigh"
         )
         val roles = ColorScheme::class.java.declaredFields.filter {
             it.type == Long::class.javaPrimitiveType && !JavaModifier.isStatic(it.modifiers)

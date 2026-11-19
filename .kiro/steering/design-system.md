@@ -44,6 +44,7 @@ Future themes remain swappable through `ColorTheme` / `ThemeManager`.
 | background | #F6F7F4 | #101312 |
 | surface | #FFFFFF | #181C1B |
 | surfaceVariant | #E8ECE8 | #252B29 |
+| surfaceContainerHigh | #E8ECE8 | #252B29 |
 | primary | #315F59 | #91D5C9 |
 | onPrimary | #FFFFFF | #0B3934 |
 | secondary | #635A78 | #CBC1E7 |
@@ -65,8 +66,10 @@ Future themes remain swappable through `ColorTheme` / `ThemeManager`.
 `background` is identical in Material and EchoList color schemes. `EchoListTheme` provides the shared solid background and system bar insets.
 The old gradient component and its three gradient tokens have been removed.
 
-Every Material color role absent from Figma is explicitly **Color.Magenta** in
-both modes, including container, inverse, tint, scrim and fixed roles. This is an
+Material color roles without a Figma or explicitly approved component definition
+are **Color.Magenta** in both modes, including undefined container, inverse, tint,
+scrim and fixed roles. `surfaceContainerHigh` is approved for the Material
+pull-to-refresh indicator and uses the same neutral tones as `surfaceVariant`. This is an
 intentional diagnostic: do not substitute Material defaults or invent colors to
 hide it. New role colors require a design decision.
 

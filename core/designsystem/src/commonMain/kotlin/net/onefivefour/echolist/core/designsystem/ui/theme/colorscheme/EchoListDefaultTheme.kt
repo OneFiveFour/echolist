@@ -6,7 +6,7 @@ import androidx.compose.ui.graphics.Color
 import net.onefivefour.echolist.core.designsystem.ui.theme.ColorTheme
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListColorScheme
 
-/** Figma foundation 6:1780. Magenta deliberately exposes Material roles absent from the design. */
+/** Figma foundation 6:1780 plus approved component roles; undefined roles remain magenta. */
 val EchoListDefaultTheme = ColorTheme(
     name = "EchoList",
     materialColorSchemeLight = lightColorScheme(
@@ -41,7 +41,7 @@ val EchoListDefaultTheme = ColorTheme(
         scrim = Color.Magenta,
         surfaceBright = Color.Magenta,
         surfaceContainer = Color.Magenta,
-        surfaceContainerHigh = Color.Magenta,
+        surfaceContainerHigh = Color(0xFFE8ECE8),
         surfaceContainerHighest = Color.Magenta,
         surfaceContainerLow = Color.Magenta,
         surfaceContainerLowest = Color.Magenta,
@@ -91,7 +91,7 @@ val EchoListDefaultTheme = ColorTheme(
         scrim = Color.Magenta,
         surfaceBright = Color.Magenta,
         surfaceContainer = Color.Magenta,
-        surfaceContainerHigh = Color.Magenta,
+        surfaceContainerHigh = Color(0xFF252B29),
         surfaceContainerHighest = Color.Magenta,
         surfaceContainerLow = Color.Magenta,
         surfaceContainerLowest = Color.Magenta,

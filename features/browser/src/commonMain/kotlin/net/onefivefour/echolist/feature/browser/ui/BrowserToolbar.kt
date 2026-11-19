@@ -1,8 +1,6 @@
 package net.onefivefour.echolist.feature.browser.ui
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -19,21 +17,12 @@ import org.jetbrains.compose.resources.stringResource
 internal fun BrowserToolbar(
     browserUiState: BrowserUiState,
     heading: @Composable () -> Unit,
-    onRefresh: () -> Unit,
     onDeleteCurrentFolderClick: () -> Unit
 ) {
     val colors = EchoListTheme.materialColors
     Row(verticalAlignment = Alignment.Bottom) {
         Box(Modifier.weight(1f)) {
             heading()
-        }
-
-        IconButton(onClick = onRefresh) {
-            Icon(
-                imageVector = Icons.Default.Refresh,
-                contentDescription = stringResource(Res.string.refresh_browser),
-                tint = colors.onSurfaceVariant
-            )
         }
 
         if (browserUiState.canDeleteCurrentFolder) {
@@ -58,7 +47,6 @@ private fun BrowserToolbarPreview() {
                 breadcrumbs = browserPreviewState.breadcrumbs,
                 style = EchoListTheme.typography.headlineSmall
             ) },
-            onRefresh = {},
             onDeleteCurrentFolderClick = {},
         )
     }
