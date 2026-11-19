@@ -17,6 +17,7 @@ import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.core.session.domain.AuthError
 import net.onefivefour.echolist.feature.login.resources.Res
@@ -55,7 +56,6 @@ internal fun authErrorMessage(error: AuthError): String {
     return "$title. $description"
 }
 
-/** A single status message and icon for all current field and authentication errors. */
 @Composable
 internal fun LoginErrorSummary(messages: List<String>, modifier: Modifier = Modifier) {
     val colors = EchoListTheme.materialColors
@@ -87,5 +87,13 @@ internal fun LoginErrorSummary(messages: List<String>, modifier: Modifier = Modi
             color = colors.error,
             modifier = Modifier.weight(1f)
         )
+    }
+}
+
+@PreviewComponentLightDark
+@Composable
+private fun LoginErrorSummaryPreview() {
+    EchoListTheme(modifier = Modifier) {
+        LoginErrorSummary(listOf("Please enter a server address.", "Please enter your username."))
     }
 }

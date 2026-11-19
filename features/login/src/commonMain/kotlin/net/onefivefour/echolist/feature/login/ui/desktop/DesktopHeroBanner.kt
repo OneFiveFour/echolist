@@ -34,6 +34,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewDesktopLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.feature.login.resources.Res
 import net.onefivefour.echolist.feature.login.resources.login_introduction_accent
@@ -260,5 +261,13 @@ private fun BannerDecoration(modifier: Modifier, factor: Float) {
                 }
             }
         }
+    }
+}
+
+@PreviewDesktopLightDark
+@Composable
+private fun DesktopHeroBannerPreview() {
+    EchoListTheme {
+        DesktopHeroBanner()
     }
 }

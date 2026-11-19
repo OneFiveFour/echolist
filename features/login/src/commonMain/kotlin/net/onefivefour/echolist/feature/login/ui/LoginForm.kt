@@ -21,6 +21,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -41,8 +42,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import net.onefivefour.echolist.core.designsystem.ui.components.ElButton
 import net.onefivefour.echolist.core.designsystem.ui.components.ElFormTextField
+import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.feature.login.resources.Res
+import net.onefivefour.echolist.feature.login.resources.error_backend_url_required
+import net.onefivefour.echolist.feature.login.resources.error_password_required
+import net.onefivefour.echolist.feature.login.resources.error_username_required
 import net.onefivefour.echolist.feature.login.resources.hide_password
 import net.onefivefour.echolist.feature.login.resources.login_backend_url_label
 import net.onefivefour.echolist.feature.login.resources.login_button
@@ -300,5 +305,50 @@ internal fun LoginForm(
                 }
             }
         }
+    }
+}
+
+@PreviewComponentLightDark
+@Composable
+private fun LoginFormPreview() {
+    EchoListTheme(modifier = Modifier) {
+        LoginForm(
+            LoginUiState(backendUrl = "https://echo.example.com", username = "Alex", password = "password"),
+            isDesktop = false,
+            isPasswordVisible = false,
+            usernameFocusRequester = remember { FocusRequester() },
+            passwordFocusRequester = remember { FocusRequester() },
+            onBackendUrlChange = {},
+            onUsernameChange = {},
+            onPasswordChange = {},
+            onTogglePassword = {},
+            onLoginClick = {},
+            modifier = Modifier,
+        )
+    }
+}
+
+@PreviewComponentLightDark
+@Composable
+private fun LoginFormErrorPreview() {
+    EchoListTheme(modifier = Modifier) {
+        LoginForm(
+            loginUiState = LoginUiState(
+                backendUrl = "",
+                backendUrlError = stringResource(Res.string.error_backend_url_required),
+                usernameError = stringResource(Res.string.error_username_required),
+                passwordError = stringResource(Res.string.error_password_required)
+            ),
+            isDesktop = false,
+            isPasswordVisible = false,
+            usernameFocusRequester = remember { FocusRequester() },
+            passwordFocusRequester = remember { FocusRequester() },
+            onBackendUrlChange = {},
+            onUsernameChange = {},
+            onPasswordChange = {},
+            onTogglePassword = {},
+            onLoginClick = {},
+            modifier = Modifier,
+        )
     }
 }

@@ -2,11 +2,18 @@ package net.onefivefour.echolist.feature.login.ui
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewDesktopLightDark
+import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewPhoneLightDark
+import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.feature.login.ui.desktop.DesktopHeroBanner
 import net.onefivefour.echolist.feature.login.ui.desktop.desktopLoginFormLayout
 import net.onefivefour.echolist.feature.login.ui.phone.phoneLoginFormLayout
@@ -51,5 +58,71 @@ private fun LoginFormContainer(
         verticalArrangement = layout.arrangement
     ) {
         content()
+    }
+}
+
+@PreviewPhoneLightDark
+@Composable
+private fun LoginLayoutPhonePreview() {
+    EchoListTheme {
+        LoginLayout(isDesktop = false, scrollState = rememberScrollState()) {
+            LoginForm(
+                LoginUiState(backendUrl = "https://echo.example.com", username = "Alex", password = "password"),
+                isDesktop = false,
+                isPasswordVisible = false,
+                usernameFocusRequester = remember { FocusRequester() },
+                passwordFocusRequester = remember { FocusRequester() },
+                onBackendUrlChange = {},
+                onUsernameChange = {},
+                onPasswordChange = {},
+                onTogglePassword = {},
+                onLoginClick = {},
+                modifier = Modifier,
+            )
+        }
+    }
+}
+
+@PreviewDesktopLightDark
+@Composable
+private fun LoginLayoutDesktopPreview() {
+    EchoListTheme {
+        LoginLayout(isDesktop = true, scrollState = rememberScrollState()) {
+            LoginForm(
+                LoginUiState(backendUrl = "https://echo.example.com", username = "Alex", password = "password"),
+                isDesktop = false,
+                isPasswordVisible = false,
+                usernameFocusRequester = remember { FocusRequester() },
+                passwordFocusRequester = remember { FocusRequester() },
+                onBackendUrlChange = {},
+                onUsernameChange = {},
+                onPasswordChange = {},
+                onTogglePassword = {},
+                onLoginClick = {},
+                modifier = Modifier,
+            )
+        }
+    }
+}
+
+@PreviewPhoneLightDark
+@Composable
+private fun LoginFormContainerPreview() {
+    EchoListTheme {
+        LoginFormContainer(rememberScrollState(), 700.dp, phoneLoginFormLayout()) {
+            LoginForm(
+                LoginUiState(backendUrl = "https://echo.example.com", username = "Alex", password = "password"),
+                isDesktop = false,
+                isPasswordVisible = false,
+                usernameFocusRequester = remember { FocusRequester() },
+                passwordFocusRequester = remember { FocusRequester() },
+                onBackendUrlChange = {},
+                onUsernameChange = {},
+                onPasswordChange = {},
+                onTogglePassword = {},
+                onLoginClick = {},
+                modifier = Modifier,
+            )
+        }
     }
 }

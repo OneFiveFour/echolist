@@ -13,6 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
+import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewDesktopLightDark
+import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewPhoneLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 
 @Composable
@@ -45,5 +47,21 @@ internal fun LoginScreen(
             onLoginClick = onLoginClick,
             modifier = Modifier.widthIn(max = 448.dp).fillMaxWidth()
         )
+    }
+}
+
+@PreviewPhoneLightDark
+@Composable
+private fun LoginScreenPhonePreview() {
+    EchoListTheme {
+        LoginScreen(LoginUiState(), {}, {}, {}, {})
+    }
+}
+
+@PreviewDesktopLightDark
+@Composable
+private fun LoginScreenDesktopPreview() {
+    EchoListTheme {
+        LoginScreen(LoginUiState(), {}, {}, {}, {})
     }
 }
