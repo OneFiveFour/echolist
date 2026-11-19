@@ -65,6 +65,7 @@ object EchoListTheme {
 
 @Composable
 fun EchoListTheme(
+    modifier: Modifier = Modifier.fillMaxSize(),
     isDarkTheme: Boolean = isSystemInDarkTheme(),
     themeManager: ThemeManager? = null,
     typeScale: EchoListTypography = echoListTypography(),
@@ -107,8 +108,7 @@ fun EchoListTheme(
             shapes = EchoListTheme.shapes
         ) {
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
+                modifier = modifier
                     .background(echoListColorScheme.background)
                     .systemBarsPadding()
             ) {
