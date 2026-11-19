@@ -29,6 +29,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 
 /** Form field with a persistent external label, independent of Material's floating-label layout. */
@@ -108,6 +109,51 @@ fun ElFormTextField(
                     }
                 }
             }
+        )
+    }
+}
+
+@PreviewComponentLightDark
+@Composable
+private fun ElFormTextFieldPreview() {
+    EchoListTheme(
+        modifier = Modifier,
+    ) {
+        ElFormTextField(
+            value = "Alex",
+            label = "Username",
+            onValueChange = {},
+        )
+    }
+}
+
+@PreviewComponentLightDark
+@Composable
+private fun ElFormTextFieldPlaceholderPreview() {
+    EchoListTheme(
+        modifier = Modifier,
+    ) {
+        ElFormTextField(
+            value = "",
+            label = "Username",
+            onValueChange = {},
+            placeholder = "Enter your username",
+        )
+    }
+}
+
+@PreviewComponentLightDark
+@Composable
+private fun ElFormTextFieldErrorPreview() {
+    EchoListTheme(
+        modifier = Modifier,
+    ) {
+        ElFormTextField(
+            value = "",
+            label = "Username",
+            onValueChange = {},
+            placeholder = "Enter your username",
+            errorMessage = "Username is required",
         )
     }
 }

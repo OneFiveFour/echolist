@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import net.onefivefour.echolist.core.designsystem.resources.Res
 import net.onefivefour.echolist.core.designsystem.resources.due_date_recurring
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
@@ -57,5 +58,37 @@ fun DueDateTag(
                 color = contentColor
             )
         }
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun DueDateTagPreview() {
+    EchoListTheme(
+        modifier = Modifier,
+    ) {
+        DueDateTag(
+            label = "Tomorrow",
+            backgroundColor = EchoListTheme.materialColors.surfaceVariant,
+            contentColor = EchoListTheme.materialColors.onSurfaceVariant,
+            isRecurring = false,
+            onClick = {},
+        )
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun DueDateTagRecurringPreview() {
+    EchoListTheme(
+        modifier = Modifier,
+    ) {
+        DueDateTag(
+            label = "Tomorrow",
+            backgroundColor = EchoListTheme.materialColors.surfaceVariant,
+            contentColor = EchoListTheme.materialColors.onSurfaceVariant,
+            isRecurring = true,
+            onClick = {},
+        )
     }
 }

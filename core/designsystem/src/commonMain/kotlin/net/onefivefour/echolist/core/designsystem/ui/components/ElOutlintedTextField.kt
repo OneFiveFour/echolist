@@ -1,7 +1,5 @@
 package net.onefivefour.echolist.core.designsystem.ui.components
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -9,12 +7,11 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
+import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 
 @Composable
@@ -53,20 +50,32 @@ fun ElOutlinedTextField(
     )
 }
 
-@Preview
+@PreviewComponentLightDark
 @Composable
 private fun ElOutlinedTextFieldPreview() {
-    EchoListTheme {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            ElOutlinedTextField(
-                text = "asdf",
-                label = "Label",
-                isError = false,
-                onValueChange = { }
-            )
-        }
+    EchoListTheme(
+        modifier = Modifier,
+    ) {
+        ElOutlinedTextField(
+            text = "Projects",
+            label = "Folder name",
+            onValueChange = {},
+            isError = false,
+        )
+    }
+}
+
+@PreviewComponentLightDark
+@Composable
+private fun ElOutlinedTextFieldErrorPreview() {
+    EchoListTheme(
+        modifier = Modifier,
+    ) {
+        ElOutlinedTextField(
+            text = "",
+            label = "Folder name",
+            onValueChange = {},
+            isError = true,
+        )
     }
 }

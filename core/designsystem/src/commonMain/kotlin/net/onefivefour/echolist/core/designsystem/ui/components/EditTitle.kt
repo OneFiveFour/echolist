@@ -5,6 +5,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -16,6 +17,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.text.input.ImeAction
+import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 
 @Composable
@@ -58,4 +60,18 @@ fun EditTitle(
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
         onKeyboardAction = { onNext() }
     )
+}
+
+@PreviewComponentLightDark
+@Composable
+private fun EditTitlePreview() {
+    EchoListTheme(
+        modifier = Modifier,
+    ) {
+        EditTitle(
+            textFieldState = rememberTextFieldState(
+                initialText = "Release checklist",
+            ),
+        )
+    }
 }

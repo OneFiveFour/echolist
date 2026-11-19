@@ -9,7 +9,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import net.onefivefour.echolist.core.designsystem.resources.Res
 import net.onefivefour.echolist.core.designsystem.resources.ic_search
@@ -46,13 +46,16 @@ fun RoundIconButton(
     }
 }
 
-@Preview
+@PreviewLightDark
 @Composable
 private fun RoundIconButtonPreview() {
-    EchoListTheme {
+    EchoListTheme(
+        modifier = Modifier,
+    ) {
         RoundIconButton(
             iconRes = Res.drawable.ic_search,
-            onClick = {}
+            onClick = {},
+            contentDescription = "Search",
         )
     }
 }

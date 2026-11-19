@@ -1,7 +1,9 @@
 package net.onefivefour.echolist.core.designsystem.ui.components
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import kotlinx.datetime.LocalDate
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 
@@ -45,4 +47,73 @@ fun DueDateTagForDate(
         contentColor = contentColor,
         onClick = onClick
     )
+}
+
+@PreviewLightDark
+@Composable
+private fun DueDateTagForDateNormalPreview() {
+    EchoListTheme(
+        modifier = Modifier,
+    ) {
+        DueDateTagForDate(
+            dueDate = LocalDate(
+                year = 2026,
+                month = 11,
+                day = 20,
+            ),
+            today = LocalDate(
+                year = 2026,
+                month = 11,
+                day = 19,
+            ),
+            urgency = DueDateTagUrgency.Normal,
+            isRecurring = false,
+        )
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun DueDateTagForDateWarningPreview() {
+    EchoListTheme(
+        modifier = Modifier,
+    ) {
+        DueDateTagForDate(
+            dueDate = LocalDate(
+                year = 2026,
+                month = 11,
+                day = 19,
+            ),
+            today = LocalDate(
+                year = 2026,
+                month = 11,
+                day = 19,
+            ),
+            urgency = DueDateTagUrgency.Warning,
+            isRecurring = true,
+        )
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun DueDateTagForDateOverduePreview() {
+    EchoListTheme(
+        modifier = Modifier,
+    ) {
+        DueDateTagForDate(
+            dueDate = LocalDate(
+                year = 2026,
+                month = 11,
+                day = 18,
+            ),
+            today = LocalDate(
+                year = 2026,
+                month = 11,
+                day = 19,
+            ),
+            urgency = DueDateTagUrgency.Overdue,
+            isRecurring = false,
+        )
+    }
 }
