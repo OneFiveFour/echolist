@@ -48,7 +48,7 @@ import org.jetbrains.compose.resources.stringResource
 internal fun DesktopHeroBanner(modifier: Modifier = Modifier) {
 
     val isDarkTheme = EchoListTheme.isDarkTheme
-    val echoListTypography = EchoListTheme.echoListTypography
+    val typography = EchoListTheme.typography
 
     val backgroundColor = when {
         isDarkTheme -> Color(0xFF172D2A)
@@ -77,19 +77,17 @@ internal fun DesktopHeroBanner(modifier: Modifier = Modifier) {
 
             Text(
                 stringResource(Res.string.login_introduction_eyebrow),
-                style = echoListTypography.label.copy(
-                    fontSize = 12.sp,
-                    lineHeight = 16.sp,
+                style = typography.labelMedium.copy(
                     letterSpacing = 1.44.sp
                 ),
                 color = Color(0xFFA8D6CE)
             )
             Spacer(Modifier.size(22.dp))
 
-            val headingStyle = echoListTypography.display.copy(
-                fontSize = (72 * scaleFactor).sp,
-                lineHeight = (70.567f * scaleFactor).sp,
-                letterSpacing = (-4.32f * scaleFactor).sp
+            val headingStyle = typography.displayLarge.copy(
+                fontSize = typography.displayLarge.fontSize * scaleFactor,
+                lineHeight = typography.displayLarge.lineHeight * scaleFactor,
+                letterSpacing = typography.displayLarge.letterSpacing * scaleFactor
             )
             val heading = stringResource(Res.string.login_introduction_heading)
             val accent = stringResource(Res.string.login_introduction_accent)
@@ -108,7 +106,7 @@ internal fun DesktopHeroBanner(modifier: Modifier = Modifier) {
             Text(
                 stringResource(Res.string.login_introduction_description),
                 modifier = Modifier.fillMaxWidth(0.94f),
-                style = echoListTypography.body.copy(
+                style = typography.bodyLarge.copy(
                     lineHeight = 25.sp,
                     letterSpacing = 0.sp
                 ),
@@ -119,7 +117,7 @@ internal fun DesktopHeroBanner(modifier: Modifier = Modifier) {
         Text(
             stringResource(Res.string.login_introduction_footer),
             Modifier.align(Alignment.BottomStart).padding(start = inset, bottom = inset),
-            style = echoListTypography.label.copy(
+            style = typography.labelLarge.copy(
                 fontSize = 11.sp,
                 lineHeight = 16.sp,
                 fontWeight = androidx.compose.ui.text.font.FontWeight.Medium,

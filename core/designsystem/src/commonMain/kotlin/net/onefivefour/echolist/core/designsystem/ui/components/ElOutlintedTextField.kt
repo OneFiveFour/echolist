@@ -53,9 +53,7 @@ fun ElOutlinedTextField(
 @PreviewComponentLightDark
 @Composable
 private fun ElOutlinedTextFieldPreview() {
-    EchoListTheme(
-        modifier = Modifier,
-    ) {
+    EchoListTheme(modifier = Modifier) {
         ElOutlinedTextField(
             text = "Projects",
             label = "Folder name",
@@ -68,9 +66,7 @@ private fun ElOutlinedTextFieldPreview() {
 @PreviewComponentLightDark
 @Composable
 private fun ElOutlinedTextFieldErrorPreview() {
-    EchoListTheme(
-        modifier = Modifier,
-    ) {
+    EchoListTheme(modifier = Modifier) {
         ElOutlinedTextField(
             text = "",
             label = "Folder name",

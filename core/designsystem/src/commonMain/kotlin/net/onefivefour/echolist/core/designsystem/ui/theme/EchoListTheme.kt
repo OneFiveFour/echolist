@@ -45,14 +45,10 @@ object EchoListTheme {
         @Composable
         @ReadOnlyComposable
         get() = LocalMaterialColors.current
-    val echoListTypography: EchoListTypography
-        @Composable
-        @ReadOnlyComposable
-        get() = LocalEchoListTypography.current
     val typography: Typography
         @Composable
         @ReadOnlyComposable
-        get() = LocalTypography.current
+        get() = MaterialTheme.typography
     val dimensions: Dimensions
         @Composable
         @ReadOnlyComposable
@@ -68,7 +64,7 @@ fun EchoListTheme(
     modifier: Modifier = Modifier.fillMaxSize(),
     isDarkTheme: Boolean = isSystemInDarkTheme(),
     themeManager: ThemeManager? = null,
-    typeScale: EchoListTypography = echoListTypography(),
+    typography: Typography = material3Typography(),
     content: @Composable () -> Unit
 ) {
     val isKoinStarted = runCatching { KoinPlatform.getKoin() }.isSuccess
@@ -91,14 +87,11 @@ fun EchoListTheme(
         else -> colorTheme.echoListColorSchemeLight
     }
 
-    val typography = typeScale.toMaterialTypography()
     val adaptiveInfo = currentWindowAdaptiveInfoV2()
 
     CompositionLocalProvider(
         LocalAdaptiveInfo provides adaptiveInfo,
         LocalDarkTheme provides isDarkTheme,
-        LocalEchoListTypography provides typeScale,
-        LocalTypography provides typography,
         LocalMaterialColors provides materialColorScheme,
         LocalEchoListColors provides echoListColorScheme
     ) {

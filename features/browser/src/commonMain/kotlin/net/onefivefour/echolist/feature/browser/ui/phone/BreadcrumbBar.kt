@@ -53,9 +53,7 @@ internal fun BreadcrumbBar(
     Text(
         text = path,
         modifier = Modifier.fillMaxWidth().testTag("browser-breadcrumbs"),
-        style = EchoListTheme.typography.bodySmall.copy(
-            fontSize = 9.sp, lineHeight = 13.sp, letterSpacing = 0.sp
-        ),
+        style = EchoListTheme.typography.labelMedium,
         color = EchoListTheme.materialColors.onSurfaceVariant,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,

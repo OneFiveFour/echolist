@@ -19,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewPhoneLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.feature.browser.resources.*
@@ -57,7 +56,7 @@ internal fun EmptyFolderContent(
             Text(
                 text = stringResource(Res.string.browser_empty_title),
                 modifier = Modifier.testTag("browser-empty-title"),
-                style = EchoListTheme.echoListTypography.title,
+                style = EchoListTheme.typography.titleMedium,
                 color = EchoListTheme.materialColors.onSurface,
                 textAlign = TextAlign.Center
             )
@@ -65,9 +64,7 @@ internal fun EmptyFolderContent(
             Text(
                 text = stringResource(Res.string.browser_empty),
                 modifier = Modifier.widthIn(max = if (isDesktop) 340.dp else 314.dp),
-                style = EchoListTheme.echoListTypography.bodySmall.copy(
-                    fontSize = 13.sp, lineHeight = 20.sp, letterSpacing = 0.sp
-                ),
+                style = EchoListTheme.typography.bodySmall,
                 color = EchoListTheme.materialColors.onSurfaceVariant,
                 textAlign = TextAlign.Center
             )

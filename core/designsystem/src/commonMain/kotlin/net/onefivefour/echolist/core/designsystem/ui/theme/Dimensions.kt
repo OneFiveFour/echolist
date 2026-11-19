@@ -15,7 +15,12 @@ data class Dimensions(
     val xxxl: Dp = 48.dp,
     val iconSmall: Dp = 36.dp,
     val iconMedium: Dp = 40.dp,
-    val borderWidth: Dp = 1.dp
+    val borderWidth: Dp = 1.dp,
+    val formFieldMinHeight: Dp = 52.dp,
+    val formFieldLeadingIconWidth: Dp = 22.dp,
+    val buttonMinHeight: Dp = 52.dp,
+    val buttonPaddingStart: Dp = 21.dp,
+    val buttonPaddingEnd: Dp = 14.dp
 )
 
 val LocalDimensions = staticCompositionLocalOf { Dimensions() }

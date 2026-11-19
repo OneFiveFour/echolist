@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,7 +15,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -24,7 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalDensity
@@ -83,7 +80,7 @@ internal fun LoginForm(
 ) {
 
     val colors = EchoListTheme.materialColors
-    val echoListTypography = EchoListTheme.echoListTypography
+    val typography = EchoListTheme.typography
     val keyboard = LocalSoftwareKeyboardController.current
 
     val errorMessages = listOfNotNull(
@@ -104,7 +101,7 @@ internal fun LoginForm(
         Text(
             stringResource(Res.string.login_welcome),
             Modifier.semantics { testTag = "login-welcome" },
-            style = echoListTypography.label,
+            style = typography.labelMedium,
             color = colors.primary
         )
 
@@ -113,11 +110,7 @@ internal fun LoginForm(
         Text(
             stringResource(Res.string.login_heading),
             modifier = Modifier.semantics { testTag = "login-heading" },
-            style = echoListTypography.titleLarge.copy(
-                fontSize = if (isDesktop) 38.sp else 31.sp,
-                lineHeight = if (isDesktop) 44.sp else 37.sp,
-                letterSpacing = if (isDesktop) (-1.71).sp else (-1.395).sp
-            ),
+            style = if (isDesktop) typography.headlineLarge else typography.headlineMedium,
             color = colors.onBackground
         )
 
@@ -147,16 +140,6 @@ internal fun LoginForm(
             else -> 16.dp
         }
 
-        val minInputFieldHeight = when {
-            isDesktop -> 54.dp
-            else -> 52.dp
-        }
-
-        val buttonHeight = when {
-            isDesktop -> 56.dp
-            else -> 58.dp
-        }
-
         Column(verticalArrangement = Arrangement.spacedBy(inputFieldSpacing)) {
 
             ElFormTextField(
@@ -165,7 +148,6 @@ internal fun LoginForm(
                 placeholder = stringResource(Res.string.login_server_placeholder),
                 onValueChange = onBackendUrlChange,
                 errorMessage = loginUiState.backendUrlError,
-                minHeight = minInputFieldHeight,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Uri,
                     imeAction = ImeAction.Next
@@ -181,7 +163,6 @@ internal fun LoginForm(
                 placeholder = stringResource(Res.string.login_username_placeholder),
                 onValueChange = onUsernameChange,
                 errorMessage = loginUiState.usernameError,
-                minHeight = minInputFieldHeight,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
                     imeAction = ImeAction.Next
@@ -198,7 +179,6 @@ internal fun LoginForm(
                 placeholder = stringResource(Res.string.login_password_placeholder),
                 onValueChange = onPasswordChange,
                 errorMessage = loginUiState.passwordError,
-                minHeight = minInputFieldHeight,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Done
@@ -255,17 +235,7 @@ internal fun LoginForm(
             isEnabled = !loginUiState.isLoading,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(buttonHeight)
-                .shadow(12.dp, EchoListTheme.shapes.extraLarge)
-                .semantics { testTag = "login-connect" },
-            shape = EchoListTheme.shapes.extraLarge,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = colors.primary,
-                contentColor = colors.onPrimary,
-                disabledContainerColor = colors.primary,
-                disabledContentColor = colors.onPrimary
-            ),
-            contentPadding = PaddingValues(start = 21.dp, end = 14.dp)
+                .semantics { testTag = "login-connect" }
         ) {
             Row(
                 Modifier.fillMaxWidth(),
@@ -274,11 +244,7 @@ internal fun LoginForm(
             ) {
                 Text(
                     stringResource(Res.string.login_button),
-                    style = echoListTypography.label.copy(
-                        fontSize = 15.sp,
-                        lineHeight = 20.sp,
-                        letterSpacing = 0.sp
-                    )
+                    style = typography.labelLarge
                 )
                 Box(
                     Modifier.size(34.dp).background(
@@ -295,7 +261,7 @@ internal fun LoginForm(
                     } else {
                         Text(
                             "→",
-                            style = echoListTypography.body.copy(
+                            style = typography.bodyLarge.copy(
                                 fontSize = 20.sp,
                                 lineHeight = 20.sp,
                                 letterSpacing = 0.sp

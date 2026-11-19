@@ -12,11 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.feature.browser.resources.*
@@ -58,7 +56,7 @@ internal fun BrowserItemCard(
                 ) { Icon(painterResource(icon), null, Modifier.size(21.dp), tint = accent) }
                 Column(Modifier.weight(1f)) {
                     Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis,
-                        style = EchoListTheme.typography.bodyMedium.copy(letterSpacing = 0.sp, fontSize = 15.sp, lineHeight = 20.sp, fontWeight = FontWeight.SemiBold),
+                        style = EchoListTheme.typography.titleSmall,
                         color = EchoListTheme.materialColors.onSurface)
                     content()
                 }

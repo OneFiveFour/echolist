@@ -16,7 +16,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.feature.browser.resources.*
@@ -76,8 +75,7 @@ internal fun DesktopBreadcrumbs(
                         modifier = Modifier.weight(1f),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        style = EchoListTheme.typography.bodySmall.copy(
-                            fontSize = 12.sp, lineHeight = 16.sp, letterSpacing = 0.sp,
+                        style = EchoListTheme.typography.labelMedium.copy(
                             fontWeight = if (isCurrent) FontWeight.SemiBold else FontWeight.Normal
                         ),
                         color = if (isCurrent) colors.onSurface else colors.onSurfaceVariant

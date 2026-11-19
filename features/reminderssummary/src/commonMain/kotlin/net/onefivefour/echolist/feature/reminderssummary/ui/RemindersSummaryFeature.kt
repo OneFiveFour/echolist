@@ -23,8 +23,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.delay
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
-import net.onefivefour.echolist.core.designsystem.ui.components.DueDateTag
-import net.onefivefour.echolist.core.designsystem.ui.components.relativeDueDateText
+import net.onefivefour.echolist.core.designsystem.ui.components.DueDateTagForDate
+import net.onefivefour.echolist.core.designsystem.ui.components.DueDateTagUrgency
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.core.tasks.domain.DueDateUrgencyCalculator
 import net.onefivefour.echolist.core.tasks.domain.model.DueDateUrgency
@@ -69,7 +69,7 @@ internal fun RemindersSummary(
     ) {
         Text(
             text = stringResource(Res.string.reminders_summary_title),
-            style = EchoListTheme.typography.titleLarge,
+            style = EchoListTheme.typography.headlineSmall,
             color = EchoListTheme.materialColors.primary
         )
         state.error?.let { error ->
@@ -110,27 +110,18 @@ internal fun RemindersSummary(
                         ) {
                             Text(
                                 text = task.title,
-                                style = EchoListTheme.typography.bodyMedium,
+                                style = EchoListTheme.typography.bodyLarge,
                                 color = EchoListTheme.materialColors.onBackground
                             )
-                            val (backgroundColor, contentColor) = when (
-                                DueDateUrgencyCalculator.computeUrgency(task.dueDate, today)
-                            ) {
-                                DueDateUrgency.Normal ->
-                                    EchoListTheme.materialColors.surfaceVariant to
-                                        EchoListTheme.materialColors.onSurfaceVariant
-                                DueDateUrgency.Warning ->
-                                    EchoListTheme.echoListColorScheme.warning to
-                                        EchoListTheme.echoListColorScheme.onWarning
-                                DueDateUrgency.Overdue ->
-                                    EchoListTheme.materialColors.error to
-                                        EchoListTheme.materialColors.onError
-                            }
-                            DueDateTag(
-                                label = relativeDueDateText(task.dueDate, today),
-                                isRecurring = task.isRecurring,
-                                backgroundColor = backgroundColor,
-                                contentColor = contentColor
+                            DueDateTagForDate(
+                                dueDate = task.dueDate,
+                                today = today,
+                                urgency = when (DueDateUrgencyCalculator.computeUrgency(task.dueDate, today)) {
+                                    DueDateUrgency.Normal -> DueDateTagUrgency.Normal
+                                    DueDateUrgency.Warning -> DueDateTagUrgency.Warning
+                                    DueDateUrgency.Overdue -> DueDateTagUrgency.Overdue
+                                },
+                                isRecurring = task.isRecurring
                             )
                         }
                         Switch(

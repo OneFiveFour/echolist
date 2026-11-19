@@ -29,7 +29,7 @@ internal fun EditNoteTextField(
         if (textFieldState.text.isEmpty()) {
             Text(
                 text = "Write your note in markdown...",
-                style = EchoListTheme.typography.bodyMedium,
+                style = EchoListTheme.typography.bodyLarge,
                 color = EchoListTheme.materialColors.onSurface.copy(alpha = 0.45f)
             )
         }
@@ -39,7 +39,7 @@ internal fun EditNoteTextField(
                 .fillMaxSize()
                 .focusRequester(focusRequester),
             state = textFieldState,
-            textStyle = EchoListTheme.typography.bodyMedium.copy(
+            textStyle = EchoListTheme.typography.bodyLarge.copy(
                 color = EchoListTheme.materialColors.onSurface
             )
         )

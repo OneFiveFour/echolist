@@ -7,7 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.feature.browser.resources.*
@@ -21,7 +20,7 @@ internal fun NoteItem(id: String, title: String, preview: String?, onClick: (Str
         Box(Modifier.width(30.dp).height(2.dp).background(color))
         if (!preview.isNullOrEmpty()) {
             Text(preview, modifier = Modifier.padding(top = EchoListTheme.dimensions.s),
-                style = EchoListTheme.typography.bodySmall.copy(letterSpacing = 0.sp, fontSize = 11.sp, lineHeight = 16.sp),
+                style = EchoListTheme.typography.bodySmall,
                 color = EchoListTheme.materialColors.onSurfaceVariant, maxLines = 2, overflow = TextOverflow.Ellipsis)
         }
     }

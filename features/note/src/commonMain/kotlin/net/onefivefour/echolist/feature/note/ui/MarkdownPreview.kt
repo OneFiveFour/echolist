@@ -37,15 +37,15 @@ internal fun MarkdownPreview(
                 is MarkdownBlock.Heading -> MarkdownText(
                     annotatedString = block.content.toAnnotatedString(linkColor),
                     style = when (block.level) {
-                        1 -> EchoListTheme.typography.titleLarge
-                        2 -> EchoListTheme.typography.titleMedium
-                        else -> EchoListTheme.typography.titleSmall
+                        1 -> EchoListTheme.typography.headlineSmall
+                        2 -> EchoListTheme.typography.titleLarge
+                        else -> EchoListTheme.typography.titleMedium
                     }
                 )
 
                 is MarkdownBlock.Paragraph -> MarkdownText(
                     annotatedString = block.content.toAnnotatedString(linkColor),
-                    style = EchoListTheme.typography.bodyMedium
+                    style = EchoListTheme.typography.bodyLarge
                 )
 
                 is MarkdownBlock.BulletList -> Column(
@@ -85,12 +85,12 @@ private fun MarkdownListRow(
     ) {
         Text(
             text = prefix,
-            style = EchoListTheme.typography.bodyMedium,
+            style = EchoListTheme.typography.bodyLarge,
             color = EchoListTheme.materialColors.onSurface
         )
         MarkdownText(
             annotatedString = content,
-            style = EchoListTheme.typography.bodyMedium,
+            style = EchoListTheme.typography.bodyLarge,
             modifier = Modifier.weight(1f)
         )
     }

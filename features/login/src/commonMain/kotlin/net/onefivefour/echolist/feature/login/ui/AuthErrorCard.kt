@@ -71,7 +71,7 @@ internal fun LoginErrorSummary(messages: List<String>, modifier: Modifier = Modi
         ) {
             Text(
                 "!",
-                style = EchoListTheme.echoListTypography.label.copy(
+                style = EchoListTheme.typography.labelLarge.copy(
                     fontSize = 11.sp, lineHeight = 16.5.sp,
                     letterSpacing = 0.sp, fontWeight = FontWeight.Bold
                 ),
@@ -80,10 +80,7 @@ internal fun LoginErrorSummary(messages: List<String>, modifier: Modifier = Modi
         }
         Text(
             if (messages.size == 1) messages.single() else messages.joinToString("\n") { "• $it" },
-            style = EchoListTheme.echoListTypography.bodySmall.copy(
-                fontSize = 12.sp, lineHeight = 17.sp,
-                letterSpacing = 0.sp, fontWeight = FontWeight.Medium
-            ),
+            style = EchoListTheme.typography.bodySmall,
             color = colors.error,
             modifier = Modifier.weight(1f)
         )

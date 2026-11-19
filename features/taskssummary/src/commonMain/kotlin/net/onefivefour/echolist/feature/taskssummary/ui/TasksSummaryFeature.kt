@@ -44,7 +44,7 @@ internal fun TasksSummaryScreen(uiState: TasksSummaryUiState, onBackClick: () ->
             }
             Text(
                 text = stringResource(Res.string.tasks_summary_title),
-                style = EchoListTheme.typography.titleLarge,
+                style = EchoListTheme.typography.headlineSmall,
                 color = EchoListTheme.materialColors.onBackground
             )
         }

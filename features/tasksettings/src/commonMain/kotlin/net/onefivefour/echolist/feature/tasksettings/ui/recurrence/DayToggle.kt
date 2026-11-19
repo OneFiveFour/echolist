@@ -35,7 +35,7 @@ internal fun DayToggle(
         Box(contentAlignment = Alignment.Center) {
             Text(
                 text = label,
-                style = EchoListTheme.typography.labelSmall,
+                style = EchoListTheme.typography.labelMedium,
                 color = if (isSelected) {
                     EchoListTheme.materialColors.onPrimary
                 } else {

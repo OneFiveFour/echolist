@@ -62,7 +62,7 @@ internal fun RenameFolderDialog(
         title = {
             Text(
                 text = "Rename Folder",
-                style = EchoListTheme.typography.titleSmall
+                style = EchoListTheme.typography.titleLarge
             )
         },
         text = {

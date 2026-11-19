@@ -29,8 +29,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import net.onefivefour.echolist.core.designsystem.resources.ic_delete
 import kotlinx.coroutines.delay
@@ -43,7 +41,6 @@ import net.onefivefour.echolist.core.tasks.domain.model.MainTask
 import net.onefivefour.echolist.core.tasks.domain.model.SubTask
 import net.onefivefour.echolist.core.designsystem.ui.components.DueDateTagForDate
 import net.onefivefour.echolist.core.designsystem.ui.components.DueDateTagUrgency
-import net.onefivefour.echolist.core.designsystem.ui.components.ElTextField
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import org.jetbrains.compose.resources.painterResource
 import kotlin.time.Clock
@@ -107,16 +104,9 @@ internal fun MainTaskCard(
                     modifier = Modifier.weight(1f),
                     verticalArrangement = Arrangement.Center
                 ) {
-                    ElTextField(
+                    TaskDescriptionField(
                         state = mainTask.descriptionState,
-                        style = EchoListTheme.typography.bodyLarge.copy(
-                            textDecoration = if (mainTask.isDone) {
-                                TextDecoration.LineThrough
-                            } else {
-                                TextDecoration.None
-                            }
-                        ),
-                        imeAction = ImeAction.Next,
+                        isDone = mainTask.isDone,
                         onKeyboardAction = { onMainTaskKeyboardAction(mainTask.id) },
                         onFocusChanged = onMainTaskDescriptionFocusChanged,
                         onFocusLost = onFieldFocusLost,

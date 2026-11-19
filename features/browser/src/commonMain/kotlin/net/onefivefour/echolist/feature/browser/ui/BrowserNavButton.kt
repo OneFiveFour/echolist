@@ -10,9 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.feature.browser.resources.*
@@ -38,18 +36,18 @@ internal fun BrowserNavButton(
         Row(buttonModifier.fillMaxWidth().padding(horizontal = EchoListTheme.dimensions.m),
             horizontalArrangement = Arrangement.spacedBy(EchoListTheme.dimensions.m), verticalAlignment = Alignment.CenterVertically) {
             Icon(painterResource(icon), null, Modifier.size(19.dp), tint = contentColor)
-            Text(label, Modifier.weight(1f), style = EchoListTheme.typography.bodyMedium.copy(letterSpacing = 0.sp, fontSize = 14.sp), color = contentColor)
+            Text(label, Modifier.weight(1f), style = EchoListTheme.typography.labelLarge, color = contentColor)
             if (hasDueBadge) {
                 // TODO backend: supply the global due-task count.
                 Box(Modifier.size(22.dp).background(EchoListTheme.echoListColorScheme.taskColor, CircleShape), contentAlignment = Alignment.Center) {
-                    Text("4", style = EchoListTheme.typography.labelSmall.copy(letterSpacing = 0.sp, fontSize = 10.sp), color = colors.onPrimary)
+                    Text("4", style = EchoListTheme.typography.labelSmall, color = colors.onPrimary)
                 }
             }
         }
     } else {
         Column(buttonModifier, horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
             Icon(painterResource(icon), null, Modifier.size(21.dp), tint = contentColor)
-            Text(label, Modifier.padding(top = 2.dp), style = EchoListTheme.typography.labelSmall.copy(letterSpacing = 0.sp, fontSize = 9.sp, lineHeight = 12.sp, fontWeight = FontWeight.SemiBold), color = contentColor)
+            Text(label, Modifier.padding(top = 2.dp), style = EchoListTheme.typography.labelLarge, color = contentColor)
         }
     }
 }

@@ -26,13 +26,9 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.error
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 
-/** Form field with a persistent external label, independent of Material's floating-label layout. */
 @Composable
 fun ElFormTextField(
     value: String,
@@ -41,7 +37,6 @@ fun ElFormTextField(
     modifier: Modifier = Modifier,
     placeholder: String = "",
     errorMessage: String? = null,
-    minHeight: Dp = 52.dp,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     visualTransformation: VisualTransformation = VisualTransformation.None,
@@ -52,22 +47,25 @@ fun ElFormTextField(
     val dimensions = EchoListTheme.dimensions
     val interaction = remember { MutableInteractionSource() }
     val isFocused by interaction.collectIsFocusedAsState()
-    val textStyle = EchoListTheme.echoListTypography.body.copy(
-        fontSize = 15.sp, lineHeight = 22.sp, letterSpacing = 0.sp
-    )
+    val textStyle = EchoListTheme.typography.bodyMedium
+
     Column(verticalArrangement = Arrangement.spacedBy(dimensions.s)) {
+
         Text(
             label,
-            style = EchoListTheme.echoListTypography.label.copy(fontSize = 12.sp, letterSpacing = 0.sp),
+            style = EchoListTheme.typography.labelMedium,
             color = colors.onSurfaceVariant
         )
+
         BasicTextField(
             value = value,
             onValueChange = onValueChange,
-            modifier = modifier.fillMaxWidth().semantics {
-                contentDescription = label
-                if (errorMessage != null) error(errorMessage)
-            },
+            modifier = modifier
+                .fillMaxWidth()
+                .semantics {
+                    contentDescription = label
+                    if (errorMessage != null) error(errorMessage)
+                },
             textStyle = textStyle.copy(color = colors.onSurface),
             singleLine = true,
             keyboardOptions = keyboardOptions,
@@ -79,7 +77,7 @@ fun ElFormTextField(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .heightIn(min = minHeight)
+                        .heightIn(min = dimensions.formFieldMinHeight)
                         .background(colors.surface, EchoListTheme.shapes.large)
                         .border(
                             dimensions.borderWidth,
@@ -93,16 +91,23 @@ fun ElFormTextField(
                         .padding(horizontal = dimensions.l, vertical = dimensions.s),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+
                     if (leadingIcon != null) {
-                        Box(Modifier.width(22.dp)) { leadingIcon() }
+                        Box(Modifier.width(dimensions.formFieldLeadingIconWidth)) { leadingIcon() }
                         Box(Modifier.width(dimensions.m))
                     }
+
                     Box(Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
                         if (value.isEmpty()) {
-                            Text(placeholder, style = textStyle, color = colors.onSurfaceVariant.copy(alpha = 0.68f))
+                            Text(
+                                text = placeholder,
+                                style = textStyle,
+                                color = colors.onSurfaceVariant.copy(alpha = 0.68f)
+                            )
                         }
                         innerTextField()
                     }
+
                     if (trailingIcon != null) {
                         Box(Modifier.width(dimensions.m))
                         trailingIcon()
@@ -116,9 +121,7 @@ fun ElFormTextField(
 @PreviewComponentLightDark
 @Composable
 private fun ElFormTextFieldPreview() {
-    EchoListTheme(
-        modifier = Modifier,
-    ) {
+    EchoListTheme(modifier = Modifier) {
         ElFormTextField(
             value = "Alex",
             label = "Username",
@@ -130,9 +133,7 @@ private fun ElFormTextFieldPreview() {
 @PreviewComponentLightDark
 @Composable
 private fun ElFormTextFieldPlaceholderPreview() {
-    EchoListTheme(
-        modifier = Modifier,
-    ) {
+    EchoListTheme(modifier = Modifier) {
         ElFormTextField(
             value = "",
             label = "Username",
@@ -145,9 +146,7 @@ private fun ElFormTextFieldPlaceholderPreview() {
 @PreviewComponentLightDark
 @Composable
 private fun ElFormTextFieldErrorPreview() {
-    EchoListTheme(
-        modifier = Modifier,
-    ) {
+    EchoListTheme(modifier = Modifier) {
         ElFormTextField(
             value = "",
             label = "Username",

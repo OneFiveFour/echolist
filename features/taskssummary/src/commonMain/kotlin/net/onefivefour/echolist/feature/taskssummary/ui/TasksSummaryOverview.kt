@@ -72,7 +72,7 @@ private fun TasksSummaryHeader(
                 vertical = EchoListTheme.dimensions.s
             ),
             text = title,
-            style = EchoListTheme.typography.titleSmall,
+            style = EchoListTheme.typography.titleMedium,
             color = EchoListTheme.materialColors.primary
         )
     }

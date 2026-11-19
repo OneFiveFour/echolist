@@ -72,34 +72,43 @@ hide it. New role colors require a design decision.
 
 ## Typography
 
-`EchoListTheme.typeScale` exposes the six Figma levels. Its default is provided
-by `echoListTypography()` and can be replaced through the `EchoListTheme`
-`typeScale` parameter independently of the palette.
+`EchoListTheme.typography` exposes Material 3 `Typography`, configured by
+`material3Typography()` with the existing Figma fonts and values. It is passed
+directly to `MaterialTheme` and can be replaced through the `EchoListTheme`
+`typography` parameter independently of the palette. There is no separate
+EchoList typography type or adapter.
 
-| Level | Font | Weight | Size / line height | Letter spacing |
+| M3 role | Font | Weight | Size / line height | Letter spacing |
 |---|---|---|---|---|
-| display | Space Grotesk | 650 | 40 / 44 sp | -1 sp |
-| titleLarge | Space Grotesk | 620 | 28 / 34 sp | -0.7 sp |
-| title | Space Grotesk | 600 | 20 / 26 sp | -0.5 sp |
-| body | Work Sans | 400 | 16 / 24 sp | -0.4 sp |
-| bodySmall | Work Sans | 400 | 14 / 20 sp | -0.35 sp |
-| label | Work Sans | 600 | 13 / 16 sp | 0.52 sp |
+| displayLarge | Space Grotesk | 650 | 72 / 71 sp | -4.32 sp |
+| displayMedium | Space Grotesk | 650 | 52 / 56 sp | -2.34 sp |
+| displaySmall | Space Grotesk | 620 | 42 / 46 sp | -1.89 sp |
+| headlineLarge | Space Grotesk | 620 | 38 / 44 sp | -1.71 sp |
+| headlineMedium | Space Grotesk | 620 | 31 / 37 sp | -1.4 sp |
+| headlineSmall | Space Grotesk | 620 | 28 / 34 sp | -0.7 sp |
+| titleLarge | Space Grotesk | 600 | 24 / 30 sp | -0.6 sp |
+| titleMedium | Space Grotesk | 600 | 20 / 26 sp | -0.5 sp |
+| titleSmall | Work Sans | 600 | 15 / 20 sp | 0 sp |
+| bodyLarge | Work Sans | 400 | 16 / 24 sp | -0.4 sp |
+| bodyMedium | Work Sans | 400 | 15 / 22 sp | 0 sp |
+| bodySmall | Work Sans | 400 | 13 / 20 sp | 0 sp |
+| labelLarge | Work Sans | 600 | 15 / 20 sp | 0 sp |
+| labelMedium | Work Sans | 600 | 12 / 16 sp | 0 sp |
+| labelSmall | Work Sans | 600 | 10 / 15 sp | 0 sp |
 
-All fonts are bundled in `composeResources/font/`. Space Grotesk's exact static
-weights 600, 620 and 650 are instantiated from the Google Fonts variable font,
-`ofl/spacegrotesk/SpaceGrotesk[wght].ttf`; its SIL Open Font License is bundled
-alongside them. Static instances preserve the intermediate weights across all
-four targets without relying on platform variable-font support or synthesis.
+Fonts are bundled in `composeResources/font/`; Space Grotesk includes exact static
+weights 600, 620 and 650. All 15 Material roles are explicitly configured.
 
-`EchoListTheme.typography` remains the Material adapter. All 15 Material slots
-are explicitly mapped, with no default font fallback:
+Use displaySmall for wide browser headings, headlineLarge/headlineMedium for
+wide/narrow login headings, and headlineSmall for regular screen/editor titles.
+Use titleLarge for dialogs, titleMedium for sections and titleSmall for card titles.
+Note/task content uses bodyLarge; inputs and supporting descriptions use bodyMedium;
+help, errors and previews use bodySmall. Buttons/navigation use labelLarge,
+field labels/breadcrumbs/due tags use labelMedium, and counters use labelSmall.
 
-- displayLarge / displayMedium / displaySmall → display
-- headlineLarge / headlineMedium / headlineSmall / titleLarge → titleLarge
-- titleMedium / titleSmall → title
-- bodyLarge / bodyMedium → body
-- bodySmall → bodySmall
-- labelLarge / labelMedium / labelSmall → label
+Local typography overrides are limited to state (decoration, breadcrumb emphasis),
+color/alignment, graphical text symbols and the editorial login hero. The hero scales
+displayLarge proportionally and retains its special tracking and supporting text styles.
 
 The label style does not uppercase content automatically; callers own text case.
 
@@ -147,7 +156,7 @@ heading and illustration scale down fluidly within that mode. The form is
 capped at 448 dp, centered alongside the introduction and bottom-aligned in
 the form-only layout. It uses
 theme fonts, semantic colors, `ElFormTextField` with external labels and the
-shared `ElButton`. Form text sizes/tracking follow the screen's Figma values.
+shared `ElButton`. Form typography follows the shared M3 roles above.
 Shared theme shapes `large` (15 dp) and `extraLarge` (17 dp) support fields and
 buttons. Existing legacy outlined fields and default pill buttons are retained
 for screens whose redesign has not happened yet.
@@ -165,8 +174,9 @@ Existing validation messages and authentication error mapping are preserved;
 errors also remain associated with fields through accessibility semantics.
 Focused fields use `primary`; error fields use `error`. During login, Connect
 is disabled and its trailing arrow becomes a progress indicator, while its
-container/content colors remain `primary` / `onPrimary`. Other disabled buttons
-retain their usual appearance; `ElButton` accepts explicit Material colors.
+container/content colors remain `primary` / `onPrimary`. Shared `ElButton` owns
+these colors (including disabled states), the extra-large shape, medium shadow,
+52-dp minimum height and content padding; callers supply behavior and content.
 The URL's `https://` default, saved URL behavior and all business logic remain
 unchanged.
 
@@ -185,8 +195,17 @@ unchanged.
 | iconSmall   | 36dp  |
 | iconMedium  | 40dp  |
 | borderWidth | 1dp   |
+| formFieldMinHeight | 52dp |
+| formFieldLeadingIconWidth | 22dp |
+| buttonMinHeight | 52dp |
+| buttonPaddingStart | 21dp |
+| buttonPaddingEnd | 14dp |
 
 Accessed via `LocalEchoListDimensions.current` inside composables.
+
+`ElFormTextField` owns its sizing, spacing, colors and typography. It uses
+`formFieldMinHeight` (52 dp) on all window sizes and grows with its content.
+Callers supply content and input behavior rather than field heights.
 
 ## Shapes
 

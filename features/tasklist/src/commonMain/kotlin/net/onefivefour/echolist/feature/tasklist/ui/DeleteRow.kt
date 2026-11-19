@@ -29,7 +29,7 @@ internal fun DeleteRow(
 
         Text(
             text = "Auto Delete",
-            style = EchoListTheme.typography.titleSmall,
+            style = EchoListTheme.typography.labelLarge,
             color = EchoListTheme.materialColors.onSurface
         )
 

@@ -26,7 +26,7 @@ internal fun SettingsSection(
     Column(modifier = modifier.fillMaxWidth()) {
         Text(
             text = title,
-            style = EchoListTheme.typography.titleSmall,
+            style = EchoListTheme.typography.titleMedium,
             color = EchoListTheme.materialColors.onBackground,
             modifier = Modifier.padding(
                 start = EchoListTheme.dimensions.xs,

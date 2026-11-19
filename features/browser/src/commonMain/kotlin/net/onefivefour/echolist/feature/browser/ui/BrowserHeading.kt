@@ -47,7 +47,7 @@ private fun BrowserHeadingPreview() {
     EchoListTheme(modifier = Modifier) {
         BrowserHeading(
             breadcrumbs = browserPreviewState.breadcrumbs,
-            style = EchoListTheme.typography.titleLarge
+            style = EchoListTheme.typography.headlineSmall
         )
     }
 }

@@ -1,4 +1,4 @@
-package net.onefivefour.echolist.core.designsystem.ui.components
+package net.onefivefour.echolist.feature.tasklist.ui
 
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
@@ -13,53 +13,41 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.input.ImeAction
 import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 
 @Composable
-fun ElTextField(
+internal fun TaskDescriptionField(
     state: TextFieldState,
+    isDone: Boolean,
     modifier: Modifier = Modifier,
-    style: TextStyle = EchoListTheme.typography.bodyMedium,
-    color: Color = EchoListTheme.materialColors.onSurface,
-    imeAction: ImeAction = ImeAction.Default,
     onKeyboardAction: (() -> Unit)? = null,
     onFocusChanged: ((Boolean) -> Unit)? = null,
     onFocusLost: (() -> Unit)? = null,
     focusRequester: FocusRequester? = null
 ) {
-    var wasFocused by remember(state) { mutableStateOf(false) }
+    var hasFocus by remember(state) { mutableStateOf(false) }
 
     BasicTextField(
         state = state,
         modifier = modifier
             .then(if (focusRequester == null) Modifier else Modifier.focusRequester(focusRequester))
-            .then(
-                if (onFocusLost == null) {
-                    if (onFocusChanged == null) {
-                        Modifier
-                    } else {
-                        Modifier.onFocusChanged { focusState ->
-                            onFocusChanged(focusState.isFocused)
-                        }
-                    }
-                } else {
-                    Modifier.onFocusChanged { focusState ->
-                        if (wasFocused && !focusState.isFocused) {
-                            onFocusLost()
-                        }
-                        onFocusChanged?.invoke(focusState.isFocused)
-                        wasFocused = focusState.isFocused
-                    }
+            .onFocusChanged { focusState ->
+                if (hasFocus && !focusState.isFocused) {
+                    onFocusLost?.invoke()
                 }
-            ),
-        textStyle = style.copy(color = color),
+                onFocusChanged?.invoke(focusState.isFocused)
+                hasFocus = focusState.isFocused
+            },
+        textStyle = EchoListTheme.typography.bodyLarge.copy(
+            color = EchoListTheme.materialColors.onSurface,
+            textDecoration = if (isDone) TextDecoration.LineThrough else TextDecoration.None
+        ),
         cursorBrush = SolidColor(EchoListTheme.materialColors.primary),
-        keyboardOptions = KeyboardOptions(imeAction = imeAction),
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
         onKeyboardAction = onKeyboardAction?.let { keyboardAction ->
             { keyboardAction() }
         }
@@ -68,14 +56,13 @@ fun ElTextField(
 
 @PreviewComponentLightDark
 @Composable
-private fun ElTextFieldPreview() {
-    EchoListTheme(
-        modifier = Modifier,
-    ) {
-        ElTextField(
+private fun TaskDescriptionFieldPreview() {
+    EchoListTheme(modifier = Modifier) {
+        TaskDescriptionField(
             state = rememberTextFieldState(
-                initialText = "Meeting notes",
+                initialText = "Review meeting notes",
             ),
+            isDone = false,
         )
     }
 }

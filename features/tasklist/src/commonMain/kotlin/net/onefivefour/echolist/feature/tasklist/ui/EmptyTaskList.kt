@@ -29,7 +29,7 @@ internal fun EmptyTaskList(onAddMainTask: () -> Unit) {
             TextButton(onClick = onAddMainTask) {
                 Text(
                     text = "Add the first task",
-                    style = EchoListTheme.typography.labelMedium
+                    style = EchoListTheme.typography.labelLarge
                 )
             }
         }

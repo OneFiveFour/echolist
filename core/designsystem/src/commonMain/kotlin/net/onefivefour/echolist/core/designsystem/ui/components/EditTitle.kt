@@ -41,10 +41,9 @@ fun EditTitle(
             .padding(EchoListTheme.dimensions.m)
             .focusRequester(focusRequester)
             .then(
-                if (onFocusLost == null) {
-                    Modifier
-                } else {
-                    Modifier.onFocusChanged { focusState ->
+                when (onFocusLost) {
+                    null -> Modifier
+                    else -> Modifier.onFocusChanged { focusState ->
                         if (wasFocused && !focusState.isFocused) {
                             onFocusLost()
                         }
@@ -53,7 +52,7 @@ fun EditTitle(
                 }
             ),
         state = textFieldState,
-        textStyle = EchoListTheme.typography.titleLarge.copy(
+        textStyle = EchoListTheme.typography.headlineSmall.copy(
             color = EchoListTheme.materialColors.onSurface
         ),
         lineLimits = TextFieldLineLimits.SingleLine,
@@ -65,9 +64,7 @@ fun EditTitle(
 @PreviewComponentLightDark
 @Composable
 private fun EditTitlePreview() {
-    EchoListTheme(
-        modifier = Modifier,
-    ) {
+    EchoListTheme(modifier = Modifier) {
         EditTitle(
             textFieldState = rememberTextFieldState(
                 initialText = "Release checklist",

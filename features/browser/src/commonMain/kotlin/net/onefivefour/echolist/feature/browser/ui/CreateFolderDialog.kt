@@ -45,7 +45,7 @@ internal fun CreateFolderDialog(
         title = {
             Text(
                 text = "Create Folder",
-                style = EchoListTheme.typography.titleSmall
+                style = EchoListTheme.typography.titleLarge
             )
         },
         text = {

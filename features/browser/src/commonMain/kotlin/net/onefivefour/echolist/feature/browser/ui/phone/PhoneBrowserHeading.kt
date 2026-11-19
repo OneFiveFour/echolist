@@ -3,7 +3,6 @@ package net.onefivefour.echolist.feature.browser.ui.phone
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.sp
 import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.feature.browser.ui.BreadcrumbItem
@@ -21,9 +20,7 @@ internal fun PhoneBrowserHeading(
         }
         BrowserHeading(
             breadcrumbs,
-            EchoListTheme.typography.titleLarge.copy(
-                fontSize = 26.sp, lineHeight = 31.sp, letterSpacing = (-1.17).sp
-            )
+            EchoListTheme.typography.headlineSmall
         )
     }
 }

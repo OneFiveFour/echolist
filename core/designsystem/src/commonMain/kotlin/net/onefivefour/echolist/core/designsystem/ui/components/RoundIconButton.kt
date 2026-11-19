@@ -49,9 +49,7 @@ fun RoundIconButton(
 @PreviewLightDark
 @Composable
 private fun RoundIconButtonPreview() {
-    EchoListTheme(
-        modifier = Modifier,
-    ) {
+    EchoListTheme(modifier = Modifier) {
         RoundIconButton(
             iconRes = Res.drawable.ic_search,
             onClick = {},

@@ -68,7 +68,7 @@ private fun BrowserToolbarPreview() {
             browserUiState = browserPreviewState,
             heading = { BrowserHeading(
                 breadcrumbs = browserPreviewState.breadcrumbs,
-                style = EchoListTheme.typography.titleLarge
+                style = EchoListTheme.typography.headlineSmall
             ) },
             onRefresh = {},
             onRenameCurrentFolderClick = {},

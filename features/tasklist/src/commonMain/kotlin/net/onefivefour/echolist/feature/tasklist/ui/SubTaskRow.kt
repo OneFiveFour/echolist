@@ -12,10 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
-import net.onefivefour.echolist.core.designsystem.ui.components.ElTextField
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 
 @Composable
@@ -49,17 +46,10 @@ internal fun SubTaskRow(
             )
         }
 
-        ElTextField(
+        TaskDescriptionField(
             state = subTask.descriptionState,
             modifier = Modifier.weight(1f),
-            style = EchoListTheme.typography.bodyMedium.copy(
-                textDecoration = if (subTask.isDone) {
-                    TextDecoration.LineThrough
-                } else {
-                    TextDecoration.None
-                }
-            ),
-            imeAction = ImeAction.Next,
+            isDone = subTask.isDone,
             onKeyboardAction = { onKeyboardAction(subTask.id) },
             onFocusLost = onFocusLost,
             focusRequester = focusRequester

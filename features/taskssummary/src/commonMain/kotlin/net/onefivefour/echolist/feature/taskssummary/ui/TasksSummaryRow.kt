@@ -47,7 +47,7 @@ internal fun TasksSummaryItemRow(
         Text(
             modifier = Modifier.weight(1f),
             text = row.description,
-            style = EchoListTheme.typography.bodyMedium,
+            style = EchoListTheme.typography.bodyLarge,
             color = EchoListTheme.materialColors.onSurface,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis

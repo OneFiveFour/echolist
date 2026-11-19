@@ -2,9 +2,7 @@ package net.onefivefour.echolist.feature.browser.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -18,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import net.onefivefour.echolist.core.designsystem.ui.components.ElButton
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.feature.browser.resources.*
@@ -34,9 +31,7 @@ internal fun EmptyFolderCreateButton(createItemCallbacks: CreateItemCallbacks) {
     Box {
         ElButton(
             onClick = { isMenuExpanded = true },
-            modifier = Modifier.heightIn(min = 44.dp).testTag("browser-empty-create"),
-            shape = EchoListTheme.shapes.medium,
-            contentPadding = PaddingValues(horizontal = EchoListTheme.dimensions.l)
+            modifier = Modifier.testTag("browser-empty-create")
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -49,9 +44,7 @@ internal fun EmptyFolderCreateButton(createItemCallbacks: CreateItemCallbacks) {
                 )
                 Text(
                     stringResource(Res.string.browser_empty_create),
-                    style = EchoListTheme.echoListTypography.label.copy(
-                        lineHeight = 19.5.sp, letterSpacing = 0.sp
-                    )
+                    style = EchoListTheme.typography.labelLarge
                 )
             }
         }
