@@ -1,5 +1,6 @@
 package net.onefivefour.echolist.feature.browser.ui
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Icon
@@ -10,14 +11,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.ui.platform.testTag
+import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
+import net.onefivefour.echolist.feature.browser.resources.*
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
@@ -61,6 +63,23 @@ internal fun BrowserItemCard(
                     content()
                 }
             }
+        }
+    }
+}
+
+@PreviewComponentLightDark
+@Composable
+private fun BrowserItemCardPreview() {
+    EchoListTheme(modifier = Modifier) {
+        BrowserItemCard(
+            title = "Design",
+            icon = Res.drawable.browser_home,
+            accent = EchoListTheme.echoListColorScheme.folderColor,
+            isFolder = true,
+            isDesktop = false,
+            onClick = {},
+        ) {
+            Text("3 items")
         }
     }
 }

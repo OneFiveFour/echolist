@@ -16,10 +16,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import net.onefivefour.echolist.core.designsystem.ui.components.ElButton
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
+import net.onefivefour.echolist.feature.browser.resources.*
 import net.onefivefour.echolist.feature.browser.resources.Res
 import net.onefivefour.echolist.feature.browser.resources.browser_empty_create
 import net.onefivefour.echolist.feature.browser.resources.browser_empty_plus
@@ -58,5 +60,13 @@ internal fun EmptyFolderCreateButton(createItemCallbacks: CreateItemCallbacks) {
             onDismiss = { isMenuExpanded = false },
             createItemCallbacks = createItemCallbacks
         )
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun EmptyFolderCreateButtonPreview() {
+    EchoListTheme(modifier = Modifier) {
+        EmptyFolderCreateButton(CreateItemCallbacks())
     }
 }

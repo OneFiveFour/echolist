@@ -4,6 +4,8 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.window.core.layout.WindowSizeClass
+import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewDesktopLightDark
+import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewPhoneLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.feature.browser.ui.desktop.DesktopBrowserHeading
 import net.onefivefour.echolist.feature.browser.ui.desktop.DesktopBrowserLayout
@@ -121,3 +123,24 @@ internal fun BrowserScreen(
     )
 }
 
+@PreviewPhoneLightDark
+@Composable
+private fun BrowserScreenPhonePreview() {
+    EchoListTheme {
+        BrowserScreen(
+            browserUiState = browserPreviewState,
+            canNavigateBack = true
+        )
+    }
+}
+
+@PreviewDesktopLightDark
+@Composable
+private fun BrowserScreenDesktopPreview() {
+    EchoListTheme {
+        BrowserScreen(
+            browserUiState = browserPreviewState,
+            canNavigateBack = true
+        )
+    }
+}

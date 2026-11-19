@@ -10,9 +10,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
+import net.onefivefour.echolist.feature.browser.resources.*
 import net.onefivefour.echolist.feature.browser.resources.Res
 import net.onefivefour.echolist.feature.browser.resources.browser_back
 import net.onefivefour.echolist.feature.browser.resources.navigate_back
@@ -42,5 +44,17 @@ internal fun BrowserBackButton(
                 tint = EchoListTheme.materialColors.onSurface
             )
         }
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun BrowserBackButtonPreview() {
+    EchoListTheme(modifier = Modifier) {
+        BrowserBackButton(
+            onBack = {},
+            size = 48.dp,
+            shape = EchoListTheme.shapes.large
+        )
     }
 }

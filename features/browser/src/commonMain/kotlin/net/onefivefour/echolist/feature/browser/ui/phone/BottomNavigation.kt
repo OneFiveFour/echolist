@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.feature.browser.resources.*
 import net.onefivefour.echolist.feature.browser.ui.BrowserNavButton
@@ -51,5 +52,16 @@ internal fun BottomNavigation(
             )
             CreateItemButton(createItemCallbacks, false)
         }
+    }
+}
+
+@PreviewComponentLightDark
+@Composable
+private fun BottomNavigationPreview() {
+    EchoListTheme(modifier = Modifier) {
+        BottomNavigation(
+            createItemCallbacks = CreateItemCallbacks(),
+            onOpenRemindersSummary = {},
+            navigateToTasksSummary = {})
     }
 }

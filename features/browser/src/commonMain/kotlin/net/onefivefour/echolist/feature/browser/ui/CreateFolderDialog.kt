@@ -16,9 +16,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
 import net.onefivefour.echolist.core.designsystem.ui.components.ElButton
 import net.onefivefour.echolist.core.designsystem.ui.components.ElOutlinedTextField
+import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 
 @Composable
@@ -96,20 +96,17 @@ internal fun CreateFolderDialog(
     )
 }
 
-@Preview
+@PreviewComponentLightDark
 @Composable
-internal fun CreateFolderDialogPreview() {
-    EchoListTheme {
+private fun CreateFolderDialogPreview() {
+    EchoListTheme(modifier = Modifier) {
         CreateFolderDialog(
             uiState = CreateFolderUiState(
                 isVisible = true,
-                folderName = "Foldername",
-                isLoading = false,
-                error = null
+                folderName = "Projects"
             ),
-            onNameChange = { },
-            onConfirm = { },
-            onDismiss = { }
-        )
+            onNameChange = {},
+            onConfirm = {},
+            onDismiss = {})
     }
 }

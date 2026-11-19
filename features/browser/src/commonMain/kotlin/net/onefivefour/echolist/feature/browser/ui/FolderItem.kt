@@ -1,13 +1,14 @@
 package net.onefivefour.echolist.feature.browser.ui
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.unit.sp
+import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
+import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.feature.browser.domain.model.FileMetadata
 import net.onefivefour.echolist.feature.browser.resources.*
-import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -21,5 +22,17 @@ internal fun FolderItem(title: String, metadata: FileMetadata.Folder?, onClick: 
                 modifier = Modifier.padding(top = EchoListTheme.dimensions.xxs),
                 style = EchoListTheme.typography.labelSmall.copy(letterSpacing = 0.sp, fontSize = 10.sp, lineHeight = 15.sp), color = color)
         }
+    }
+}
+
+@PreviewComponentLightDark
+@Composable
+private fun FolderItemPreview() {
+    EchoListTheme(modifier = Modifier) {
+        FolderItem(
+            title = "Design",
+            metadata = FileMetadata.Folder(3),
+            onClick = {}
+        )
     }
 }

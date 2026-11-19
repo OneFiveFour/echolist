@@ -8,8 +8,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import net.onefivefour.echolist.feature.browser.resources.*
+import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
+import net.onefivefour.echolist.feature.browser.resources.*
 
 @Composable
 internal fun NoteItem(id: String, title: String, preview: String?, onClick: (String) -> Unit,
@@ -23,5 +24,17 @@ internal fun NoteItem(id: String, title: String, preview: String?, onClick: (Str
                 style = EchoListTheme.typography.bodySmall.copy(letterSpacing = 0.sp, fontSize = 11.sp, lineHeight = 16.sp),
                 color = EchoListTheme.materialColors.onSurfaceVariant, maxLines = 2, overflow = TextOverflow.Ellipsis)
         }
+    }
+}
+
+@PreviewComponentLightDark
+@Composable
+private fun NoteItemPreview() {
+    EchoListTheme(modifier = Modifier) {
+        NoteItem(
+            id = "note-1",
+            title = "Meeting notes",
+            preview = "Ideas and decisions for our next release.",
+            onClick = {})
     }
 }

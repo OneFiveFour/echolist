@@ -7,13 +7,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
-import net.onefivefour.echolist.feature.browser.resources.*
+import net.onefivefour.echolist.core.designsystem.resources.Res as SharedRes
 import net.onefivefour.echolist.core.designsystem.resources.ic_delete
 import net.onefivefour.echolist.core.designsystem.resources.ic_edit
+import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
+import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
+import net.onefivefour.echolist.feature.browser.resources.*
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import net.onefivefour.echolist.core.designsystem.resources.Res as SharedRes
 
 @Composable
 internal fun BrowserToolbar(
@@ -56,5 +57,22 @@ internal fun BrowserToolbar(
                 )
             }
         }
+    }
+}
+
+@PreviewComponentLightDark
+@Composable
+private fun BrowserToolbarPreview() {
+    EchoListTheme(modifier = Modifier) {
+        BrowserToolbar(
+            browserUiState = browserPreviewState,
+            heading = { BrowserHeading(
+                breadcrumbs = browserPreviewState.breadcrumbs,
+                style = EchoListTheme.typography.titleLarge
+            ) },
+            onRefresh = {},
+            onRenameCurrentFolderClick = {},
+            onDeleteCurrentFolderClick = {},
+        )
     }
 }

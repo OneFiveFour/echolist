@@ -9,10 +9,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import net.onefivefour.echolist.feature.browser.resources.*
 import net.onefivefour.echolist.core.designsystem.ui.components.DueCountPill
 import net.onefivefour.echolist.core.designsystem.ui.components.DueDateTagUrgency
+import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
+import net.onefivefour.echolist.feature.browser.resources.*
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -34,5 +35,19 @@ internal fun TaskItem(id: String, title: String, doneTaskCount: Int, totalTaskCo
             DueCountPill(stringResource(Res.string.count_overdue, 1), DueDateTagUrgency.Overdue)
             DueCountPill(stringResource(Res.string.count_due_soon, 2), DueDateTagUrgency.Warning)
         }
+    }
+}
+
+@PreviewComponentLightDark
+@Composable
+private fun TaskItemPreview() {
+    EchoListTheme(modifier = Modifier) {
+        TaskItem(
+            id = "tasks-1",
+            title = "Release checklist",
+            doneTaskCount = 3,
+            totalTaskCount = 8,
+            onClick = {}
+        )
     }
 }

@@ -7,6 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 
 @Composable
@@ -25,5 +26,13 @@ internal fun ErrorContainer(
             style = EchoListTheme.typography.bodyMedium,
             color = EchoListTheme.materialColors.secondary
         )
+    }
+}
+
+@PreviewComponentLightDark
+@Composable
+private fun ErrorContainerPreview() {
+    EchoListTheme(modifier = Modifier) {
+        ErrorContainer(message = "The server could not be reached. Please try again.")
     }
 }

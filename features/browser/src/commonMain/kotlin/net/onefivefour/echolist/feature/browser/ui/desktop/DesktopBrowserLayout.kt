@@ -2,13 +2,16 @@ package net.onefivefour.echolist.feature.browser.ui.desktop
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewDesktopLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
-import androidx.compose.ui.Alignment
 import net.onefivefour.echolist.feature.browser.ui.BrowserBackButton
 import net.onefivefour.echolist.feature.browser.ui.CreateItemButton
 import net.onefivefour.echolist.feature.browser.ui.CreateItemCallbacks
+import net.onefivefour.echolist.feature.browser.ui.FileOverview
+import net.onefivefour.echolist.feature.browser.ui.browserPreviewState
 
 @Composable
 internal fun DesktopBrowserLayout(
@@ -42,5 +45,19 @@ internal fun DesktopBrowserLayout(
             }
             CreateItemButton(createItemCallbacks, isDesktop = true)
         }
+    }
+}
+
+@PreviewDesktopLightDark
+@Composable
+private fun DesktopBrowserLayoutPreview() {
+    EchoListTheme {
+        DesktopBrowserLayout(
+            CreateItemCallbacks(),
+            true,
+            {},
+            toolbar = { DesktopBrowserHeading(browserPreviewState.breadcrumbs) },
+            content = { FileOverview(browserPreviewState.fileEntries, false, null, {}, {}, {}, isDesktop = true) },
+        )
     }
 }

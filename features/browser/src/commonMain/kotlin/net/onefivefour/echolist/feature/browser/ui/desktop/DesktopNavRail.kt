@@ -1,8 +1,5 @@
 package net.onefivefour.echolist.feature.browser.ui.desktop
 
-import net.onefivefour.echolist.feature.browser.ui.BrowserNavButton
-import net.onefivefour.echolist.feature.browser.ui.BrowserUiState
-
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -17,7 +14,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewDesktopLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
+import net.onefivefour.echolist.feature.browser.resources.*
 import net.onefivefour.echolist.feature.browser.resources.Res
 import net.onefivefour.echolist.feature.browser.resources.browser_browse
 import net.onefivefour.echolist.feature.browser.resources.browser_due
@@ -25,6 +24,9 @@ import net.onefivefour.echolist.feature.browser.resources.browser_remind
 import net.onefivefour.echolist.feature.browser.resources.nav_browse
 import net.onefivefour.echolist.feature.browser.resources.nav_due
 import net.onefivefour.echolist.feature.browser.resources.nav_reminders
+import net.onefivefour.echolist.feature.browser.ui.BrowserNavButton
+import net.onefivefour.echolist.feature.browser.ui.BrowserUiState
+import net.onefivefour.echolist.feature.browser.ui.browserPreviewState
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -76,5 +78,18 @@ internal fun DesktopNavRail(
 
             DesktopBreadcrumbs(browserUiState.breadcrumbs, onFolderClick)
         }
+    }
+}
+
+@PreviewDesktopLightDark
+@Composable
+private fun DesktopNavRailPreview() {
+    EchoListTheme {
+        DesktopNavRail(
+            colors = EchoListTheme.materialColors,
+            navToTasksSummary = {},
+            navToRemindersSummary = {},
+            browserUiState = browserPreviewState,
+            onFolderClick = {})
     }
 }

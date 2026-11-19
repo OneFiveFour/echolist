@@ -13,7 +13,9 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
+import net.onefivefour.echolist.feature.browser.resources.*
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
@@ -49,5 +51,18 @@ internal fun BrowserNavButton(
             Icon(painterResource(icon), null, Modifier.size(21.dp), tint = contentColor)
             Text(label, Modifier.padding(top = 2.dp), style = EchoListTheme.typography.labelSmall.copy(letterSpacing = 0.sp, fontSize = 9.sp, lineHeight = 12.sp, fontWeight = FontWeight.SemiBold), color = contentColor)
         }
+    }
+}
+
+@PreviewComponentLightDark
+@Composable
+private fun BrowserNavButtonPreview() {
+    EchoListTheme(modifier = Modifier) {
+        BrowserNavButton(
+            label = "Home",
+            icon = Res.drawable.browser_home,
+            isSelected = true,
+            isDesktop = false,
+            onClick = {})
     }
 }

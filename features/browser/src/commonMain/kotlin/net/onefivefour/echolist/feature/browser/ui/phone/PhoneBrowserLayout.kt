@@ -5,8 +5,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewPhoneLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.feature.browser.ui.BrowserBackButton
+import net.onefivefour.echolist.feature.browser.ui.FileOverview
+import net.onefivefour.echolist.feature.browser.ui.browserPreviewState
 
 @Composable
 internal fun PhoneBrowserLayout(
@@ -36,5 +39,18 @@ internal fun PhoneBrowserLayout(
                 modifier = Modifier.align(Alignment.BottomEnd).padding(end = 6.dp, bottom = 2.dp)
             )
         }
+    }
+}
+
+@PreviewPhoneLightDark
+@Composable
+private fun PhoneBrowserLayoutPreview() {
+    EchoListTheme {
+        PhoneBrowserLayout(
+            canNavigateBack = true,
+            onBack = {},
+            toolbar = { PhoneBrowserHeading(browserPreviewState.breadcrumbs, {}) },
+            content = { FileOverview(browserPreviewState.fileEntries, false, null, {}, {}, {}) },
+        )
     }
 }

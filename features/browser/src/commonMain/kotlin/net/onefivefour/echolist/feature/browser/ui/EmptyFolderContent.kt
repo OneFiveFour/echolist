@@ -20,7 +20,9 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewPhoneLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
+import net.onefivefour.echolist.feature.browser.resources.*
 import net.onefivefour.echolist.feature.browser.resources.Res
 import net.onefivefour.echolist.feature.browser.resources.browser_empty
 import net.onefivefour.echolist.feature.browser.resources.browser_empty_title
@@ -72,5 +74,16 @@ internal fun EmptyFolderContent(
             Spacer(Modifier.height(dimensions.xl))
             EmptyFolderCreateButton(createItemCallbacks)
         }
+    }
+}
+
+@PreviewPhoneLightDark
+@Composable
+private fun EmptyFolderContentPreview() {
+    EchoListTheme {
+        EmptyFolderContent(
+            createItemCallbacks = CreateItemCallbacks(),
+            isDesktop = false
+        )
     }
 }

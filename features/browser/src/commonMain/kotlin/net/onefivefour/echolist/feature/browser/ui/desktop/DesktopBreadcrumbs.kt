@@ -1,25 +1,27 @@
 package net.onefivefour.echolist.feature.browser.ui.desktop
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.feature.browser.resources.*
 import net.onefivefour.echolist.feature.browser.ui.BreadcrumbItem
+import net.onefivefour.echolist.feature.browser.ui.browserPreviewState
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -83,5 +85,13 @@ internal fun DesktopBreadcrumbs(
                 }
             }
         }
+    }
+}
+
+@PreviewComponentLightDark
+@Composable
+private fun DesktopBreadcrumbsPreview() {
+    EchoListTheme(modifier = Modifier) {
+        DesktopBreadcrumbs(browserPreviewState.breadcrumbs) {}
     }
 }

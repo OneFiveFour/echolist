@@ -10,7 +10,9 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
+import net.onefivefour.echolist.feature.browser.resources.*
 import net.onefivefour.echolist.feature.browser.resources.Res
 import net.onefivefour.echolist.feature.browser.resources.browser_home
 import org.jetbrains.compose.resources.painterResource
@@ -35,6 +37,17 @@ internal fun BrowserHeading(breadcrumbs: List<BreadcrumbItem>, style: TextStyle)
             color = EchoListTheme.materialColors.onSurface,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+@PreviewComponentLightDark
+@Composable
+private fun BrowserHeadingPreview() {
+    EchoListTheme(modifier = Modifier) {
+        BrowserHeading(
+            breadcrumbs = browserPreviewState.breadcrumbs,
+            style = EchoListTheme.typography.titleLarge
         )
     }
 }

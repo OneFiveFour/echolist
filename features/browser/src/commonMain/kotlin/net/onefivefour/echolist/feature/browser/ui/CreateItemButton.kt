@@ -2,10 +2,12 @@ package net.onefivefour.echolist.feature.browser.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.feature.browser.resources.*
@@ -30,6 +32,17 @@ internal fun CreateItemButton(
             isExpanded = isMenuExpanded,
             onDismiss = { isMenuExpanded = false },
             createItemCallbacks = createItemCallbacks
+        )
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun CreateItemButtonPreview() {
+    EchoListTheme(modifier = Modifier) {
+        CreateItemButton(
+            createItemCallbacks = CreateItemCallbacks(),
+            isDesktop = false
         )
     }
 }

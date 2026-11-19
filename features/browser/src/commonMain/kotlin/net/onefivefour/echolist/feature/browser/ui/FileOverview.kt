@@ -5,10 +5,11 @@ import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.window.core.layout.WindowSizeClass
+import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewPhoneLightDark
+import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.feature.browser.domain.model.FileEntry
 import net.onefivefour.echolist.feature.browser.domain.model.FileMetadata
 import net.onefivefour.echolist.feature.browser.domain.model.ItemType
-import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 
 @Composable
 internal fun FileOverview(
@@ -57,5 +58,19 @@ internal fun FileOverview(
                 }
             }
         }
+    }
+}
+
+@PreviewPhoneLightDark
+@Composable
+private fun FileOverviewPreview() {
+    EchoListTheme {
+        FileOverview(
+            fileEntries = browserPreviewState.fileEntries,
+            isLoading = false,
+            error = null,
+            onFolderClick = {},
+            onNoteClick = {},
+            onTaskClick = {})
     }
 }

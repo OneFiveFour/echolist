@@ -2,10 +2,13 @@ package net.onefivefour.echolist.feature.browser.ui.phone
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.sp
+import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.feature.browser.ui.BreadcrumbItem
 import net.onefivefour.echolist.feature.browser.ui.BrowserHeading
+import net.onefivefour.echolist.feature.browser.ui.browserPreviewState
 
 @Composable
 internal fun PhoneBrowserHeading(
@@ -21,6 +24,17 @@ internal fun PhoneBrowserHeading(
             EchoListTheme.typography.titleLarge.copy(
                 fontSize = 26.sp, lineHeight = 31.sp, letterSpacing = (-1.17).sp
             )
+        )
+    }
+}
+
+@PreviewComponentLightDark
+@Composable
+private fun PhoneBrowserHeadingPreview() {
+    EchoListTheme(modifier = Modifier) {
+        PhoneBrowserHeading(
+            breadcrumbs = browserPreviewState.breadcrumbs,
+            onFolderClick = {}
         )
     }
 }

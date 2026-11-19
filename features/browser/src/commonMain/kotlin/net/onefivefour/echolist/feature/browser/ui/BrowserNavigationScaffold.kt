@@ -12,7 +12,9 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewPhoneLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
+import net.onefivefour.echolist.feature.browser.ui.phone.PhoneBrowserNavigation
 
 /** Keeps EchoList's custom navigation visuals within the official adaptive scaffold layout. */
 @OptIn(ExperimentalMaterial3AdaptiveComponentOverrideApi::class)
@@ -44,6 +46,27 @@ internal fun BrowserNavigationScaffold(
             containerColor = EchoListTheme.materialColors.background,
             contentColor = EchoListTheme.materialColors.onBackground,
             content = content
+        )
+    }
+}
+
+@PreviewPhoneLightDark
+@Composable
+private fun BrowserNavigationScaffoldPreview() {
+    EchoListTheme {
+        BrowserNavigationScaffold(
+            isDesktop = false,
+            navigation = { PhoneBrowserNavigation(
+                createItemCallbacks = CreateItemCallbacks(),
+                navToTasksSummary = {},
+                navToRemindersSummary = {}) },
+            content = { FileOverview(
+                fileEntries = browserPreviewState.fileEntries,
+                isLoading = false,
+                error = null,
+                onFolderClick = {},
+                onNoteClick = {},
+                onTaskClick = {}) },
         )
     }
 }

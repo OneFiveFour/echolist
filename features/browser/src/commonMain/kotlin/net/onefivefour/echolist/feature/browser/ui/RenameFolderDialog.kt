@@ -25,8 +25,8 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import net.onefivefour.echolist.core.designsystem.ui.components.ElButton
+import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 
 @Composable
@@ -126,20 +126,17 @@ internal fun RenameFolderDialog(
     )
 }
 
-@Preview
+@PreviewComponentLightDark
 @Composable
-internal fun RenameFolderDialogPreview() {
-    EchoListTheme {
+private fun RenameFolderDialogPreview() {
+    EchoListTheme(modifier = Modifier) {
         RenameFolderDialog(
             uiState = RenameFolderUiState(
                 isVisible = true,
-                folderName = "My Folder",
-                isLoading = false,
-                error = null
+                folderName = "Projects"
             ),
             onNameChange = {},
             onConfirm = {},
-            onDismiss = {}
-        )
+            onDismiss = {})
     }
 }
