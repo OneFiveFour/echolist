@@ -20,14 +20,18 @@ import org.jetbrains.compose.resources.painterResource
 internal fun EmptyFolderIllustration() {
     val folderColor = EchoListTheme.echoListColorScheme.folderColor
     Box(
-        Modifier.size(EchoListTheme.dimensions.xxxl + EchoListTheme.dimensions.xl).background(
-            folderColor.copy(alpha = 0.12f),
-            EchoListTheme.shapes.extraLarge.copy(all = CornerSize(EchoListTheme.dimensions.xl))
-        ),
+        modifier = Modifier
+            .size(size = EchoListTheme.dimensions.xxxl + EchoListTheme.dimensions.xl)
+            .background(
+                color = folderColor.copy(alpha = 0.12f),
+                shape = EchoListTheme.shapes.extraLarge.copy(
+                    all = CornerSize(EchoListTheme.dimensions.xl)
+                )
+            ),
         contentAlignment = Alignment.Center
     ) {
         Icon(
-            painterResource(Res.drawable.browser_empty_folder),
+            painter = painterResource(resource = Res.drawable.browser_empty_folder),
             contentDescription = null,
             modifier = Modifier.size(EchoListTheme.dimensions.xxl).testTag("browser-empty-icon"),
             tint = folderColor

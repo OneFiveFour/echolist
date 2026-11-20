@@ -20,13 +20,18 @@ internal fun BrowserToolbar(
     onDeleteCurrentFolderClick: () -> Unit
 ) {
     val colors = EchoListTheme.materialColors
+
     Row(verticalAlignment = Alignment.Bottom) {
+
         Box(Modifier.weight(1f)) {
             heading()
         }
 
         if (browserUiState.canDeleteCurrentFolder) {
-            IconButton(onClick = onDeleteCurrentFolderClick, enabled = !browserUiState.isDeletingFolder && browserUiState.folderDraft == null) {
+            IconButton(
+                onClick = onDeleteCurrentFolderClick,
+                enabled = !browserUiState.isDeletingFolder && browserUiState.folderDraft == null
+            ) {
                 Icon(
                     painter = painterResource(resource = SharedRes.drawable.ic_delete),
                     contentDescription = stringResource(Res.string.delete_folder),
@@ -43,10 +48,12 @@ private fun BrowserToolbarPreview() {
     EchoListTheme(modifier = Modifier) {
         BrowserToolbar(
             browserUiState = browserPreviewState,
-            heading = { BrowserHeading(
-                breadcrumbs = browserPreviewState.breadcrumbs,
-                style = EchoListTheme.typography.headlineSmall
-            ) },
+            heading = {
+                BrowserHeading(
+                    breadcrumbs = browserPreviewState.breadcrumbs,
+                    style = EchoListTheme.typography.headlineSmall
+                )
+            },
             onDeleteCurrentFolderClick = {},
         )
     }

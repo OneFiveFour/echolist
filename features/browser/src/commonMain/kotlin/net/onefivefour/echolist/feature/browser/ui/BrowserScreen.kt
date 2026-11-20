@@ -36,16 +36,20 @@ internal fun BrowserScreen(
     val isDesktop = EchoListTheme.adaptiveInfo.windowSizeClass
         .isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)
     val gridState = rememberLazyGridState()
+
     val toolbar: @Composable () -> Unit = {
         BrowserToolbar(
             browserUiState = browserUiState,
             heading = {
-                if (isDesktop) DesktopBrowserHeading(browserUiState.breadcrumbs)
-                else PhoneBrowserHeading(browserUiState.breadcrumbs, onFolderClick)
+                when {
+                    isDesktop -> DesktopBrowserHeading(browserUiState.breadcrumbs)
+                    else -> PhoneBrowserHeading(browserUiState.breadcrumbs, onFolderClick)
+                }
             },
             onDeleteCurrentFolderClick = onDeleteCurrentFolderClick
         )
     }
+
     val files: @Composable (PaddingValues) -> Unit = { contentPadding ->
         PullToRefreshBox(
             isRefreshing = browserUiState.isRefreshing,
@@ -54,7 +58,7 @@ internal fun BrowserScreen(
             FileOverview(
                 fileEntries = browserUiState.fileEntries,
                 isLoading = browserUiState.isLoading,
-                error = browserUiState.error,
+                errorMessage = browserUiState.error,
                 onFolderClick = onFolderClick,
                 onFolderLongClick = onFolderLongClick,
                 onNoteClick = onNoteClick,
@@ -71,9 +75,13 @@ internal fun BrowserScreen(
         }
     }
 
+    val isInFolderDraft = browserUiState.folderDraft != null
     BrowserNavigationScaffold(
         isDesktop = isDesktop,
-        modifier = if (browserUiState.folderDraft != null) Modifier.imePadding() else Modifier,
+        modifier = when {
+            isInFolderDraft -> Modifier.imePadding()
+            else -> Modifier
+        },
         navigation = {
             if (isDesktop) {
                 DesktopBrowserNavigation(
@@ -100,7 +108,6 @@ internal fun BrowserScreen(
             content = files
         )
     }
-
 }
 
 @PreviewPhoneLightDark

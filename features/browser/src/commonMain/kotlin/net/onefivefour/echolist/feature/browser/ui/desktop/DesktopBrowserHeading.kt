@@ -11,8 +11,8 @@ import net.onefivefour.echolist.feature.browser.ui.browserPreviewState
 @Composable
 internal fun DesktopBrowserHeading(breadcrumbs: List<BreadcrumbItem>) {
     BrowserHeading(
-        breadcrumbs,
-        EchoListTheme.typography.displaySmall
+        breadcrumbs = breadcrumbs,
+        style = EchoListTheme.typography.displaySmall
     )
 }
 

@@ -1,3 +1,4 @@
 <resources>
     <string name="due_date_recurring">Recurring</string>
+    <string name="navigate_back">Navigate back</string>
 </resources>

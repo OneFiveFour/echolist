@@ -18,11 +18,13 @@ import org.jetbrains.compose.resources.painterResource
 
 @Composable
 internal fun BrowserHeading(breadcrumbs: List<BreadcrumbItem>, style: TextStyle) {
+
     val isHome = breadcrumbs.size == 1 && breadcrumbs.first().parentDir.isEmpty()
+
     Row(verticalAlignment = Alignment.CenterVertically) {
         if (isHome) {
             Icon(
-                painterResource(Res.drawable.browser_home),
+                painterResource(resource = Res.drawable.browser_home),
                 contentDescription = null,
                 modifier = Modifier.size(EchoListTheme.dimensions.xl).testTag("browser-home-icon"),
                 tint = EchoListTheme.materialColors.onSurface
@@ -36,6 +38,17 @@ internal fun BrowserHeading(breadcrumbs: List<BreadcrumbItem>, style: TextStyle)
             color = EchoListTheme.materialColors.onSurface,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+@PreviewComponentLightDark
+@Composable
+private fun BrowserHeadingHomePreview() {
+    EchoListTheme(modifier = Modifier) {
+        BrowserHeading(
+            breadcrumbs = browserPreviewState.breadcrumbs.take(1),
+            style = EchoListTheme.typography.headlineSmall
         )
     }
 }

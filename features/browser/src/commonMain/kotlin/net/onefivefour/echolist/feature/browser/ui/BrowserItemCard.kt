@@ -34,14 +34,19 @@ internal fun BrowserItemCard(
     onLongClickLabel: String? = null,
     content: @Composable ColumnScope.() -> Unit
 ) {
+
     val dimensions = EchoListTheme.dimensions
+
     // Content may grow with font scale, while each item type keeps a consistent minimum.
-    val minimumHeight = if (isFolder) {
-        dimensions.iconMedium + dimensions.m * 2
-    } else {
-        dimensions.xxxl * 2
+    val minimumHeight = when {
+        isFolder -> dimensions.iconMedium + dimensions.m * 2
+        else -> dimensions.xxxl * 2
     }
-    val sizeModifier = Modifier.height(IntrinsicSize.Min).heightIn(min = minimumHeight)
+
+    val sizeModifier = Modifier
+        .height(IntrinsicSize.Min)
+        .heightIn(min = minimumHeight)
+
     val clickModifier = when {
         onClick == null -> Modifier
         onLongClick != null -> Modifier.combinedClickable(
@@ -49,43 +54,79 @@ internal fun BrowserItemCard(
             onLongClick = onLongClick,
             onLongClickLabel = onLongClickLabel
         )
+
         else -> Modifier.clickable(onClick = onClick)
     }
-    val tag = when {
+
+    val testTag = when {
         titleContent != null -> "browser-folder-draft"
         isFolder -> "browser-folder"
         else -> "browser-file"
     }
+
     Surface(
-        modifier = modifier.fillMaxWidth().then(clickModifier).then(sizeModifier).testTag(tag),
+        modifier = modifier
+            .fillMaxWidth()
+            .then(clickModifier)
+            .then(sizeModifier)
+            .testTag(testTag),
         shape = EchoListTheme.shapes.large,
-        border = BorderStroke(EchoListTheme.dimensions.borderWidth, EchoListTheme.materialColors.outlineVariant),
-        color = EchoListTheme.materialColors.surface
+        border = BorderStroke(
+            width = EchoListTheme.dimensions.borderWidth,
+            color = EchoListTheme.materialColors.outlineVariant
+        ),
+        color = Color.Transparent
     ) {
         Box {
-            Box(Modifier.width(dimensions.xs).fillMaxHeight().background(accent))
+
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .background(accent)
+            )
+
             Row(
-                Modifier.fillMaxSize().padding(dimensions.m),
-                verticalAlignment = if (isFolder) Alignment.CenterVertically else Alignment.Top,
+                Modifier
+                    .fillMaxSize()
+                    .padding(start = EchoListTheme.dimensions.xs)
+                    .clip(EchoListTheme.shapes.large)
+                    .background(EchoListTheme.materialColors.surface)
+                    .padding(dimensions.m),
+                verticalAlignment = when {
+                    isFolder -> Alignment.CenterVertically
+                    else -> Alignment.Top
+                },
                 horizontalArrangement = Arrangement.spacedBy(EchoListTheme.dimensions.m)
             ) {
+
                 Box(
-                    Modifier.size(dimensions.iconMedium).clip(EchoListTheme.shapes.medium)
+                    Modifier
+                        .size(dimensions.iconMedium)
+                        .clip(EchoListTheme.shapes.medium)
                         .background(accent.copy(alpha = 0.12f)),
                     contentAlignment = Alignment.Center
-                ) { Icon(painterResource(icon), null, Modifier.size(dimensions.xl), tint = accent) }
+                ) {
+                    Icon(
+                        painter = painterResource(resource = icon),
+                        contentDescription = null,
+                        modifier = Modifier.size(dimensions.xl),
+                        tint = accent
+                    )
+                }
+
                 Column(Modifier.weight(1f)) {
                     if (titleContent != null) {
                         titleContent()
                     } else {
                         Text(
-                            title,
+                            text = title,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             style = EchoListTheme.typography.titleSmall,
                             color = EchoListTheme.materialColors.onSurface
                         )
                     }
+
                     content()
                 }
             }
@@ -104,7 +145,10 @@ private fun BrowserItemCardPreview() {
             isFolder = true,
             onClick = {},
         ) {
-            Text("3 items")
+            Text(
+                text = "3 items",
+                color = EchoListTheme.echoListColorScheme.folderColor
+            )
         }
     }
 }

@@ -16,8 +16,8 @@ import net.onefivefour.echolist.feature.browser.resources.*
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun TaskItem(id: String, title: String, doneTaskCount: Int, totalTaskCount: Int,
-    onClick: (String) -> Unit, modifier: Modifier = Modifier) {
+internal fun TaskListItem(id: String, title: String, doneTaskCount: Int, totalTaskCount: Int,
+                          onClick: (String) -> Unit, modifier: Modifier = Modifier) {
     val color = EchoListTheme.echoListColorScheme.taskColor
     BrowserItemCard(title, Res.drawable.browser_tasks, color, false, { onClick(id) }, modifier) {
         Row(Modifier.padding(top = EchoListTheme.dimensions.s).widthIn(max = 210.dp),
@@ -39,9 +39,9 @@ internal fun TaskItem(id: String, title: String, doneTaskCount: Int, totalTaskCo
 
 @PreviewComponentLightDark
 @Composable
-private fun TaskItemPreview() {
+private fun TaskListItemPreview() {
     EchoListTheme(modifier = Modifier) {
-        TaskItem(
+        TaskListItem(
             id = "tasks-1",
             title = "Release checklist",
             doneTaskCount = 3,

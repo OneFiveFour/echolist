@@ -16,7 +16,6 @@ import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewPhoneLightDa
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.feature.browser.ui.phone.PhoneBrowserNavigation
 
-/** Keeps EchoList's custom navigation visuals within the official adaptive scaffold layout. */
 @OptIn(ExperimentalMaterial3AdaptiveComponentOverrideApi::class)
 @Composable
 internal fun BrowserNavigationScaffold(
@@ -28,7 +27,11 @@ internal fun BrowserNavigationScaffold(
     val scaffoldOverride = object : NavigationSuiteScaffoldOverride {
         @Composable
         override fun NavigationSuiteScaffoldOverrideScope.NavigationSuiteScaffold() {
-            Surface(modifier = modifier, color = containerColor, contentColor = contentColor) {
+            Surface(
+                modifier = modifier,
+                color = containerColor,
+                contentColor = contentColor
+            ) {
                 NavigationSuiteScaffoldLayout(
                     navigationSuite = navigation,
                     navigationSuiteType = layoutType,
@@ -38,12 +41,15 @@ internal fun BrowserNavigationScaffold(
             }
         }
     }
+
     CompositionLocalProvider(LocalNavigationSuiteScaffoldOverride provides scaffoldOverride) {
         NavigationSuiteScaffold(
             navigationSuiteItems = {},
             modifier = modifier.fillMaxSize(),
-            // Preserve Expanded as the boundary, regardless of height or fold posture.
-            layoutType = if (isDesktop) NavigationSuiteType.NavigationRail else NavigationSuiteType.NavigationBar,
+            layoutType = when {
+                isDesktop -> NavigationSuiteType.NavigationRail
+                else -> NavigationSuiteType.NavigationBar
+            },
             containerColor = EchoListTheme.materialColors.background,
             contentColor = EchoListTheme.materialColors.onBackground,
             content = content
@@ -57,17 +63,21 @@ private fun BrowserNavigationScaffoldPreview() {
     EchoListTheme {
         BrowserNavigationScaffold(
             isDesktop = false,
-            navigation = { PhoneBrowserNavigation(
-                createItemCallbacks = CreateItemCallbacks(),
-                navToTasksSummary = {},
-                navToRemindersSummary = {}) },
-            content = { FileOverview(
-                fileEntries = browserPreviewState.fileEntries,
-                isLoading = false,
-                error = null,
-                onFolderClick = {},
-                onNoteClick = {},
-                onTaskClick = {}) },
+            navigation = {
+                PhoneBrowserNavigation(
+                    createItemCallbacks = CreateItemCallbacks(),
+                    navToTasksSummary = {},
+                    navToRemindersSummary = {})
+            },
+            content = {
+                FileOverview(
+                    fileEntries = browserPreviewState.fileEntries,
+                    isLoading = false,
+                    errorMessage = null,
+                    onFolderClick = {},
+                    onNoteClick = {},
+                    onTaskClick = {})
+            },
         )
     }
 }

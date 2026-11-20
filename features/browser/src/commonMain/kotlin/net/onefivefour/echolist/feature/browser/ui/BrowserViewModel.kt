@@ -43,96 +43,154 @@ internal class BrowserViewModel(
 
     private var nextDraftId = 0L
     private var loadRevision = 0L
-    // Keep successful folder mutations until a server listing acknowledges them.
-    private val unacknowledgedFolders = mutableMapOf<String, FileEntry>()
+
+    private val unpersistedFolders = mutableMapOf<String, FileEntry>()
     private val renamedFolderPaths = mutableMapOf<String, String>()
 
     fun startFolderDraft() = startFolderEditing(null)
 
     fun startFolderRename(path: String) {
         val entry = uiState.value.fileEntries.firstOrNull { it.path == path && it.itemType == ItemType.FOLDER }
-        if (uiState.value.folderDraft != null || entry != null) startFolderEditing(entry)
+        val wasEntryFound = entry != null
+        val isInFolderDraft = uiState.value.folderDraft != null
+        if (isInFolderDraft || wasEntryFound) {
+            startFolderEditing(entry)
+        }
     }
 
     private fun startFolderEditing(entry: FileEntry?) {
-        val current = uiState.value
-        if (current.isDeletingFolder || current.folderDraft?.isSaving == true) return
-        uiState.update {
-            it.copy(folderDraft = it.folderDraft?.let { draft ->
+        val currentUiState = uiState.value
+
+        if (currentUiState.isDeletingFolder || currentUiState.folderDraft?.isSaving == true) {
+            return
+        }
+
+        uiState.update { currentUiState ->
+
+            val newFolderDraft = currentUiState.folderDraft?.let { draft ->
                 draft.copy(focusRequest = draft.focusRequest + 1)
             } ?: FolderDraft(
                 id = ++nextDraftId,
                 name = entry?.title.orEmpty(),
                 originalEntry = entry,
-                originalIndex = current.fileEntries.filter { file -> file.itemType == ItemType.FOLDER }
-                    .indexOf(entry).coerceAtLeast(0)
-            ))
+                originalIndex = currentUiState.fileEntries
+                    .filter { file -> file.itemType == ItemType.FOLDER }
+                    .indexOf(entry)
+                    .coerceAtLeast(0)
+            )
+
+            currentUiState.copy(
+                folderDraft = newFolderDraft
+            )
         }
     }
 
     fun dismissFolderDraft() {
-        if (uiState.value.folderDraft?.isSaving == true) return
+        if (uiState.value.folderDraft?.isSaving == true) {
+            return
+        }
         uiState.update { it.copy(folderDraft = null) }
     }
 
     fun onFolderNameChange(name: String) {
-        uiState.update { current ->
-            val draft = current.folderDraft ?: return@update current
-            if (draft.isSaving) current
-            else current.copy(folderDraft = draft.copy(name = name, error = null))
+        uiState.update { currentUiState ->
+            val draft = currentUiState.folderDraft ?: return@update currentUiState
+            when {
+                draft.isSaving -> currentUiState
+                else -> currentUiState.copy(folderDraft = draft.copy(name = name, error = null))
+            }
         }
     }
 
     fun confirmFolderDraft() {
         val draft = uiState.value.folderDraft ?: return
         if (!draft.canConfirm) return
+
         val name = draft.name.trim()
         val original = draft.originalEntry
+
         if (original != null && name == original.title) {
             dismissFolderDraft()
             return
         }
+
         uiState.update { it.copy(folderDraft = draft.copy(name = name, isSaving = true)) }
+
         viewModelScope.launch {
             try {
+
                 val result = if (original == null) {
-                    fileRepository.createFolder(CreateFolderParams(parentDir, name))
+                    fileRepository.createFolder(
+                        CreateFolderParams(
+                            parentDir = parentDir,
+                            name = name
+                        )
+                    )
                 } else {
-                    fileRepository.updateFolder(UpdateFolderParams(normalizePath(original.path), name))
+                    fileRepository.updateFolder(
+                        UpdateFolderParams(
+                            folderPath = normalizePath(path = original.path),
+                            newName = name
+                        )
+                    )
                 }
+
                 result.fold(
                     onSuccess = { folder ->
+
                         val metadata = if (original != null) {
-                            uiState.value.fileEntries.firstOrNull { it.path == original.path }?.metadata ?: original.metadata
-                        } else FileMetadata.Folder(0)
-                        val entry = FileEntry(folder.path, folder.name, ItemType.FOLDER, metadata)
+                            uiState.value.fileEntries
+                                .firstOrNull { it.path == original.path }
+                                ?.metadata
+                                ?: original.metadata
+                        } else {
+                            FileMetadata.Folder(0)
+                        }
+
+                        val entry = FileEntry(
+                            path = folder.path,
+                            title = folder.name,
+                            itemType = ItemType.FOLDER,
+                            metadata = metadata
+                        )
+
                         if (original != null && original.path != entry.path) {
-                            unacknowledgedFolders.remove(original.path)
+                            unpersistedFolders.remove(original.path)
                             renamedFolderPaths.entries.forEach { pending ->
-                                if (pending.value == original.path) pending.setValue(entry.path)
+                                if (pending.value == original.path) {
+                                    pending.setValue(entry.path)
+                                }
                             }
                             renamedFolderPaths[original.path] = entry.path
                         }
-                        unacknowledgedFolders[entry.path] = entry
-                        // Invalidate reads begun before this mutation completed.
+                        unpersistedFolders[entry.path] = entry
+
                         loadRevision++
                         uiState.update { current ->
                             current.copy(
                                 folderDraft = null,
-                                fileEntries = sortBrowserEntries(current.fileEntries.filterNot {
-                                    it.path == entry.path || it.path == original?.path
-                                } + entry),
+                                fileEntries = sortBrowserEntries(
+                                    current.fileEntries
+                                    .filterNot {
+                                        it.path == entry.path || it.path == original?.path
+                                    } + entry
+                                ),
                                 isLoading = false,
                                 canDeleteCurrentFolder = false,
                                 error = null
                             )
                         }
+
                         loadData()
                     },
+
                     onFailure = { exception ->
                         if (exception is CancellationException) throw exception
                         val message = exception.message ?: getString(
-                            if (draft.isRenaming) Res.string.folder_rename_failed else Res.string.folder_create_failed
+                            when {
+                                draft.isRenaming -> Res.string.folder_rename_failed
+                                else -> Res.string.folder_create_failed
+                            }
                         )
                         uiState.update { current ->
                             current.copy(
@@ -141,11 +199,13 @@ internal class BrowserViewModel(
                         }
                     }
                 )
+
             } finally {
                 uiState.update { current ->
-                    if (current.folderDraft?.id == draft.id) {
-                        current.copy(folderDraft = current.folderDraft.copy(isSaving = false))
-                    } else current
+                    when (current.folderDraft?.id) {
+                        draft.id -> current.copy(folderDraft = current.folderDraft.copy(isSaving = false))
+                        else -> current
+                    }
                 }
             }
         }
@@ -209,15 +269,16 @@ internal class BrowserViewModel(
         val revision = ++loadRevision
         val breadcrumbs = resolveBreadcrumbs()
         uiState.update { current ->
-            current.copy(
-                breadcrumbs = breadcrumbs
-            )
+            current.copy(breadcrumbs = breadcrumbs)
         }
+
         val result = fileRepository.listFiles(parentDir)
+
         if (revision != loadRevision) return
+
         val entries = result.getOrNull()?.let { remoteEntries ->
             val remotePaths = remoteEntries.map { it.path }.toSet()
-            unacknowledgedFolders.keys.removeAll { path ->
+            unpersistedFolders.keys.removeAll { path ->
                 path in remotePaths && renamedFolderPaths.none { (oldPath, newPath) ->
                     newPath == path && oldPath in remotePaths
                 }
@@ -225,8 +286,8 @@ internal class BrowserViewModel(
             renamedFolderPaths.entries.removeAll { (oldPath, newPath) ->
                 oldPath !in remotePaths && newPath in remotePaths
             }
-            remoteEntries.filterNot { it.path in renamedFolderPaths || it.path in unacknowledgedFolders } +
-                unacknowledgedFolders.values
+            remoteEntries.filterNot { it.path in renamedFolderPaths || it.path in unpersistedFolders } +
+                unpersistedFolders.values
         }
         uiState.update { current ->
             result.fold(

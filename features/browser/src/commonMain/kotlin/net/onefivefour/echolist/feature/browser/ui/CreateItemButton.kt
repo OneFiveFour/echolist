@@ -27,11 +27,20 @@ internal fun CreateItemButton(
     var isMenuExpanded by remember { mutableStateOf(false) }
 
     Box {
-        Surface(onClick = { isMenuExpanded = true }, shape = EchoListTheme.shapes.extraLarge,
-            color = EchoListTheme.materialColors.primary, shadowElevation = EchoListTheme.dimensions.m,
-            modifier = Modifier.size(EchoListTheme.dimensions.buttonMinHeight).testTag("browser-create")) {
+        Surface(
+            onClick = { isMenuExpanded = true },
+            shape = EchoListTheme.shapes.extraLarge,
+            color = EchoListTheme.materialColors.primary,
+            shadowElevation = EchoListTheme.dimensions.m,
+            modifier = Modifier.size(EchoListTheme.dimensions.buttonMinHeight).testTag("browser-create")
+        ) {
             Box(contentAlignment = Alignment.Center) {
-                Icon(painterResource(Res.drawable.browser_plus), stringResource(Res.string.create_item), Modifier.size(EchoListTheme.dimensions.xl), tint = EchoListTheme.materialColors.onPrimary)
+                Icon(
+                    painter = painterResource(resource = Res.drawable.browser_plus),
+                    contentDescription = stringResource(Res.string.create_item),
+                    modifier = Modifier.size(EchoListTheme.dimensions.xl),
+                    tint = EchoListTheme.materialColors.onPrimary
+                )
             }
         }
         CreateItemMenu(

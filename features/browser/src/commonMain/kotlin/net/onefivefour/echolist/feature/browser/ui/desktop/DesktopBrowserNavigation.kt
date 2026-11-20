@@ -25,8 +25,10 @@ internal fun DesktopBrowserNavigation(
             onFolderClick = onFolderClick
         )
         Box(
-            Modifier.width(EchoListTheme.dimensions.borderWidth)
-                .fillMaxHeight().background(EchoListTheme.materialColors.outlineVariant)
+            Modifier
+                .width(EchoListTheme.dimensions.borderWidth)
+                .fillMaxHeight()
+                .background(EchoListTheme.materialColors.outlineVariant)
         )
     }
 }

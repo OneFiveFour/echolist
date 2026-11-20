@@ -34,22 +34,26 @@ internal fun BreadcrumbBar(
     val linkStyles = TextLinkStyles(
         style = SpanStyle(color = EchoListTheme.materialColors.onSurfaceVariant)
     )
+
     val path = buildAnnotatedString {
-        breadcrumbs.dropLast(1).forEach { crumb ->
-            withLink(
-                LinkAnnotation.Clickable(
-                    tag = crumb.parentDir,
-                    styles = linkStyles,
-                    linkInteractionListener = { onFolderClick(crumb.parentDir) }
-                )
-            ) {
-                append(crumb.label)
+        breadcrumbs
+            .dropLast(1)
+            .forEach { crumb ->
+                withLink(
+                    LinkAnnotation.Clickable(
+                        tag = crumb.parentDir,
+                        styles = linkStyles,
+                        linkInteractionListener = { onFolderClick(crumb.parentDir) }
+                    )
+                ) {
+                    append(crumb.label)
+                }
+                append(" ")
+                appendInlineContent("separator", "›")
+                append(" ")
             }
-            append(" ")
-            appendInlineContent("separator", "›")
-            append(" ")
-        }
     }
+
     Text(
         text = path,
         modifier = Modifier.fillMaxWidth().testTag("browser-breadcrumbs"),

@@ -46,7 +46,10 @@ internal fun DesktopNavRail(
     ) {
         Column(
             Modifier
-                .padding(horizontal = EchoListTheme.dimensions.xl, vertical = EchoListTheme.dimensions.xxl)
+                .padding(
+                    horizontal = EchoListTheme.dimensions.xl,
+                    vertical = EchoListTheme.dimensions.xxl
+                )
                 .verticalScroll(rememberScrollState())
         ) {
             Spacer(Modifier.height(EchoListTheme.dimensions.xxl))
@@ -76,7 +79,10 @@ internal fun DesktopNavRail(
             )
             Spacer(Modifier.height(EchoListTheme.dimensions.xxl))
 
-            DesktopBreadcrumbs(browserUiState.breadcrumbs, onFolderClick)
+            DesktopBreadcrumbs(
+                breadcrumbs = browserUiState.breadcrumbs,
+                onFolderClick = onFolderClick
+            )
         }
     }
 }

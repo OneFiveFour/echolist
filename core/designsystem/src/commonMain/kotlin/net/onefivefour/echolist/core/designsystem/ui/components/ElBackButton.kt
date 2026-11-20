@@ -1,4 +1,4 @@
-package net.onefivefour.echolist.feature.browser.ui
+package net.onefivefour.echolist.core.designsystem.ui.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
@@ -10,16 +10,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import net.onefivefour.echolist.core.designsystem.resources.Res
+import net.onefivefour.echolist.core.designsystem.resources.browser_back
+import net.onefivefour.echolist.core.designsystem.resources.navigate_back
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
-import net.onefivefour.echolist.feature.browser.resources.*
-import net.onefivefour.echolist.feature.browser.resources.Res
-import net.onefivefour.echolist.feature.browser.resources.browser_back
-import net.onefivefour.echolist.feature.browser.resources.navigate_back
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun BrowserBackButton(
+fun ElBackButton(
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -44,9 +43,9 @@ internal fun BrowserBackButton(
 
 @PreviewLightDark
 @Composable
-private fun BrowserBackButtonPreview() {
+private fun ElBackButtonPreview() {
     EchoListTheme(modifier = Modifier) {
-        BrowserBackButton(
+        ElBackButton(
             onBack = {}
         )
     }

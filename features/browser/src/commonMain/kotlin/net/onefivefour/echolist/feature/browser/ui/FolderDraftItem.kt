@@ -36,6 +36,7 @@ internal fun FolderDraftItem(
     onConfirm: () -> Unit,
     onCancel: () -> Unit
 ) {
+    
     var textFieldValue by rememberSaveable(draft.id, stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue(
             text = draft.name,
@@ -80,12 +81,12 @@ internal fun FolderDraftItem(
         isFolder = true,
         onClick = null,
         modifier = Modifier.testTag("browser-folder-draft").onPreviewKeyEvent { event ->
-            when {
-                event.key == Key.Escape -> {
+            when (event.key) {
+                Key.Escape -> {
                     if (event.type == KeyEventType.KeyUp) cancel()
                     true
                 }
-                event.key == Key.Enter || event.key == Key.NumPadEnter -> {
+                Key.Enter, Key.NumPadEnter -> {
                     if (event.type == KeyEventType.KeyUp) confirm()
                     true
                 }

@@ -20,11 +20,22 @@ internal fun BottomNavigation(
     onOpenRemindersSummary: () -> Unit,
     navigateToTasksSummary: () -> Unit
 ) {
-    Surface(shape = EchoListTheme.shapes.extraLarge,
-        color = EchoListTheme.materialColors.surface, shadowElevation = EchoListTheme.dimensions.l,
-        border = BorderStroke(EchoListTheme.dimensions.borderWidth, EchoListTheme.materialColors.outlineVariant)) {
-        Row(Modifier.fillMaxWidth().padding(EchoListTheme.dimensions.s), verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(EchoListTheme.dimensions.xs)) {
+    Surface(
+        shape = EchoListTheme.shapes.extraLarge,
+        color = EchoListTheme.materialColors.surface,
+        shadowElevation = EchoListTheme.dimensions.l,
+        border = BorderStroke(
+            width = EchoListTheme.dimensions.borderWidth,
+            color = EchoListTheme.materialColors.outlineVariant
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(all = EchoListTheme.dimensions.s),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(EchoListTheme.dimensions.xs)
+        ) {
             BrowserNavButton(
                 label = stringResource(resource = Res.string.nav_browse),
                 icon = Res.drawable.browser_browse,

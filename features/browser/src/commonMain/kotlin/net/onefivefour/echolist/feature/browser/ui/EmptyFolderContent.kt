@@ -35,15 +35,18 @@ internal fun EmptyFolderContent(
     modifier: Modifier = Modifier
 ) {
     val dimensions = EchoListTheme.dimensions
-    // Header, navigation and floating-action space are reserved by the surrounding layout.
-    BoxWithConstraints(modifier.fillMaxSize().testTag("browser-empty")) {
+
+    BoxWithConstraints(
+        modifier = modifier
+            .fillMaxSize()
+            .testTag("browser-empty")
+    ) {
         Column(
-            Modifier.fillMaxWidth()
+            Modifier
+                .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
                 .heightIn(min = maxHeight)
-                .padding(
-                    all = dimensions.xl
-                ),
+                .padding(all = dimensions.xl),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {

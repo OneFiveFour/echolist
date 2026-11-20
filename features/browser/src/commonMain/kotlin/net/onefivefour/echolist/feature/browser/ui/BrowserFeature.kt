@@ -37,14 +37,22 @@ fun BrowserFeature(
         }
     }
 
-    val isSavingFolder = browserUiState.folderDraft?.isSaving == true
-    SideEffect { onNavigationStateChange(isSavingFolder, browserViewModel::dismissFolderDraft) }
+    val isSaving = browserUiState.folderDraft?.isSaving == true
+
+    SideEffect {
+        onNavigationStateChange(
+            isSaving,
+            browserViewModel::dismissFolderDraft
+        )
+    }
+
     DisposableEffect(browserViewModel) {
         onDispose {
-            onNavigationStateChange(false, {})
+            onNavigationStateChange(false) { }
         }
     }
-    fun leaveBrowser(action: () -> Unit) {
+
+    fun leaveBrowserWith(action: () -> Unit) {
         if (browserViewModel.uiState.value.folderDraft?.isSaving == true) return
         browserViewModel.dismissFolderDraft()
         action()
@@ -54,28 +62,26 @@ fun BrowserFeature(
         browserUiState = browserUiState,
 
         canNavigateBack = canNavigateBack,
-        onBack = { leaveBrowser(onBack) },
+        onBack = { leaveBrowserWith(onBack) },
 
         createItemCallbacks = CreateItemCallbacks(
             onCreateFolder = browserViewModel::startFolderDraft,
-            onCreateNote = { leaveBrowser { navToNote(null) } },
-            onCreateTaskList = { leaveBrowser { navToTaskList(null) } }
+            onCreateNote = { leaveBrowserWith { navToNote(null) } },
+            onCreateTaskList = { leaveBrowserWith { navToTaskList(null) } }
         ),
 
         onConfirmFolder = browserViewModel::confirmFolderDraft,
         onDismissFolder = browserViewModel::dismissFolderDraft,
 
         onFolderNameChange = browserViewModel::onFolderNameChange,
-
         onDeleteCurrentFolderClick = browserViewModel::onDeleteCurrentFolderClick,
-
         onFolderLongClick = browserViewModel::startFolderRename,
-        onFolderClick = { path -> leaveBrowser { navToFolder(path) } },
-        onNoteClick = { id -> leaveBrowser { navToNote(id) } },
-        onTaskClick = { id -> leaveBrowser { navToTaskList(id) } },
+        onFolderClick = { path -> leaveBrowserWith { navToFolder(path) } },
+        onNoteClick = { id -> leaveBrowserWith { navToNote(id) } },
+        onTaskClick = { id -> leaveBrowserWith { navToTaskList(id) } },
 
-        navToRemindersSummary = { leaveBrowser(navToRemindersSummary) },
-        navToTasksSummary = { leaveBrowser(navToTasksSummary) },
+        navToRemindersSummary = { leaveBrowserWith(navToRemindersSummary) },
+        navToTasksSummary = { leaveBrowserWith(navToTasksSummary) },
 
         onRefresh = browserViewModel::refresh,
     )

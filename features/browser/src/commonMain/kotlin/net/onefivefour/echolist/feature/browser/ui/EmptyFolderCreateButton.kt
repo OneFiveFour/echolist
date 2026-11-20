@@ -37,12 +37,12 @@ internal fun EmptyFolderCreateButton(createItemCallbacks: CreateItemCallbacks) {
                 horizontalArrangement = Arrangement.spacedBy(EchoListTheme.dimensions.s)
             ) {
                 Icon(
-                    painterResource(Res.drawable.browser_empty_plus),
+                    painter = painterResource(resource = Res.drawable.browser_empty_plus),
                     contentDescription = null,
                     modifier = Modifier.size(EchoListTheme.dimensions.l)
                 )
                 Text(
-                    stringResource(Res.string.browser_empty_create),
+                    text = stringResource(resource = Res.string.browser_empty_create),
                     style = EchoListTheme.typography.labelLarge
                 )
             }

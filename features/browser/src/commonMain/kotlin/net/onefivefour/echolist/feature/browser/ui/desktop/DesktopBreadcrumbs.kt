@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.selected
@@ -17,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
+import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme.shapes
 import net.onefivefour.echolist.feature.browser.resources.*
 import net.onefivefour.echolist.feature.browser.ui.BreadcrumbItem
 import net.onefivefour.echolist.feature.browser.ui.browserPreviewState
@@ -33,30 +35,51 @@ internal fun DesktopBreadcrumbs(
         verticalArrangement = Arrangement.spacedBy(EchoListTheme.dimensions.xs)
     ) {
         breadcrumbs.forEachIndexed { index, crumb ->
+
             val isCurrent = index == breadcrumbs.lastIndex
+
             val icon = when {
                 index == 0 -> Res.drawable.browser_location_home
                 isCurrent -> Res.drawable.browser_location_current
                 else -> Res.drawable.browser_location_folder
             }
+
             Box {
+
                 if (index > 0) {
                     Box(
-                        Modifier.offset(x = EchoListTheme.dimensions.m, y = -EchoListTheme.dimensions.s)
-                            .size(width = EchoListTheme.dimensions.borderWidth, height = EchoListTheme.dimensions.m)
+                        Modifier
+                            .offset(
+                                x = EchoListTheme.dimensions.m,
+                                y = -EchoListTheme.dimensions.s
+                            )
+                            .size(
+                                width = EchoListTheme.dimensions.borderWidth,
+                                height = EchoListTheme.dimensions.m
+                            )
                             .background(colors.outlineVariant)
                     )
                 }
+
+                val backgroundColor = when {
+                    isCurrent -> colors.surfaceVariant
+                    else -> Color.Transparent
+                }
                 Row(
-                    Modifier.fillMaxWidth().heightIn(min = EchoListTheme.dimensions.iconSmall)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = EchoListTheme.dimensions.iconSmall)
                         .background(
-                            if (isCurrent) colors.surfaceVariant else colors.surface,
-                            EchoListTheme.shapes.small
+                            color = backgroundColor,
+                            shape = shapes.small
                         )
-                        .clip(EchoListTheme.shapes.small)
+                        .clip(shapes.small)
                         .then(
-                            if (isCurrent) Modifier else Modifier.clickable(role = Role.Button) {
-                                onFolderClick(crumb.parentDir)
+                            when {
+                                isCurrent -> Modifier
+                                else -> Modifier.clickable(role = Role.Button) {
+                                    onFolderClick(crumb.parentDir)
+                                }
                             }
                         )
                         .semantics { selected = isCurrent }
@@ -65,19 +88,29 @@ internal fun DesktopBreadcrumbs(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(EchoListTheme.dimensions.s)
                 ) {
+
                     Icon(
-                        painterResource(icon), null, Modifier.size(EchoListTheme.dimensions.l),
+                        painter = painterResource(resource = icon),
+                        contentDescription = null,
+                        modifier = Modifier.size(EchoListTheme.dimensions.l),
                         tint = if (isCurrent) colors.onSurface else colors.onSurfaceVariant
                     )
+
                     Text(
-                        crumb.label,
+                        text = crumb.label,
                         modifier = Modifier.weight(1f),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         style = EchoListTheme.typography.labelMedium.copy(
-                            fontWeight = if (isCurrent) FontWeight.SemiBold else FontWeight.Normal
+                            fontWeight = when {
+                                isCurrent -> FontWeight.SemiBold
+                                else -> FontWeight.Normal
+                            }
                         ),
-                        color = if (isCurrent) colors.onSurface else colors.onSurfaceVariant
+                        color = when {
+                            isCurrent -> colors.onSurface
+                            else -> colors.onSurfaceVariant
+                        }
                     )
                 }
             }

@@ -18,14 +18,21 @@ internal fun CreateItemMenu(
     onDismiss: () -> Unit,
     createItemCallbacks: CreateItemCallbacks
 ) {
-    DropdownMenu(expanded = isExpanded, onDismissRequest = onDismiss,
-        containerColor = EchoListTheme.materialColors.surface) {
+    DropdownMenu(
+        expanded = isExpanded,
+        onDismissRequest = onDismiss,
+        containerColor = EchoListTheme.materialColors.surface
+    ) {
         for ((label, action) in listOf(
             stringResource(Res.string.create_folder) to createItemCallbacks.onCreateFolder,
             stringResource(Res.string.create_note) to createItemCallbacks.onCreateNote,
             stringResource(Res.string.create_task_list) to createItemCallbacks.onCreateTaskList
         )) {
-            DropdownMenuItem(modifier = Modifier.testTag("create-$label"), text = { Text(label) }, onClick = { onDismiss(); action() })
+            DropdownMenuItem(
+                modifier = Modifier.testTag("create-$label"),
+                text = { Text(label) },
+                onClick = { onDismiss(); action() }
+            )
         }
     }
 }

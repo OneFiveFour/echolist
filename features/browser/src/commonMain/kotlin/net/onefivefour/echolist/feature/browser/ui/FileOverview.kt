@@ -14,9 +14,14 @@ import net.onefivefour.echolist.feature.browser.domain.model.ItemType
 
 @Composable
 internal fun FileOverview(
-    fileEntries: List<FileEntry>, isLoading: Boolean, error: String?,
-    onFolderClick: (String) -> Unit, onNoteClick: (String) -> Unit, onTaskClick: (String) -> Unit,
-    modifier: Modifier = Modifier, isDesktop: Boolean = false,
+    fileEntries: List<FileEntry>,
+    isLoading: Boolean,
+    errorMessage: String?,
+    onFolderClick: (String) -> Unit,
+    onNoteClick: (String) -> Unit,
+    onTaskClick: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    isDesktop: Boolean = false,
     gridState: LazyGridState = rememberLazyGridState(),
     contentPadding: PaddingValues = PaddingValues(bottom = EchoListTheme.dimensions.l),
     createItemCallbacks: CreateItemCallbacks = CreateItemCallbacks(),
@@ -26,14 +31,15 @@ internal fun FileOverview(
     onCancelFolder: () -> Unit = {},
     onFolderLongClick: (String) -> Unit = {}
 ) {
-    if (!isLoading && error == null && fileEntries.isEmpty() && folderDraft == null) {
+
+    if (!isLoading && errorMessage == null && fileEntries.isEmpty() && folderDraft == null) {
         EmptyFolderContent(createItemCallbacks, modifier.padding(contentPadding))
         return
     }
 
     val folders = fileEntries.filter { it.itemType == ItemType.FOLDER }.toMutableList()
     val original = folderDraft?.originalEntry
-    // A remote refresh must not remove an active editor, even if the original entry disappears.
+
     if (original != null && folders.none { it.path == original.path }) {
         folders.add(folderDraft.originalIndex.coerceIn(0, folders.size), original)
     }
@@ -41,9 +47,16 @@ internal fun FileOverview(
 
     LaunchedEffect(folderDraft?.id, folderDraft?.focusRequest) {
         if (folderDraft != null) {
-            val index = if (original == null) 0 else folders.indexOfFirst { it.path == original.path }.coerceAtLeast(0)
-            if (original == null || gridState.layoutInfo.visibleItemsInfo.none { it.index == index }) {
-                gridState.scrollToItem(index)
+            val index = when (original) {
+                null -> 0
+                else -> folders
+                    .indexOfFirst { it.path == original.path }
+                    .coerceAtLeast(0)
+            }
+            when {
+                original == null || gridState.layoutInfo.visibleItemsInfo.none { it.index == index } -> {
+                    gridState.scrollToItem(index)
+                }
             }
         }
     }
@@ -52,51 +65,98 @@ internal fun FileOverview(
     val hasTwoColumns = isDesktop && EchoListTheme.adaptiveInfo.windowSizeClass
         .isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_LARGE_LOWER_BOUND)
 
+    val columnCount = when {
+        hasTwoColumns -> 2
+        else -> 1
+    }
+
     LazyVerticalGrid(
-        columns = GridCells.Fixed(if (hasTwoColumns) 2 else 1),
+        columns = GridCells.Fixed(columnCount),
         modifier = modifier.fillMaxSize(),
         state = gridState,
         horizontalArrangement = Arrangement.spacedBy(spacing),
         verticalArrangement = Arrangement.spacedBy(spacing),
         contentPadding = contentPadding
     ) {
+
         if (isCreatingFolder) {
-            val draft = requireNotNull(folderDraft)
-            item(key = "folder-draft-${draft.id}") {
-                FolderDraftItem(draft, onFolderNameChange, onConfirmFolder, onCancelFolder)
+            item(key = "folder-draft-${folderDraft.id}") {
+                FolderDraftItem(folderDraft, onFolderNameChange, onConfirmFolder, onCancelFolder)
             }
         }
+
+        val isLoading = isLoading && original == null
+        val hasError = errorMessage != null && fileEntries.isEmpty() && original == null
         when {
-            isLoading && original == null -> item(key = "loading", span = { GridItemSpan(maxLineSpan) }) { LoadingIndicator() }
-            error != null && fileEntries.isEmpty() && original == null -> item(key = "error", span = { GridItemSpan(maxLineSpan) }) { ErrorContainer(message = error) }
+
+            isLoading -> item(
+                key = "loading",
+                span = { GridItemSpan(maxLineSpan) }
+            ) {
+                LoadingIndicator()
+            }
+
+            hasError -> item(
+                key = "error",
+                span = { GridItemSpan(maxLineSpan) }
+            ) {
+                ErrorContainer(message = errorMessage)
+            }
+
             else -> {
                 items(folders, key = { "entry:${it.path}" }) { entry ->
                     if (folderDraft != null && entry.path == original?.path) {
-                        FolderDraftItem(folderDraft, onFolderNameChange, onConfirmFolder, onCancelFolder)
+                        FolderDraftItem(
+                            draft = folderDraft,
+                            onNameChange = onFolderNameChange,
+                            onConfirm = onConfirmFolder,
+                            onCancel = onCancelFolder
+                        )
                     } else {
                         FolderItem(
-                            entry.title,
-                            entry.metadata as? FileMetadata.Folder,
-                            { onFolderClick(entry.path) },
+                            title = entry.title,
+                            metadata = entry.metadata as? FileMetadata.Folder,
+                            onClick = { onFolderClick(entry.path) },
                             onLongClick = { onFolderLongClick(entry.path) }
                         )
                     }
                 }
-                val files = fileEntries.filter { it.itemType == ItemType.NOTE || it.itemType == ItemType.TASK_LIST }
-                // Fill the unused folder cell so files begin on a new row.
+
+                val files = fileEntries
+                    .filter { it.itemType == ItemType.NOTE || it.itemType == ItemType.TASK_LIST }
+
                 val folderCount = folders.size + if (isCreatingFolder) 1 else 0
                 if (hasTwoColumns && folderCount % 2 != 0 && files.isNotEmpty()) {
                     item(key = "folder-boundary") { Spacer(Modifier) }
                 }
+
                 items(files, key = { "entry:${it.path}" }) { entry ->
                     when (val metadata = entry.metadata) {
-                        is FileMetadata.Note -> NoteItem(metadata.id, entry.title, metadata.preview, onNoteClick)
-                        is FileMetadata.TaskList -> TaskItem(metadata.id, entry.title, metadata.doneTaskCount, metadata.totalTaskCount, onTaskClick)
+                        is FileMetadata.Note -> NoteItem(
+                            id = metadata.id,
+                            title = entry.title,
+                            preview = metadata.preview,
+                            onClick = onNoteClick
+                        )
+                        is FileMetadata.TaskList -> TaskListItem(
+                            id = metadata.id,
+                            title = entry.title,
+                            doneTaskCount = metadata.doneTaskCount,
+                            totalTaskCount = metadata.totalTaskCount,
+                            onClick = onTaskClick
+                        )
+
                         else -> Unit
                     }
                 }
-                if (error != null) {
-                    item(key = "error", span = { GridItemSpan(maxLineSpan) }) { ErrorContainer(message = error) }
+
+                if (errorMessage != null) {
+                    item(
+                        key = "error",
+                        span = { GridItemSpan(maxLineSpan) }
+                    ) {
+                        ErrorContainer(message = errorMessage)
+                    }
                 }
             }
         }
@@ -110,7 +170,7 @@ private fun FileOverviewPreview() {
         FileOverview(
             fileEntries = browserPreviewState.fileEntries,
             isLoading = false,
-            error = null,
+            errorMessage = null,
             onFolderClick = {},
             onNoteClick = {},
             onTaskClick = {})
