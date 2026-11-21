@@ -16,23 +16,66 @@ import net.onefivefour.echolist.feature.browser.resources.*
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun TaskListItem(id: String, title: String, doneTaskCount: Int, totalTaskCount: Int,
-                          onClick: (String) -> Unit, modifier: Modifier = Modifier) {
+internal fun TaskListItem(
+    id: String,
+    title: String,
+    doneTaskCount: Int,
+    totalTaskCount: Int,
+    onClick: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
     val color = EchoListTheme.echoListColorScheme.taskColor
-    BrowserItemCard(title, Res.drawable.browser_tasks, color, false, { onClick(id) }, modifier) {
-        Row(Modifier.padding(top = EchoListTheme.dimensions.s).widthIn(max = 210.dp),
-            horizontalArrangement = Arrangement.spacedBy(EchoListTheme.dimensions.s), verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.weight(1f).height(EchoListTheme.dimensions.xs).clip(EchoListTheme.shapes.small).background(EchoListTheme.materialColors.surfaceVariant)) {
-                val progress = if (totalTaskCount > 0) (doneTaskCount.toFloat() / totalTaskCount).coerceIn(0f, 1f) else 0f
-                Box(Modifier.fillMaxWidth(progress).fillMaxHeight().background(color))
+
+    BrowserItemCard(
+        title = title,
+        icon = Res.drawable.browser_tasks,
+        accent = color,
+        isFolder = false,
+        onClick = { onClick(id) },
+        modifier = modifier
+    ) {
+        Row(
+            Modifier
+                .padding(top = EchoListTheme.dimensions.s)
+                .widthIn(max = 210.dp),
+            horizontalArrangement = Arrangement.spacedBy(EchoListTheme.dimensions.s),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            Box(modifier = Modifier
+                .weight(1f)
+                .height(EchoListTheme.dimensions.xs)
+                .clip(EchoListTheme.shapes.small)
+                .background(EchoListTheme.materialColors.surfaceVariant)
+            ) {
+                val progress = when {
+                    totalTaskCount > 0 -> (doneTaskCount.toFloat() / totalTaskCount).coerceIn(0f, 1f)
+                    else -> 0f
+                }
+                Box(Modifier
+                    .fillMaxWidth(progress)
+                    .fillMaxHeight()
+                    .background(color)
+                )
             }
+
             Text("$doneTaskCount/$totalTaskCount", style = EchoListTheme.typography.labelSmall,
                 color = EchoListTheme.materialColors.onSurfaceVariant)
         }
+
         // TODO backend: replace these design preview counts with per-list urgency counts.
-        Row(Modifier.padding(top = EchoListTheme.dimensions.s), horizontalArrangement = Arrangement.spacedBy(EchoListTheme.dimensions.s)) {
-            DueCountPill(stringResource(Res.string.count_overdue, 1), DueDateTagUrgency.Overdue)
-            DueCountPill(stringResource(Res.string.count_due_soon, 2), DueDateTagUrgency.Warning)
+        Row(
+            modifier = Modifier.padding(top = EchoListTheme.dimensions.s),
+            horizontalArrangement = Arrangement.spacedBy(EchoListTheme.dimensions.s)
+        ) {
+            DueCountPill(
+                label = stringResource(Res.string.count_overdue, 1),
+                urgency = DueDateTagUrgency.Overdue
+            )
+            DueCountPill(
+                label = stringResource(Res.string.count_due_soon, 2),
+                urgency = DueDateTagUrgency.Warning
+            )
         }
     }
 }

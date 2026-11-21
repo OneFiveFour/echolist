@@ -43,10 +43,14 @@ internal fun FolderDraftItem(
             selection = if (draft.isRenaming) TextRange(0, draft.name.length) else TextRange(draft.name.length)
         ))
     }
-    val focusRequester = remember(draft.id) { FocusRequester() }
+
+    val focusRequester = remember(draft.id) {
+        FocusRequester()
+    }
+
     val focusManager = LocalFocusManager.current
     val keyboard = LocalSoftwareKeyboardController.current
-    // Shared by the button, hardware Enter and the IME action.
+
     val confirm = {
         if (draft.canConfirm) {
             keyboard?.hide()
@@ -54,6 +58,7 @@ internal fun FolderDraftItem(
             onConfirm()
         }
     }
+
     val cancel = {
         if (!draft.isSaving) {
             keyboard?.hide()
@@ -61,7 +66,11 @@ internal fun FolderDraftItem(
             onCancel()
         }
     }
-    var lastFocusRequest by rememberSaveable(draft.id) { mutableStateOf(-1L) }
+
+    var lastFocusRequest by rememberSaveable(draft.id) {
+        mutableStateOf(-1L)
+    }
+
     LaunchedEffect(draft.id, draft.focusRequest) {
         if (!draft.isSaving && lastFocusRequest != draft.focusRequest) {
             lastFocusRequest = draft.focusRequest
@@ -69,25 +78,52 @@ internal fun FolderDraftItem(
             keyboard?.show()
         }
     }
-    val savingLabel = stringResource(if (draft.isRenaming) Res.string.folder_rename_saving else Res.string.folder_create_saving)
-    val confirmLabel = stringResource(if (draft.isRenaming) Res.string.folder_rename_confirm else Res.string.folder_create_confirm)
-    val cancelLabel = stringResource(if (draft.isRenaming) Res.string.folder_rename_cancel else Res.string.folder_create_cancel)
+
+    val savingLabel = stringResource(
+        when {
+            draft.isRenaming -> Res.string.folder_rename_saving
+            else -> Res.string.folder_create_saving
+        }
+    )
+
+    val confirmLabel = stringResource(
+        when {
+            draft.isRenaming -> Res.string.folder_rename_confirm
+            else -> Res.string.folder_create_confirm
+        }
+    )
+
+    val cancelLabel = stringResource(
+        when {
+            draft.isRenaming -> Res.string.folder_rename_cancel
+            else -> Res.string.folder_create_cancel
+        }
+    )
+
     val nameLabel = stringResource(Res.string.folder_name)
+
     val colors = EchoListTheme.materialColors
+
     BrowserItemCard(
         title = "",
         icon = Res.drawable.browser_folder,
         accent = EchoListTheme.echoListColorScheme.folderColor,
         isFolder = true,
         onClick = null,
-        modifier = Modifier.testTag("browser-folder-draft").onPreviewKeyEvent { event ->
+        modifier = Modifier
+        .testTag("browser-folder-draft")
+        .onPreviewKeyEvent { event ->
             when (event.key) {
                 Key.Escape -> {
-                    if (event.type == KeyEventType.KeyUp) cancel()
+                    if (event.type == KeyEventType.KeyUp) {
+                        cancel()
+                    }
                     true
                 }
                 Key.Enter, Key.NumPadEnter -> {
-                    if (event.type == KeyEventType.KeyUp) confirm()
+                    if (event.type == KeyEventType.KeyUp) {
+                        confirm()
+                    }
                     true
                 }
                 else -> false
@@ -96,10 +132,15 @@ internal fun FolderDraftItem(
         titleContent = {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 BasicTextField(
-                    value = if (textFieldValue.text == draft.name) textFieldValue else textFieldValue.copy(text = draft.name),
+                    value = when (textFieldValue.text) {
+                        draft.name -> textFieldValue
+                        else -> textFieldValue.copy(text = draft.name)
+                    },
                     onValueChange = { value ->
                         textFieldValue = value
-                        if (value.text != draft.name) onNameChange(value.text)
+                        if (value.text != draft.name) {
+                            onNameChange(value.text)
+                        }
                     },
                     enabled = !draft.isSaving,
                     singleLine = true,
@@ -107,16 +148,22 @@ internal fun FolderDraftItem(
                     textStyle = EchoListTheme.typography.titleSmall.copy(color = colors.onSurface),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(onDone = { confirm() }),
-                    modifier = Modifier.weight(1f).padding(vertical = EchoListTheme.dimensions.m)
-                        .focusRequester(focusRequester).testTag("folder-draft-name")
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(vertical = EchoListTheme.dimensions.m)
+                        .focusRequester(focusRequester)
+                        .testTag("folder-draft-name")
                         .semantics {
                             contentDescription = nameLabel
                             draft.error?.let { error(it) }
                         }
                 )
+
                 if (draft.isSaving) {
                     CircularProgressIndicator(
-                        modifier = Modifier.padding(EchoListTheme.dimensions.m).size(EchoListTheme.dimensions.xl)
+                        modifier = Modifier
+                            .padding(EchoListTheme.dimensions.m)
+                            .size(EchoListTheme.dimensions.xl)
                             .semantics { contentDescription = savingLabel },
                         color = colors.primary
                     )
@@ -132,7 +179,10 @@ internal fun FolderDraftItem(
                             tint = if (draft.canConfirm) colors.primary else colors.onSurfaceVariant
                         )
                     }
-                    IconButton(onClick = { cancel() }, modifier = Modifier.testTag("folder-draft-cancel")) {
+                    IconButton(
+                        onClick = { cancel() },
+                        modifier = Modifier.testTag("folder-draft-cancel")
+                    ) {
                         Icon(Icons.Default.Close, cancelLabel, tint = colors.onSurfaceVariant)
                     }
                 }

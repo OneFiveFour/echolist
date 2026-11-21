@@ -11,16 +11,40 @@ import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.feature.browser.resources.*
 
 @Composable
-internal fun NoteItem(id: String, title: String, preview: String?, onClick: (String) -> Unit,
-    modifier: Modifier = Modifier) {
+internal fun NoteItem(
+    id: String,
+    title: String,
+    preview: String?,
+    onClick: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
     val color = EchoListTheme.echoListColorScheme.noteColor
-    BrowserItemCard(title, Res.drawable.browser_note, color, false, { onClick(id) }, modifier) {
+
+    BrowserItemCard(
+        title = title,
+        icon = Res.drawable.browser_note,
+        accent = color,
+        isFolder = false,
+        onClick = { onClick(id) },
+        modifier = modifier
+    ) {
         Spacer(Modifier.height(EchoListTheme.dimensions.s))
-        Box(Modifier.width(EchoListTheme.dimensions.xxl).height(EchoListTheme.dimensions.xxs).background(color))
+
+        Box(Modifier
+            .width(EchoListTheme.dimensions.xxl)
+            .height(EchoListTheme.dimensions.xxs)
+            .background(color)
+        )
+
         if (!preview.isNullOrEmpty()) {
-            Text(preview, modifier = Modifier.padding(top = EchoListTheme.dimensions.s),
+            Text(
+                text = preview,
+                modifier = Modifier.padding(top = EchoListTheme.dimensions.s),
                 style = EchoListTheme.typography.bodySmall,
-                color = EchoListTheme.materialColors.onSurfaceVariant, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                color = EchoListTheme.materialColors.onSurfaceVariant,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
         }
     }
 }
