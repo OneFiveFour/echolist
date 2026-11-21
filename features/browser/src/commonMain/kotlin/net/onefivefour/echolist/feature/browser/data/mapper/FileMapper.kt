@@ -46,7 +46,9 @@ internal object FileMapper {
                 id = it.id,
                 updatedAt = it.updated_at,
                 totalTaskCount = it.total_task_count,
-                doneTaskCount = it.done_task_count
+                doneTaskCount = it.done_task_count,
+                overdueTaskCount = it.overdue_task_count,
+                dueSoonTaskCount = it.due_soon_task_count
             )
         }
     )

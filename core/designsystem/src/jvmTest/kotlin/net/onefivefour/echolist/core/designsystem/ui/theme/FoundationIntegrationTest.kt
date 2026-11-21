@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.Switch
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -30,7 +31,7 @@ class FoundationIntegrationTest : FunSpec({
         val definedRoles = setOf(
             "primary", "onPrimary", "secondary", "onSecondary", "background", "onBackground",
             "surface", "onSurface", "surfaceVariant", "onSurfaceVariant", "error", "onError",
-            "outline", "outlineVariant", "surfaceContainerHigh"
+            "outline", "outlineVariant", "surfaceContainerHigh", "surfaceContainerHighest"
         )
         val roles = ColorScheme::class.java.declaredFields.filter {
             it.type == Long::class.javaPrimitiveType && !JavaModifier.isStatic(it.modifiers)
@@ -44,6 +45,33 @@ class FoundationIntegrationTest : FunSpec({
                 role.isAccessible = true
                 (role.getLong(scheme) == Color.Magenta.value.toLong()) shouldBe
                     (role.name !in definedRoles)
+            }
+        }
+    }
+
+    test("switch renders without diagnostic magenta in both modes and all toggle states") {
+        SwingUtilities.invokeAndWait {
+            for (isDarkTheme in listOf(false, true)) {
+                val image = renderComposeScene(240, 280) {
+                    EchoListTheme(isDarkTheme = isDarkTheme, themeManager = ThemeManager(listOf(EchoListDefaultTheme))) {
+                        Column {
+                            for (isEnabled in listOf(true, false)) {
+                                for (isChecked in listOf(false, true)) {
+                                    Switch(checked = isChecked, onCheckedChange = {}, enabled = isEnabled)
+                                }
+                            }
+                        }
+                    }
+                }
+                image.use {
+                    val bytes = requireNotNull(it.encodeToData()).bytes
+                    val rendered = ImageIO.read(ByteArrayInputStream(bytes))
+                    val hasMagenta = (0 until rendered.height).any { y ->
+                        (0 until rendered.width).any { x -> rendered.getRGB(x, y) == Color.Magenta.toArgb() }
+                    }
+                    hasMagenta shouldBe false
+                    File("build/switch-${if (isDarkTheme) "dark" else "light"}.png").writeBytes(bytes)
+                }
             }
         }
     }

@@ -15,6 +15,7 @@ import io.kotest.property.arbitrary.string
 import io.kotest.property.checkAll
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.datetime.LocalDate
 import net.onefivefour.echolist.core.networking.data.error.NetworkException
 import net.onefivefour.echolist.data.FakeDirectoryChangeNotifier
 import net.onefivefour.echolist.feature.browser.data.source.network.FakeFileRemoteDataSource
@@ -113,6 +114,28 @@ internal class FileRepositoryImplTest : FunSpec({
     }
 
     // -- ListFiles --
+
+    test("listFiles supplies the current local reference date on every request") {
+        val fake = FakeFileRemoteDataSource()
+        var today = LocalDate(2026, 11, 21)
+        val repo = FileRepositoryImpl(
+            fileRemoteDataSource = fake,
+            directoryChangedNotifier = FakeDirectoryChangeNotifier(),
+            dispatcher = Dispatchers.Unconfined,
+            currentDate = { today }
+        )
+
+        repo.listFiles("Projects").isSuccess shouldBe true
+        val firstRequest = requireNotNull(fake.lastListRequest)
+        firstRequest.parent_dir shouldBe "Projects"
+        val decoded = `file`.v1.ListFilesRequest.ADAPTER.decode(firstRequest.encode())
+        decoded.reference_date shouldBe "2026-11-21"
+
+        today = LocalDate(2026, 11, 22)
+        repo.listFiles("").isSuccess shouldBe true
+        fake.lastListRequest?.parent_dir shouldBe ""
+        fake.lastListRequest?.reference_date shouldBe "2026-11-22"
+    }
 
     test("listFiles returns mapped entries on success") {
         val protoEntries = listOf(

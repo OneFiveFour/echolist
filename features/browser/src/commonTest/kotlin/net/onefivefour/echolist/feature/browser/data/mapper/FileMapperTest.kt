@@ -111,6 +111,32 @@ internal class FileMapperTest : FunSpec({
 
     // -- Domain -> Proto transformations --
 
+    test("task-list urgency counts preserve missing, zero and populated values over the wire") {
+        for ((overdueTaskCount, dueSoonTaskCount) in listOf(null to null, 0 to 0, 2 to 5, null to 3, 4 to null)) {
+            val protoEntry = `file`.v1.FileEntry(
+                path = "tasks",
+                title = "Release checklist",
+                item_type = `file`.v1.ItemType.ITEM_TYPE_TASK_LIST,
+                task_list_metadata = `file`.v1.TaskListMetadata(
+                    id = "tasks-1",
+                    total_task_count = 10,
+                    done_task_count = 3,
+                    overdue_task_count = overdueTaskCount,
+                    due_soon_task_count = dueSoonTaskCount
+                )
+            )
+            val response = `file`.v1.ListFilesResponse(entries = listOf(protoEntry))
+            val decoded = `file`.v1.ListFilesResponse.ADAPTER.decode(response.encode())
+
+            val metadata = FileMapper.toDomain(decoded).single().metadata as FileMetadata.TaskList
+
+            metadata.totalTaskCount shouldBe 10
+            metadata.doneTaskCount shouldBe 3
+            metadata.overdueTaskCount shouldBe overdueTaskCount
+            metadata.dueSoonTaskCount shouldBe dueSoonTaskCount
+        }
+    }
+
     test("toProto transforms CreateFolderParams to CreateFolderRequest with snake_case fields") {
         val params = CreateFolderParams(
             parentDir = "/home/user",

@@ -36,7 +36,9 @@ internal val browserPreviewState = BrowserUiState(
                 id = "tasks-1",
                 updatedAt = 0L,
                 totalTaskCount = 8,
-                doneTaskCount = 3
+                doneTaskCount = 3,
+                overdueTaskCount = 1,
+                dueSoonTaskCount = 2
             )
         )
     )

@@ -143,6 +143,8 @@ internal fun FileOverview(
                             title = entry.title,
                             doneTaskCount = metadata.doneTaskCount,
                             totalTaskCount = metadata.totalTaskCount,
+                            overdueTaskCount = metadata.overdueTaskCount,
+                            dueSoonTaskCount = metadata.dueSoonTaskCount,
                             onClick = onTaskClick
                         )
 

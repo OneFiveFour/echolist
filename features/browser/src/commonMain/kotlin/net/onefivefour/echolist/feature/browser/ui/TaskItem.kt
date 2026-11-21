@@ -21,6 +21,8 @@ internal fun TaskListItem(
     title: String,
     doneTaskCount: Int,
     totalTaskCount: Int,
+    overdueTaskCount: Int?,
+    dueSoonTaskCount: Int?,
     onClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -63,19 +65,24 @@ internal fun TaskListItem(
                 color = EchoListTheme.materialColors.onSurfaceVariant)
         }
 
-        // TODO backend: replace these design preview counts with per-list urgency counts.
-        Row(
-            modifier = Modifier.padding(top = EchoListTheme.dimensions.s),
-            horizontalArrangement = Arrangement.spacedBy(EchoListTheme.dimensions.s)
-        ) {
-            DueCountPill(
-                label = stringResource(Res.string.count_overdue, 1),
-                urgency = DueDateTagUrgency.Overdue
-            )
-            DueCountPill(
-                label = stringResource(Res.string.count_due_soon, 2),
-                urgency = DueDateTagUrgency.Warning
-            )
+        if ((overdueTaskCount ?: 0) > 0 || (dueSoonTaskCount ?: 0) > 0) {
+            Row(
+                modifier = Modifier.padding(top = EchoListTheme.dimensions.s),
+                horizontalArrangement = Arrangement.spacedBy(EchoListTheme.dimensions.s)
+            ) {
+                if (overdueTaskCount != null && overdueTaskCount > 0) {
+                    DueCountPill(
+                        label = stringResource(Res.string.count_overdue, overdueTaskCount),
+                        urgency = DueDateTagUrgency.Overdue
+                    )
+                }
+                if (dueSoonTaskCount != null && dueSoonTaskCount > 0) {
+                    DueCountPill(
+                        label = stringResource(Res.string.count_due_soon, dueSoonTaskCount),
+                        urgency = DueDateTagUrgency.Warning
+                    )
+                }
+            }
         }
     }
 }
@@ -89,6 +96,8 @@ private fun TaskListItemPreview() {
             title = "Release checklist",
             doneTaskCount = 3,
             totalTaskCount = 8,
+            overdueTaskCount = 1,
+            dueSoonTaskCount = 2,
             onClick = {}
         )
     }

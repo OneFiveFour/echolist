@@ -32,6 +32,8 @@ internal sealed interface FileMetadata {
         val id: String,
         val updatedAt: Long,
         val totalTaskCount: Int,
-        val doneTaskCount: Int
+        val doneTaskCount: Int,
+        val overdueTaskCount: Int? = null,
+        val dueSoonTaskCount: Int? = null
     ) : FileMetadata
 }

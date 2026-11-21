@@ -45,6 +45,7 @@ Future themes remain swappable through `ColorTheme` / `ThemeManager`.
 | surface | #FFFFFF | #181C1B |
 | surfaceVariant | #E8ECE8 | #252B29 |
 | surfaceContainerHigh | #E8ECE8 | #252B29 |
+| surfaceContainerHighest | #E8ECE8 | #252B29 |
 | primary | #315F59 | #91D5C9 |
 | onPrimary | #FFFFFF | #0B3934 |
 | secondary | #635A78 | #CBC1E7 |
@@ -70,7 +71,9 @@ Material color roles without a Figma or explicitly approved component definition
 are **Color.Magenta** in both modes, including undefined container, inverse, tint,
 scrim and fixed roles. `surfaceContainerHigh` is approved for the Material
 pull-to-refresh indicator and uses the same neutral tones as `surfaceVariant`. This is an
-intentional diagnostic: do not substitute Material defaults or invent colors to
+intentional diagnostic. `surfaceContainerHighest` is approved for the inactive
+Material switch track (including Auto Delete) and uses the same neutral palette
+in light and dark mode. Do not substitute Material defaults or invent colors to
 hide it. New role colors require a design decision.
 
 ## Typography

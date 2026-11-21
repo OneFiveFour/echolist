@@ -23,6 +23,15 @@
 
 - Boolean variables, properties and parameters must use a meaningful predicate prefix such as `is`, `are`, `has`, `can` or `should` (for example `isDesktop`, `isPasswordVisible`, `hasErrors`). Apply this to inferred Boolean types, delegated state and tests as well as explicitly typed Booleans. Name Boolean-returning functions as predicates where appropriate. Preserve names required by external APIs and overrides.
 
+## Kotlin syntax and formatting preferences
+
+- Use the reviewed `features/login` and `features/browser` sources as the style reference for future code. Preserve surrounding formatting when editing; do not reformat unrelated code.
+- Prefer descriptive, context-specific parameter and property names such as `loginUiState`, `browserUiState`, `taskListId` and `onFolderClick`. Use `on...` for event callbacks and `navTo...` for navigation callbacks where that distinction is useful. Short local names such as `current`, `value` or `it` are fine when their meaning is clear.
+- Prefer named arguments for larger calls and calls where names clarify meaning, especially composables, model construction and Boolean arguments. Keep simple, obvious calls positional when that reads naturally; naming every argument is not required.
+- Prefer `when` for conditional value selection, including two-branch choices, and for type/state dispatch. Use `if` for guards, early returns and conditional execution or UI content. Short inline `if` expressions and straightforward `if`/`else` UI branches remain acceptable; do not mechanically convert all conditions.
+- Use four-space indentation. Keep short calls and expressions compact; break larger parameter/argument lists across lines, usually one per line. Split long modifier chains into indented dot-prefixed lines. Use blank lines to separate logical steps and sibling UI blocks when helpful.
+- Follow local formatting for compact lambdas such as `update { it.copy(...) }`, modifier placement and closing parentheses. Trailing commas and exact wrapping vary in the reference code; do not impose them uniformly. `.editorconfig` allows both compact and multiline signatures and sets a 120-character line limit.
+
 ## Boundaries and verification
 
 - UI depends on domain contracts; data implements them; DI wires implementations. Domain must not import UI, platform UI, Koin, Ktor, SQLDelight, generated protocol messages or data implementations.

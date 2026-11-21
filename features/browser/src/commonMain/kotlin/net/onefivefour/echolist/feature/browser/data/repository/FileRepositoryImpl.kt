@@ -5,6 +5,10 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.todayIn
+import kotlin.time.Clock
 import net.onefivefour.echolist.core.files.domain.DirectoryChangeNotifier
 import net.onefivefour.echolist.feature.browser.data.mapper.FileMapper
 import net.onefivefour.echolist.feature.browser.data.source.network.FileRemoteDataSource
@@ -18,7 +22,8 @@ import net.onefivefour.echolist.feature.browser.domain.repository.FileRepository
 internal class FileRepositoryImpl(
     private val fileRemoteDataSource: FileRemoteDataSource,
     private val directoryChangedNotifier: DirectoryChangeNotifier,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.Default
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
+    private val currentDate: () -> LocalDate = { Clock.System.todayIn(TimeZone.currentSystemDefault()) }
 ) : FileRepository {
 
     override suspend fun createFolder(params: CreateFolderParams): Result<Folder> =
@@ -39,7 +44,10 @@ internal class FileRepositoryImpl(
     override suspend fun listFiles(parentDir: String): Result<List<FileEntry>> =
         withContext(dispatcher) {
             try {
-                val request = ListFilesRequest(parent_dir = parentDir)
+                val request = ListFilesRequest(
+                    parent_dir = parentDir,
+                    reference_date = currentDate().toString()
+                )
                 val response = fileRemoteDataSource.listFiles(request)
                 Result.success(FileMapper.toDomain(response))
             } catch (e: CancellationException) {

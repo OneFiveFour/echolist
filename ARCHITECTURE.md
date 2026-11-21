@@ -151,8 +151,12 @@ The former create/rename dialogs, states and separate ViewModels have been remov
 Browser entries sort folders first by case-insensitive name, then notes and task lists
 together by ascending backend `updated_at`. Equal timestamps preserve server order;
 missing timestamps use the protocol's epoch fallback (`0`). Shared `DueCountPill` components
-render urgency summaries. Per-list urgency counts and the sidebar due badge are explicit
-UI placeholders until backend count fields are available.
+render urgency summaries. Per-list urgency counts come from the optional
+`overdue_task_count` and `due_soon_task_count` fields in `TaskListMetadata`; missing
+or zero counts hide the corresponding pill. Each listing request supplies the current
+local calendar date as `reference_date`, which the backend requires to include counts.
+The browser ViewModel carries these
+metadata through its existing file-entry state. The sidebar due badge remains a UI placeholder.
 
 ## Navigation and results
 
