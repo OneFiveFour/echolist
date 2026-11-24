@@ -6,6 +6,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.feature.browser.resources.*
@@ -21,6 +22,7 @@ internal fun BottomNavigation(
     navigateToTasksSummary: () -> Unit
 ) {
     Surface(
+        modifier = Modifier.padding(bottom = EchoListTheme.dimensions.m),
         shape = EchoListTheme.shapes.extraLarge,
         color = EchoListTheme.materialColors.surface,
         shadowElevation = EchoListTheme.dimensions.l,

@@ -1,9 +1,11 @@
 package net.onefivefour.echolist.feature.browser.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import net.onefivefour.echolist.core.designsystem.ui.components.ElBackButton
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
@@ -33,7 +35,7 @@ internal fun BrowserLayout(
         )
 
         else -> BrowserLayoutSpacing(
-            horizontal = dimensions.xl,
+            horizontal = dimensions.xl - dimensions.xs,
             top = dimensions.l,
             contentGap = dimensions.xl
         )
@@ -45,7 +47,9 @@ internal fun BrowserLayout(
     val contentPadding = PaddingValues(
         bottom = when {
             hasFloatingActions -> {
-                dimensions.buttonMinHeight * actionCount + dimensions.m * (actionCount - 1) + dimensions.xl * 2
+                dimensions.buttonMinHeight * actionCount +
+                    dimensions.m * (actionCount - 1) +
+                    dimensions.l * 2
             }
 
             else -> dimensions.l
@@ -79,7 +83,7 @@ internal fun BrowserLayout(
         Column(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(bottom = dimensions.xl),
+                .padding(bottom = dimensions.l),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(dimensions.m)
         ) {

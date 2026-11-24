@@ -2,6 +2,7 @@ package net.onefivefour.echolist.feature.browser.ui
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -118,7 +119,24 @@ private fun BrowserScreenPhonePreview() {
     EchoListTheme {
         BrowserScreen(
             browserUiState = browserPreviewState,
-            canNavigateBack = true
+            canNavigateBack = true,
+            onLogoutClick = { }
+        )
+    }
+}
+
+@PreviewPhoneLightDark
+@Composable
+private fun BrowserScreenPhoneHomePreview() {
+    EchoListTheme {
+        BrowserScreen(
+            browserUiState = browserPreviewState.copy(
+                breadcrumbs = listOf(
+                    BreadcrumbItem("Home", "")
+                )
+            ),
+            canNavigateBack = true,
+            onLogoutClick = { }
         )
     }
 }
@@ -129,7 +147,8 @@ private fun BrowserScreenDesktopPreview() {
     EchoListTheme {
         BrowserScreen(
             browserUiState = browserPreviewState,
-            canNavigateBack = true
+            canNavigateBack = true,
+            onLogoutClick = { }
         )
     }
 }

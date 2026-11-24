@@ -12,6 +12,7 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewPhoneLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.feature.browser.ui.phone.PhoneBrowserNavigation
@@ -50,7 +51,7 @@ internal fun BrowserNavigationScaffold(
                 isDesktop -> NavigationSuiteType.NavigationRail
                 else -> NavigationSuiteType.NavigationBar
             },
-            containerColor = EchoListTheme.materialColors.background,
+            containerColor = Color.Transparent,
             contentColor = EchoListTheme.materialColors.onBackground,
             content = content
         )

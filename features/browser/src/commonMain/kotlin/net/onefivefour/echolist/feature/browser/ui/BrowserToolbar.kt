@@ -22,9 +22,12 @@ internal fun BrowserToolbar(
 ) {
     val colors = EchoListTheme.materialColors
 
-    Row(verticalAlignment = Alignment.Bottom) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
 
-        Box(Modifier.weight(1f)) {
+        Box(Modifier
+            .weight(1f)
+            .padding(start = EchoListTheme.dimensions.l + EchoListTheme.dimensions.borderWidth)
+        ) {
             heading()
         }
 
