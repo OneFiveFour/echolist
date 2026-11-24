@@ -1,5 +1,6 @@
 package net.onefivefour.echolist.feature.browser.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -14,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.platform.LocalFocusManager
@@ -25,6 +27,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.ImeAction
+import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.feature.browser.resources.*
 import org.jetbrains.compose.resources.stringResource
@@ -196,6 +199,29 @@ internal fun FolderDraftItem(
                 style = EchoListTheme.typography.bodySmall,
                 modifier = Modifier.testTag("folder-draft-error")
             )
+        }
+    }
+}
+
+@PreviewComponentLightDark
+@Composable
+private fun FolderDraftItemPreview() {
+    EchoListTheme(modifier = Modifier) {
+        Column(verticalArrangement = Arrangement.spacedBy(EchoListTheme.dimensions.m)) {
+            // focusRequest = -1 keeps previews from requesting focus and showing the keyboard.
+            listOf(
+                FolderDraft(id = 1, focusRequest = -1),
+                FolderDraft(id = 2, name = "Projects", focusRequest = -1),
+                FolderDraft(id = 3, name = "Projects", error = "Folder already exists", focusRequest = -1),
+                FolderDraft(id = 4, name = "Projects", isSaving = true, focusRequest = -1)
+            ).forEach { folderDraft ->
+                FolderDraftItem(
+                    draft = folderDraft,
+                    onNameChange = {},
+                    onConfirm = {},
+                    onCancel = {}
+                )
+            }
         }
     }
 }

@@ -69,7 +69,6 @@ internal fun BrowserScreen(
                 isDesktop = isDesktop,
                 gridState = gridState,
                 contentPadding = contentPadding,
-                createItemCallbacks = createItemCallbacks,
                 folderDraft = browserUiState.folderDraft,
                 onFolderNameChange = onFolderNameChange,
                 onConfirmFolder = onConfirmFolder,

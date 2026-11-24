@@ -24,7 +24,6 @@ internal fun FileOverview(
     isDesktop: Boolean = false,
     gridState: LazyGridState = rememberLazyGridState(),
     contentPadding: PaddingValues = PaddingValues(bottom = EchoListTheme.dimensions.l),
-    createItemCallbacks: CreateItemCallbacks = CreateItemCallbacks(),
     folderDraft: FolderDraft? = null,
     onFolderNameChange: (String) -> Unit = {},
     onConfirmFolder: () -> Unit = {},
@@ -33,7 +32,7 @@ internal fun FileOverview(
 ) {
 
     if (!isLoading && errorMessage == null && fileEntries.isEmpty() && folderDraft == null) {
-        EmptyFolderContent(createItemCallbacks, modifier.padding(contentPadding))
+        EmptyFolderContent(modifier.padding(contentPadding))
         return
     }
 

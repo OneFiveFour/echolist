@@ -31,7 +31,6 @@ private val EmptyFolderTextMaxWidth = 340.dp
 
 @Composable
 internal fun EmptyFolderContent(
-    createItemCallbacks: CreateItemCallbacks,
     modifier: Modifier = Modifier
 ) {
     val dimensions = EchoListTheme.dimensions
@@ -67,8 +66,6 @@ internal fun EmptyFolderContent(
                 color = EchoListTheme.materialColors.onSurfaceVariant,
                 textAlign = TextAlign.Center
             )
-            Spacer(Modifier.height(dimensions.xl))
-            EmptyFolderCreateButton(createItemCallbacks)
         }
     }
 }

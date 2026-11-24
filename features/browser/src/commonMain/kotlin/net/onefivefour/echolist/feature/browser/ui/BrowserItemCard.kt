@@ -64,6 +64,12 @@ internal fun BrowserItemCard(
         else -> "browser-file"
     }
 
+    val isDraftItem = onClick == null
+    val backgroundAlpha = when {
+        isDraftItem -> .7f
+        else -> 1f
+    }
+
     Surface(
         modifier = modifier
             .fillMaxWidth()
@@ -90,7 +96,7 @@ internal fun BrowserItemCard(
                     .fillMaxSize()
                     .padding(start = EchoListTheme.dimensions.xs)
                     .clip(EchoListTheme.shapes.large)
-                    .background(EchoListTheme.materialColors.surface)
+                    .background(EchoListTheme.materialColors.surface.copy(alpha = backgroundAlpha))
                     .padding(dimensions.m),
                 verticalAlignment = when {
                     isFolder -> Alignment.CenterVertically
@@ -144,6 +150,25 @@ private fun BrowserItemCardPreview() {
             accent = EchoListTheme.echoListColorScheme.folderColor,
             isFolder = true,
             onClick = {},
+        ) {
+            Text(
+                text = "3 items",
+                color = EchoListTheme.echoListColorScheme.folderColor
+            )
+        }
+    }
+}
+
+@PreviewComponentLightDark
+@Composable
+private fun BrowserItemCardDraftPreview() {
+    EchoListTheme(modifier = Modifier) {
+        BrowserItemCard(
+            title = "Design",
+            icon = Res.drawable.browser_folder,
+            accent = EchoListTheme.echoListColorScheme.folderColor,
+            isFolder = true,
+            onClick = null,
         ) {
             Text(
                 text = "3 items",
