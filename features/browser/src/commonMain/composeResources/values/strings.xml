@@ -19,6 +19,7 @@
     <string name="create_item">Create item</string>
     <string name="rename_folder">Rename folder</string>
     <string name="delete_folder">Delete folder</string>
+    <string name="logout">Logout</string>
     <string name="browser_empty_title">Room for something new</string>
     <string name="browser_empty">This folder is empty. Add a folder, note, or task list when you’re ready.</string>
     <string name="browser_empty_create">Create here</string>

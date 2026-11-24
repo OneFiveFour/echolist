@@ -17,7 +17,8 @@ import org.jetbrains.compose.resources.stringResource
 internal fun BrowserToolbar(
     browserUiState: BrowserUiState,
     heading: @Composable () -> Unit,
-    onDeleteCurrentFolderClick: () -> Unit
+    onDeleteCurrentFolderClick: () -> Unit,
+    onLogoutClick: (() -> Unit)? = null
 ) {
     val colors = EchoListTheme.materialColors
 
@@ -39,6 +40,16 @@ internal fun BrowserToolbar(
                 )
             }
         }
+
+        if (onLogoutClick != null) {
+            IconButton(onClick = onLogoutClick) {
+                Icon(
+                    painter = painterResource(resource = Res.drawable.ic_logout),
+                    contentDescription = stringResource(Res.string.logout),
+                    tint = colors.primary
+                )
+            }
+        }
     }
 }
 
@@ -55,6 +66,7 @@ private fun BrowserToolbarPreview() {
                 )
             },
             onDeleteCurrentFolderClick = {},
+            onLogoutClick = {}
         )
     }
 }

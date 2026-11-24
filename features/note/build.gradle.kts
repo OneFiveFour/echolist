@@ -11,6 +11,7 @@ kotlin.sourceSets.getByName("commonMain").dependencies {
     implementation(project(":core:networking"))
     implementation(project(":core:protocol"))
     implementation(project(":core:database"))
+    implementation(project(":core:session"))
     implementation(libs.sqldelight.runtime)
     implementation(libs.sqldelight.coroutines)
     implementation(libs.compose.materialIconsExtended)

@@ -3,6 +3,9 @@ package net.onefivefour.echolist
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -28,6 +31,10 @@ import androidx.navigationevent.compose.rememberNavigationEventState
 import kotlinx.coroutines.launch
 import net.onefivefour.echolist.app.resources.Res
 import net.onefivefour.echolist.app.resources.ic_arrow_back
+import net.onefivefour.echolist.app.resources.logout_cancel
+import net.onefivefour.echolist.app.resources.logout_failed_message
+import net.onefivefour.echolist.app.resources.logout_failed_title
+import net.onefivefour.echolist.app.resources.logout_retry
 import net.onefivefour.echolist.app.resources.navigate_back
 import net.onefivefour.echolist.core.designsystem.ui.components.RoundIconButton
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
@@ -45,6 +52,7 @@ import net.onefivefour.echolist.feature.tasksettings.ui.TaskSettingsFeature
 import net.onefivefour.echolist.feature.taskssummary.ui.TasksSummaryFeature
 import net.onefivefour.echolist.ui.AuthState
 import net.onefivefour.echolist.ui.AuthViewModel
+import net.onefivefour.echolist.ui.LogoutState
 import net.onefivefour.echolist.ui.navigation.BrowserRoute
 import net.onefivefour.echolist.ui.navigation.EditNoteRoute
 import net.onefivefour.echolist.ui.navigation.EditTaskListRoute
@@ -77,6 +85,7 @@ fun App(
         val reminderScope = rememberCoroutineScope()
 
         val authState by authViewModel.authState.collectAsStateWithLifecycle()
+        val logoutState by authViewModel.logoutState.collectAsStateWithLifecycle()
 
         LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
             reminderScope.launch {
@@ -103,14 +112,67 @@ fun App(
             AuthState.Loading -> Unit
             AuthState.Unauthenticated -> UnauthenticatedApp(authViewModel)
             AuthState.Authenticated -> AuthenticatedApp(
+                onLogout = authViewModel::logout,
                 notificationTarget = notificationTarget,
                 onNotificationTargetConsumed = onNotificationTargetConsumed,
                 onDebugReminder = onDebugReminder
             )
         }
 
+        if (authState == AuthState.Authenticated && logoutState == LogoutState.Failed) {
+            LogoutFailedDialog(
+                onRetry = authViewModel::logout,
+                onDismiss = authViewModel::dismissLogoutError
+            )
+        }
+
         overlayContent()
     }
+}
+
+@Composable
+private fun LogoutFailedDialog(
+    onRetry: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    val colors = EchoListTheme.materialColors
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = colors.surface,
+        titleContentColor = colors.onSurface,
+        textContentColor = colors.onSurfaceVariant,
+        title = {
+            Text(
+                text = stringResource(Res.string.logout_failed_title),
+                style = EchoListTheme.typography.titleLarge
+            )
+        },
+        text = {
+            Text(
+                text = stringResource(Res.string.logout_failed_message),
+                style = EchoListTheme.typography.bodyMedium
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = onRetry) {
+                Text(
+                    text = stringResource(Res.string.logout_retry),
+                    style = EchoListTheme.typography.labelLarge,
+                    color = colors.primary
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(
+                    text = stringResource(Res.string.logout_cancel),
+                    style = EchoListTheme.typography.labelLarge,
+                    color = colors.primary
+                )
+            }
+        }
+    )
 }
 
 @Composable
@@ -120,6 +182,7 @@ private fun UnauthenticatedApp(authViewModel: AuthViewModel) {
 
 @Composable
 private fun AuthenticatedApp(
+    onLogout: () -> Unit,
     notificationTarget: TaskListNotificationTarget?,
     onNotificationTargetConsumed: () -> Unit,
     onDebugReminder: ((String, String) -> Unit)?
@@ -162,6 +225,7 @@ private fun AuthenticatedApp(
                 discardBrowserDraft = discardDraft
             },
             onLeaveBrowser = { discardBrowserDraft() },
+            onLogout = onLogout,
             onDebugReminder = onDebugReminder
         )
 
@@ -192,6 +256,7 @@ private fun AuthenticatedNavDisplay(
     isBrowserNavigationBlocked: Boolean,
     onBrowserNavigationStateChange: (Boolean, () -> Unit) -> Unit,
     onLeaveBrowser: () -> Unit,
+    onLogout: () -> Unit,
     onDebugReminder: ((String, String) -> Unit)?
 ) {
     NavDisplay(
@@ -228,6 +293,7 @@ private fun AuthenticatedNavDisplay(
                     navToTaskList = { backStack.add(EditTaskListRoute(browserRoute.parentDir, it)) },
                     navToRemindersSummary = { backStack.add(RemindersSummaryRoute) },
                     navToTasksSummary = { backStack.add(TasksSummaryRoute(browserRoute.parentDir)) },
+                    onLogout = onLogout,
                     onBack = { backStack.removeLastOrNull() }
                 )
             }

@@ -1,5 +1,12 @@
 package net.onefivefour.echolist.core.session.data.repository
 
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import net.onefivefour.echolist.core.networking.data.error.NetworkException
 import net.onefivefour.echolist.core.session.domain.SecureStorage
 import net.onefivefour.echolist.core.session.domain.StorageKeys
 import net.onefivefour.echolist.core.networking.data.client.ConnectRpcClient
@@ -12,6 +19,9 @@ internal class AuthRepositoryImpl(
     private val client: ConnectRpcClient,
     private val networkConfigProvider: NetworkConfigProvider
 ) : AuthRepository {
+
+    // Serializes refresh and logout so logout always sends the most recently rotated refresh token.
+    private val refreshTokenMutex = Mutex()
 
     override suspend fun login(
         baseUrl: String,
@@ -43,17 +53,17 @@ internal class AuthRepositoryImpl(
         )
     }
 
-    override suspend fun refreshToken(): Result<String> {
+    override suspend fun refreshToken(): Result<String> = refreshTokenMutex.withLock {
         val baseUrl = secureStorage.get(StorageKeys.BACKEND_URL)
-            ?: return Result.failure(IllegalStateException("No backend URL stored"))
+            ?: return@withLock Result.failure(IllegalStateException("No backend URL stored"))
         val refreshToken = secureStorage.get(StorageKeys.REFRESH_TOKEN)
-            ?: return Result.failure(IllegalStateException("No refresh token stored"))
+            ?: return@withLock Result.failure(IllegalStateException("No refresh token stored"))
 
         networkConfigProvider.updateBaseUrl(baseUrl)
 
         val request = auth.v1.RefreshTokenRequest(refresh_token = refreshToken)
 
-        return client.call(
+        client.call(
             path = "/auth.v1.AuthService/RefreshToken",
             request = request,
             requestSerializer = { auth.v1.RefreshTokenRequest.ADAPTER.encode(it) },
@@ -68,6 +78,45 @@ internal class AuthRepositoryImpl(
             response.access_token
         }
     }
+
+    override suspend fun logout(): Result<Unit> = refreshTokenMutex.withLock {
+        val baseUrl = secureStorage.get(StorageKeys.BACKEND_URL)
+        val refreshToken = secureStorage.get(StorageKeys.REFRESH_TOKEN)
+        if (baseUrl == null || refreshToken == null) {
+            // Without a refresh token there is no server session this device can revoke.
+            clearAuth()
+            return@withLock Result.success(Unit)
+        }
+
+        networkConfigProvider.updateBaseUrl(baseUrl)
+
+        // Public client: no Authorization header and no auth interceptor, so a 401 never triggers a refresh.
+        val result = client.call(
+            path = "/auth.v1.AuthService/Logout",
+            request = auth.v1.LogoutRequest(refresh_token = refreshToken),
+            requestSerializer = { auth.v1.LogoutRequest.ADAPTER.encode(it) },
+            responseDeserializer = { auth.v1.LogoutResponse.ADAPTER.decode(it) }
+        )
+        currentCoroutineContext().ensureActive()
+
+        val failure = result.exceptionOrNull()
+        when {
+            failure == null -> {
+                clearAuth()
+                Result.success(Unit)
+            }
+            failure is CancellationException -> throw failure
+            // 401 means invalid or expired: nothing was revoked, but the session is unusable anyway.
+            failure is NetworkException.ClientError && failure.code == UNAUTHORIZED -> {
+                clearAuth()
+                Result.success(Unit)
+            }
+            // Anything else leaves the revocation unconfirmed, so tokens stay for a retry.
+            else -> Result.failure(AuthFailure(AuthErrorMapper.fromNetworkException(failure)))
+        }
+    }
+
+    override fun observeExternalLogout(): Flow<Unit> = secureStorage.observeDeletions(StorageKeys.ACCESS_TOKEN)
 
     override fun isAuthenticated(): Boolean {
         return secureStorage.get(StorageKeys.ACCESS_TOKEN) != null
@@ -84,5 +133,9 @@ internal class AuthRepositoryImpl(
 
     override fun getBaseUrl(): String? {
         return secureStorage.get(StorageKeys.BACKEND_URL)
+    }
+
+    private companion object {
+        const val UNAUTHORIZED = 401
     }
 }

@@ -18,6 +18,7 @@ fun BrowserFeature(
     navToTaskList: (String?) -> Unit,
     navToRemindersSummary: () -> Unit,
     navToTasksSummary: () -> Unit,
+    onLogout: (() -> Unit)? = null,
     onNavigationStateChange: (isBlocked: Boolean, discardDraft: () -> Unit) -> Unit = { _, _ -> },
     onBack: () -> Unit = {}
 ) {
@@ -84,5 +85,7 @@ fun BrowserFeature(
         navToTasksSummary = { leaveBrowserWith(navToTasksSummary) },
 
         onRefresh = browserViewModel::refresh,
+
+        onLogoutClick = onLogout?.let { logout -> { leaveBrowserWith(logout) } },
     )
 }

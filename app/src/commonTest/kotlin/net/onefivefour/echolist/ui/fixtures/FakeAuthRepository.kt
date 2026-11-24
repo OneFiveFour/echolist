@@ -24,6 +24,11 @@ open class FakeAuthRepository(
         return Result.failure(UnsupportedOperationException("Not used in login tests"))
     }
 
+    override suspend fun logout(): Result<Unit> {
+        authenticated = false
+        return Result.success(Unit)
+    }
+
     override fun isAuthenticated(): Boolean = authenticated
 
     override fun clearAuth() {

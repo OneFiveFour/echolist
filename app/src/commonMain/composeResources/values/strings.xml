@@ -1,4 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="navigate_back">Navigate back</string>
+    <string name="logout_failed_title">Logout not confirmed</string>
+    <string name="logout_failed_message">Logout not confirmed, please try again.</string>
+    <string name="logout_retry">Retry</string>
+    <string name="logout_cancel">Cancel</string>
 </resources>

@@ -54,6 +54,8 @@ class AuthInterceptorPropertyTest : FunSpec({
 
         override suspend fun refreshToken(): Result<String> = refreshResult()
 
+        override suspend fun logout(): Result<Unit> = Result.success(Unit)
+
         override fun isAuthenticated(): Boolean =
             storage.get(StorageKeys.ACCESS_TOKEN) != null
 

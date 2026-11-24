@@ -32,6 +32,7 @@ internal fun BrowserScreen(
     onFolderLongClick: (path: String) -> Unit = {},
     onNoteClick: (noteId: String) -> Unit = {},
     onTaskClick: (taskListId: String) -> Unit = {},
+    onLogoutClick: (() -> Unit)? = null,
 ) {
     val isDesktop = EchoListTheme.adaptiveInfo.windowSizeClass
         .isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)
@@ -46,7 +47,8 @@ internal fun BrowserScreen(
                     else -> PhoneBrowserHeading(browserUiState.breadcrumbs, onFolderClick)
                 }
             },
-            onDeleteCurrentFolderClick = onDeleteCurrentFolderClick
+            onDeleteCurrentFolderClick = onDeleteCurrentFolderClick,
+            onLogoutClick = onLogoutClick
         )
     }
 

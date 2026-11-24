@@ -20,7 +20,13 @@ import net.onefivefour.echolist.core.notifications.domain.NotificationAccountPro
 
 private val compositionModule = module {
     single<NotificationAccountProvider> { NotificationAccount(get()) }
-    viewModel { AuthViewModel(authRepository = get(), authEventBus = get()) }
+    viewModel {
+        AuthViewModel(
+            authRepository = get(),
+            authEventBus = get(),
+            sessionDataCleaners = getAll()
+        )
+    }
     viewModel { TaskSettingsChannels() }
 }
 
