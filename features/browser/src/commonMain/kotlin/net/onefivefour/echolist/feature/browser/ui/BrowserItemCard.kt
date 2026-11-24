@@ -140,7 +140,7 @@ private fun BrowserItemCardPreview() {
     EchoListTheme(modifier = Modifier) {
         BrowserItemCard(
             title = "Design",
-            icon = Res.drawable.browser_home,
+            icon = Res.drawable.browser_folder,
             accent = EchoListTheme.echoListColorScheme.folderColor,
             isFolder = true,
             onClick = {},

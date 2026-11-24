@@ -1,5 +1,6 @@
 package net.onefivefour.echolist.feature.browser.ui
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
@@ -11,6 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
@@ -25,6 +27,10 @@ internal fun CreateItemButton(
     createItemCallbacks: CreateItemCallbacks
 ) {
     var isMenuExpanded by remember { mutableStateOf(false) }
+    val buttonRotation by animateFloatAsState(
+        targetValue = if (isMenuExpanded) 45f else 0f,
+        label = "buttonRotation"
+    )
 
     Box {
         Surface(
@@ -32,7 +38,10 @@ internal fun CreateItemButton(
             shape = EchoListTheme.shapes.extraLarge,
             color = EchoListTheme.materialColors.primary,
             shadowElevation = EchoListTheme.dimensions.m,
-            modifier = Modifier.size(EchoListTheme.dimensions.buttonMinHeight).testTag("browser-create")
+            modifier = Modifier
+                .rotate(buttonRotation)
+                .size(EchoListTheme.dimensions.buttonMinHeight)
+                .testTag("browser-create")
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Icon(
