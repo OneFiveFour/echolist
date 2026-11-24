@@ -1,7 +1,6 @@
 package net.onefivefour.echolist.feature.browser.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -12,8 +11,19 @@ import net.onefivefour.echolist.core.designsystem.ui.components.DueCountPill
 import net.onefivefour.echolist.core.designsystem.ui.components.DueDateTagUrgency
 import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
-import net.onefivefour.echolist.feature.browser.resources.*
 import org.jetbrains.compose.resources.stringResource
+import net.onefivefour.echolist.feature.browser.resources.Res
+import net.onefivefour.echolist.feature.browser.resources.browser_tasks
+import net.onefivefour.echolist.feature.browser.resources.count_due_soon
+import net.onefivefour.echolist.feature.browser.resources.count_overdue
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 
 @Composable
 internal fun TaskListItem(
@@ -43,26 +53,30 @@ internal fun TaskListItem(
             horizontalArrangement = Arrangement.spacedBy(EchoListTheme.dimensions.s),
             verticalAlignment = Alignment.CenterVertically
         ) {
-
-            Box(modifier = Modifier
-                .weight(1f)
-                .height(EchoListTheme.dimensions.xs)
-                .clip(EchoListTheme.shapes.small)
-                .background(EchoListTheme.materialColors.surfaceVariant)
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(EchoListTheme.dimensions.xs)
+                    .clip(EchoListTheme.shapes.small)
+                    .background(EchoListTheme.materialColors.surfaceVariant)
             ) {
                 val progress = when {
                     totalTaskCount > 0 -> (doneTaskCount.toFloat() / totalTaskCount).coerceIn(0f, 1f)
                     else -> 0f
                 }
-                Box(Modifier
-                    .fillMaxWidth(progress)
-                    .fillMaxHeight()
-                    .background(color)
+                Box(
+                    Modifier
+                        .fillMaxWidth(progress)
+                        .fillMaxHeight()
+                        .background(color)
                 )
             }
 
-            Text("$doneTaskCount/$totalTaskCount", style = EchoListTheme.typography.labelSmall,
-                color = EchoListTheme.materialColors.onSurfaceVariant)
+            Text(
+                "$doneTaskCount/$totalTaskCount",
+                style = EchoListTheme.typography.labelSmall,
+                color = EchoListTheme.materialColors.onSurfaceVariant
+            )
         }
 
         if ((overdueTaskCount ?: 0) > 0 || (dueSoonTaskCount ?: 0) > 0) {

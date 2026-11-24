@@ -5,11 +5,22 @@ import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.*
 import net.onefivefour.echolist.core.files.domain.DirectoryChangeNotifier
 import net.onefivefour.echolist.data.FakeDirectoryChangeNotifier
-import net.onefivefour.echolist.feature.browser.domain.model.*
 import net.onefivefour.echolist.feature.browser.domain.repository.FileRepository
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runCurrent
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import net.onefivefour.echolist.feature.browser.domain.model.CreateFolderParams
+import net.onefivefour.echolist.feature.browser.domain.model.DeleteFolderParams
+import net.onefivefour.echolist.feature.browser.domain.model.FileEntry
+import net.onefivefour.echolist.feature.browser.domain.model.FileMetadata
+import net.onefivefour.echolist.feature.browser.domain.model.Folder
+import net.onefivefour.echolist.feature.browser.domain.model.ItemType
+import net.onefivefour.echolist.feature.browser.domain.model.UpdateFolderParams
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class BrowserFolderCreationTest : FunSpec({
@@ -87,7 +98,9 @@ internal class BrowserFolderCreationTest : FunSpec({
 
     test("failure retains the submitted name and supports editing and retry") {
         runTest(dispatcher) {
-            val repository = FolderCreationRepository().apply { create = { Result.failure(Exception("Already exists")) } }
+            val repository = FolderCreationRepository().apply {
+                create = { Result.failure(Exception("Already exists")) }
+            }
             val vm = model(repository)
             advanceUntilIdle()
             vm.startFolderDraft()

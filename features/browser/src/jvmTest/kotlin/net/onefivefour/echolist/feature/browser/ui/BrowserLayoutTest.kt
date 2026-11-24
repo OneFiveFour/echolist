@@ -29,13 +29,18 @@ class BrowserLayoutTest : FunSpec({
             for (isDarkTheme in listOf(false, true)) {
                 for (width in listOf(402, 1440)) {
                     ImageComposeScene(width, 874) {
-                        EchoListTheme(isDarkTheme = isDarkTheme, themeManager = ThemeManager(listOf(EchoListDefaultTheme))) {
+                        EchoListTheme(
+                            isDarkTheme = isDarkTheme,
+                            themeManager = ThemeManager(listOf(EchoListDefaultTheme))
+                        ) {
                             BrowserScreen(browserUiState = browserPreviewState.copy(isRefreshing = true))
                         }
                     }.use { scene ->
                         scene.render().use { image ->
                             val bytes = requireNotNull(image.encodeToData()).bytes
-                            File("build/browser-refresh-$width-${if (isDarkTheme) "dark" else "light"}.png").writeBytes(bytes)
+                            File(
+                                "build/browser-refresh-$width-${if (isDarkTheme) "dark" else "light"}.png"
+                            ).writeBytes(bytes)
                             val rendered = ImageIO.read(ByteArrayInputStream(bytes))
                             val hasMagenta = (0 until rendered.height).any { y ->
                                 (0 until rendered.width).any { x -> rendered.getRGB(x, y) == Color.Magenta.toArgb() }
@@ -43,8 +48,12 @@ class BrowserLayoutTest : FunSpec({
                             hasMagenta shouldBe false
                         }
                         val nodes = scene.browserNodes()
-                        nodes.any { it.config.getOrNull(SemanticsProperties.ProgressBarRangeInfo) != null } shouldBe true
-                        nodes.any { it.config.getOrNull(SemanticsProperties.ContentDescription)?.contains("Refresh") == true } shouldBe false
+                        nodes.any {
+                            it.config.getOrNull(SemanticsProperties.ProgressBarRangeInfo) != null
+                        } shouldBe true
+                        nodes.any {
+                            it.config.getOrNull(SemanticsProperties.ContentDescription)?.contains("Refresh") == true
+                        } shouldBe false
                     }
                 }
             }
@@ -81,14 +90,28 @@ class BrowserLayoutTest : FunSpec({
     test("phone and desktop layouts render with compact folders, navigation and working create menu") {
         SwingUtilities.invokeAndWait {
             for (isDarkTheme in listOf(false, true)) {
-                for ((width, height) in listOf(402 to 874, 1440 to 1024, 320 to 640, 600 to 700, 839 to 700, 840 to 700, 840 to 400)) {
+                for ((width, height) in listOf(
+                    402 to 874,
+                    1440 to 1024,
+                    320 to 640,
+                    600 to 700,
+                    839 to 700,
+                    840 to 700,
+                    840 to 400
+                )) {
                     var dueClicks = 0
                     var reminderClicks = 0
                     var createClicks = 0
                     ImageComposeScene(width, height) {
-                        EchoListTheme(isDarkTheme = isDarkTheme, themeManager = ThemeManager(listOf(EchoListDefaultTheme))) {
+                        EchoListTheme(
+                            isDarkTheme = isDarkTheme,
+                            themeManager = ThemeManager(listOf(EchoListDefaultTheme))
+                        ) {
                             BrowserScreen(
-                                browserUiState = BrowserUiState(listOf(BreadcrumbItem("Home", "")), fileEntries = sampleEntries()),
+                                browserUiState = BrowserUiState(
+                                    listOf(BreadcrumbItem("Home", "")),
+                                    fileEntries = sampleEntries()
+                                ),
                                 navToTasksSummary = { dueClicks++ },
                                 navToRemindersSummary = { reminderClicks++ },
                                 createItemCallbacks = CreateItemCallbacks(onCreateNote = { createClicks++ })
@@ -107,13 +130,17 @@ class BrowserLayoutTest : FunSpec({
                             val folder = requireNotNull(nodes.tagged("browser-folder"))
                             val file = requireNotNull(nodes.tagged("browser-file"))
                             (folder.boundsInRoot.height < file.boundsInRoot.height) shouldBe true
-                            val folders = nodes.filter { it.config.getOrNull(SemanticsProperties.TestTag) == "browser-folder" }
+                            val folders = nodes.filter {
+                                it.config.getOrNull(SemanticsProperties.TestTag) == "browser-folder"
+                            }
                             (folders[0].boundsInRoot.top == folders[1].boundsInRoot.top) shouldBe (width >= 1200)
                             (file.boundsInRoot.top >= folders.last().boundsInRoot.bottom) shouldBe true
                         }
                         nodes.tagged("nav-Due")!!.config[SemanticsActions.OnClick].action!!.invoke()
                         dueClicks shouldBe 1
-                        nodes.tagged(if (isDesktop) "nav-Reminders" else "nav-Remind")!!.config[SemanticsActions.OnClick].action!!.invoke()
+                        nodes.tagged(
+                            if (isDesktop) "nav-Reminders" else "nav-Remind"
+                        )!!.config[SemanticsActions.OnClick].action!!.invoke()
                         reminderClicks shouldBe 1
                         val create = requireNotNull(nodes.tagged("browser-create"))
                         (create.boundsInRoot.bottom <= height) shouldBe true
@@ -143,7 +170,10 @@ class BrowserLayoutTest : FunSpec({
                         var backClicks = 0
                         val folderClicks = mutableListOf<String>()
                         ImageComposeScene(width, 874) {
-                            EchoListTheme(isDarkTheme = isDarkTheme, themeManager = ThemeManager(listOf(EchoListDefaultTheme))) {
+                            EchoListTheme(
+                                isDarkTheme = isDarkTheme,
+                                themeManager = ThemeManager(listOf(EchoListDefaultTheme))
+                            ) {
                                 BrowserScreen(
                                     browserUiState = BrowserUiState(breadcrumbs),
                                     canNavigateBack = !isHome,
@@ -153,7 +183,9 @@ class BrowserLayoutTest : FunSpec({
                             }
                         }.use { scene ->
                             scene.render().use { image ->
-                                File("build/browser-navigation-$width-$depth-${if (isDarkTheme) "dark" else "light"}.png")
+                                File(
+                                    "build/browser-navigation-$width-$depth-${if (isDarkTheme) "dark" else "light"}.png"
+                                )
                                     .writeBytes(requireNotNull(image.encodeToData()).bytes)
                             }
                             val nodes = scene.browserNodes()
@@ -211,9 +243,14 @@ class BrowserLayoutTest : FunSpec({
                 for ((width, height) in listOf(402 to 874, 1440 to 1024, 320 to 640, 840 to 400)) {
                     val clicks = mutableListOf<String>()
                     ImageComposeScene(width, height) {
-                        EchoListTheme(isDarkTheme = isDarkTheme, themeManager = ThemeManager(listOf(EchoListDefaultTheme))) {
+                        EchoListTheme(
+                            isDarkTheme = isDarkTheme,
+                            themeManager = ThemeManager(listOf(EchoListDefaultTheme))
+                        ) {
                             BrowserScreen(
-                                browserUiState = BrowserUiState(listOf(BreadcrumbItem("Home", ""), BreadcrumbItem("Empty", "Empty"))),
+                                browserUiState = BrowserUiState(
+                                    listOf(BreadcrumbItem("Home", ""), BreadcrumbItem("Empty", "Empty"))
+                                ),
                                 createItemCallbacks = CreateItemCallbacks(
                                     onCreateFolder = { clicks.add("folder") },
                                     onCreateNote = { clicks.add("note") },
@@ -277,16 +314,25 @@ class BrowserLayoutTest : FunSpec({
             }
         }
     }
-
 })
 
 private fun sampleEntries(): List<FileEntry> = listOf(
     FileEntry("Projects", "Projects", ItemType.FOLDER, FileMetadata.Folder(12)),
     FileEntry("Personal", "Personal", ItemType.FOLDER, FileMetadata.Folder(8)),
     FileEntry("Archive", "Archive", ItemType.FOLDER, FileMetadata.Folder(0)),
-    FileEntry("capture", "Quick capture", ItemType.NOTE, FileMetadata.Note("capture", 0, "Ideas from the train, books to find, a thought about slower mornings…")),
+    FileEntry(
+        "capture",
+        "Quick capture",
+        ItemType.NOTE,
+        FileMetadata.Note("capture", 0, "Ideas from the train, books to find, a thought about slower mornings…")
+    ),
     FileEntry("weekly", "Weekly reset", ItemType.TASK_LIST, FileMetadata.TaskList("weekly", 0, 7, 3)),
-    FileEntry("reading", "Reading list", ItemType.NOTE, FileMetadata.Note("reading", 0, "The Creative Act, An Immense World, Four Thousand Weeks…")),
+    FileEntry(
+        "reading",
+        "Reading list",
+        ItemType.NOTE,
+        FileMetadata.Note("reading", 0, "The Creative Act, An Immense World, Four Thousand Weeks…")
+    ),
     FileEntry("errands", "Home errands", ItemType.TASK_LIST, FileMetadata.TaskList("errands", 0, 6, 4))
 )
 
@@ -302,6 +348,9 @@ private fun SemanticsNode.hasClickActionInSubtree(): Boolean =
     config.getOrNull(SemanticsActions.OnClick) != null || children.any { it.hasClickActionInSubtree() }
 
 private fun SemanticsNode.clickableDescendants(): List<SemanticsNode> = children.flatMap { child ->
-    if (child.config.getOrNull(SemanticsActions.OnClick) != null) listOf(child)
-    else child.clickableDescendants()
+    if (child.config.getOrNull(SemanticsActions.OnClick) != null) {
+        listOf(child)
+    } else {
+        child.clickableDescendants()
+    }
 }

@@ -87,7 +87,10 @@ internal class FileMapperPropertyTest : FunSpec({
         }
     }
 
-    test("Feature: proto-api-update, Property 2: CreateFolderResponse -> domain Folder normalizes path and preserves name") {
+    test(
+        "Feature: proto-api-update, Property 2: CreateFolderResponse -> " +
+            "domain Folder normalizes path and preserves name"
+    ) {
         checkAll(PropTestConfig(iterations = 100), arbProtoFolder) { protoFolder ->
             val response = `file`.v1.CreateFolderResponse(folder = protoFolder)
             val domain = FileMapper.toDomain(response)
@@ -111,7 +114,10 @@ internal class FileMapperPropertyTest : FunSpec({
         }
     }
 
-    test("Feature: proto-api-update, Property 2: UpdateFolderResponse -> domain Folder normalizes path and preserves name") {
+    test(
+        "Feature: proto-api-update, Property 2: UpdateFolderResponse -> " +
+            "domain Folder normalizes path and preserves name"
+    ) {
         checkAll(PropTestConfig(iterations = 100), arbProtoFolder) { protoFolder ->
             val response = `file`.v1.UpdateFolderResponse(folder = protoFolder)
             val domain = FileMapper.toDomain(response)

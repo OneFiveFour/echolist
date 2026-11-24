@@ -1,13 +1,16 @@
 package net.onefivefour.echolist.feature.browser.ui.desktop
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewDesktopLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.feature.browser.ui.BrowserUiState
 import net.onefivefour.echolist.feature.browser.ui.browserPreviewState
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.width
 
 @Composable
 internal fun DesktopBrowserNavigation(
@@ -41,6 +44,7 @@ private fun DesktopBrowserNavigationPreview() {
             browserUiState = browserPreviewState,
             navToTasksSummary = {},
             navToRemindersSummary = {},
-            onFolderClick = {})
+            onFolderClick = {}
+        )
     }
 }

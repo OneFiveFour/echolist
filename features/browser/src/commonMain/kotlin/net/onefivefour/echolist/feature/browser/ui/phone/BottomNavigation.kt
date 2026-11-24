@@ -1,19 +1,27 @@
 package net.onefivefour.echolist.feature.browser.ui.phone
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
-import net.onefivefour.echolist.feature.browser.resources.*
 import net.onefivefour.echolist.feature.browser.ui.BrowserNavButton
 import net.onefivefour.echolist.feature.browser.ui.CreateItemButton
 import net.onefivefour.echolist.feature.browser.ui.CreateItemCallbacks
 import org.jetbrains.compose.resources.stringResource
+import net.onefivefour.echolist.feature.browser.resources.Res
+import net.onefivefour.echolist.feature.browser.resources.browser_browse
+import net.onefivefour.echolist.feature.browser.resources.browser_due
+import net.onefivefour.echolist.feature.browser.resources.browser_remind
+import net.onefivefour.echolist.feature.browser.resources.nav_browse
+import net.onefivefour.echolist.feature.browser.resources.nav_due
+import net.onefivefour.echolist.feature.browser.resources.nav_remind
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 
 @Composable
 internal fun BottomNavigation(
@@ -74,6 +82,7 @@ private fun BottomNavigationPreview() {
         BottomNavigation(
             createItemCallbacks = CreateItemCallbacks(),
             onOpenRemindersSummary = {},
-            navigateToTasksSummary = {})
+            navigateToTasksSummary = {}
+        )
     }
 }

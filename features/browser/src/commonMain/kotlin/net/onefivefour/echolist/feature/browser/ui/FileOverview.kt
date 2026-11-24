@@ -1,7 +1,5 @@
 package net.onefivefour.echolist.feature.browser.ui
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -11,6 +9,17 @@ import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.feature.browser.domain.model.FileEntry
 import net.onefivefour.echolist.feature.browser.domain.model.FileMetadata
 import net.onefivefour.echolist.feature.browser.domain.model.ItemType
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 
 @Composable
 internal fun FileOverview(
@@ -30,8 +39,8 @@ internal fun FileOverview(
     onCancelFolder: () -> Unit = {},
     onFolderLongClick: (String) -> Unit = {}
 ) {
-
-    if (!isLoading && errorMessage == null && fileEntries.isEmpty() && folderDraft == null) {
+    val isEmptyFolder = fileEntries.isEmpty() && folderDraft == null
+    if (isEmptyFolder && !isLoading && errorMessage == null) {
         EmptyFolderContent(modifier.padding(contentPadding))
         return
     }
@@ -48,9 +57,10 @@ internal fun FileOverview(
         if (folderDraft != null) {
             val index = when (original) {
                 null -> 0
-                else -> folders
-                    .indexOfFirst { it.path == original.path }
-                    .coerceAtLeast(0)
+                else ->
+                    folders
+                        .indexOfFirst { it.path == original.path }
+                        .coerceAtLeast(0)
             }
             when {
                 original == null || gridState.layoutInfo.visibleItemsInfo.none { it.index == index } -> {
@@ -77,7 +87,6 @@ internal fun FileOverview(
         verticalArrangement = Arrangement.spacedBy(spacing),
         contentPadding = contentPadding
     ) {
-
         if (isCreatingFolder) {
             item(key = "folder-draft-${folderDraft.id}") {
                 FolderDraftItem(folderDraft, onFolderNameChange, onConfirmFolder, onCancelFolder)
@@ -87,7 +96,6 @@ internal fun FileOverview(
         val isLoading = isLoading && original == null
         val hasError = errorMessage != null && fileEntries.isEmpty() && original == null
         when {
-
             isLoading -> item(
                 key = "loading",
                 span = { GridItemSpan(maxLineSpan) }
@@ -174,6 +182,7 @@ private fun FileOverviewPreview() {
             errorMessage = null,
             onFolderClick = {},
             onNoteClick = {},
-            onTaskClick = {})
+            onTaskClick = {}
+        )
     }
 }

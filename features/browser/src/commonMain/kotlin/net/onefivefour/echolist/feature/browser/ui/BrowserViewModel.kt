@@ -15,6 +15,7 @@ import net.onefivefour.echolist.feature.browser.domain.model.CreateFolderParams
 import net.onefivefour.echolist.feature.browser.domain.model.DeleteFolderParams
 import net.onefivefour.echolist.feature.browser.domain.model.FileEntry
 import net.onefivefour.echolist.feature.browser.domain.model.FileMetadata
+import net.onefivefour.echolist.feature.browser.domain.model.Folder
 import net.onefivefour.echolist.feature.browser.domain.model.ItemType
 import net.onefivefour.echolist.feature.browser.domain.model.UpdateFolderParams
 import net.onefivefour.echolist.feature.browser.domain.repository.FileRepository
@@ -118,88 +119,10 @@ internal class BrowserViewModel(
 
         viewModelScope.launch {
             try {
-
-                val result = if (original == null) {
-                    fileRepository.createFolder(
-                        CreateFolderParams(
-                            parentDir = parentDir,
-                            name = name
-                        )
-                    )
-                } else {
-                    fileRepository.updateFolder(
-                        UpdateFolderParams(
-                            folderPath = normalizePath(path = original.path),
-                            newName = name
-                        )
-                    )
-                }
-
-                result.fold(
-                    onSuccess = { folder ->
-
-                        val metadata = if (original != null) {
-                            uiState.value.fileEntries
-                                .firstOrNull { it.path == original.path }
-                                ?.metadata
-                                ?: original.metadata
-                        } else {
-                            FileMetadata.Folder(0)
-                        }
-
-                        val entry = FileEntry(
-                            path = folder.path,
-                            title = folder.name,
-                            itemType = ItemType.FOLDER,
-                            metadata = metadata
-                        )
-
-                        if (original != null && original.path != entry.path) {
-                            unpersistedFolders.remove(original.path)
-                            renamedFolderPaths.entries.forEach { pending ->
-                                if (pending.value == original.path) {
-                                    pending.setValue(entry.path)
-                                }
-                            }
-                            renamedFolderPaths[original.path] = entry.path
-                        }
-                        unpersistedFolders[entry.path] = entry
-
-                        loadRevision++
-                        uiState.update { current ->
-                            current.copy(
-                                folderDraft = null,
-                                fileEntries = sortBrowserEntries(
-                                    current.fileEntries
-                                    .filterNot {
-                                        it.path == entry.path || it.path == original?.path
-                                    } + entry
-                                ),
-                                isLoading = false,
-                                canDeleteCurrentFolder = false,
-                                error = null
-                            )
-                        }
-
-                        loadData()
-                    },
-
-                    onFailure = { exception ->
-                        if (exception is CancellationException) throw exception
-                        val message = exception.message ?: getString(
-                            when {
-                                draft.isRenaming -> Res.string.folder_rename_failed
-                                else -> Res.string.folder_create_failed
-                            }
-                        )
-                        uiState.update { current ->
-                            current.copy(
-                                folderDraft = current.folderDraft?.copy(isSaving = false, error = message)
-                            )
-                        }
-                    }
+                saveFolder(name = name, original = original).fold(
+                    onSuccess = { folder -> onFolderSaved(folder = folder, original = original) },
+                    onFailure = { exception -> onFolderSaveFailed(exception = exception, draft = draft) }
                 )
-
             } finally {
                 uiState.update { current ->
                     when (current.folderDraft?.id) {
@@ -208,6 +131,75 @@ internal class BrowserViewModel(
                     }
                 }
             }
+        }
+    }
+
+    private suspend fun saveFolder(name: String, original: FileEntry?): Result<Folder> =
+        when (original) {
+            null -> fileRepository.createFolder(CreateFolderParams(parentDir = parentDir, name = name))
+            else -> fileRepository.updateFolder(
+                UpdateFolderParams(
+                    folderPath = normalizePath(path = original.path),
+                    newName = name
+                )
+            )
+        }
+
+    private suspend fun onFolderSaved(folder: Folder, original: FileEntry?) {
+        val metadata = when (original) {
+            null -> FileMetadata.Folder(0)
+            else ->
+                uiState.value.fileEntries
+                    .firstOrNull { it.path == original.path }
+                    ?.metadata
+                    ?: original.metadata
+        }
+
+        val entry = FileEntry(
+            path = folder.path,
+            title = folder.name,
+            itemType = ItemType.FOLDER,
+            metadata = metadata
+        )
+
+        if (original != null && original.path != entry.path) {
+            unpersistedFolders.remove(original.path)
+            renamedFolderPaths.entries.forEach { pending ->
+                if (pending.value == original.path) {
+                    pending.setValue(entry.path)
+                }
+            }
+            renamedFolderPaths[original.path] = entry.path
+        }
+        unpersistedFolders[entry.path] = entry
+
+        loadRevision++
+        uiState.update { current ->
+            current.copy(
+                folderDraft = null,
+                fileEntries = sortBrowserEntries(
+                    current.fileEntries
+                        .filterNot { it.path == entry.path || it.path == original?.path } + entry
+                ),
+                isLoading = false,
+                canDeleteCurrentFolder = false,
+                error = null
+            )
+        }
+
+        loadData()
+    }
+
+    private suspend fun onFolderSaveFailed(exception: Throwable, draft: FolderDraft) {
+        if (exception is CancellationException) throw exception
+        val message = exception.message ?: getString(
+            when {
+                draft.isRenaming -> Res.string.folder_rename_failed
+                else -> Res.string.folder_create_failed
+            }
+        )
+        uiState.update { current ->
+            current.copy(folderDraft = current.folderDraft?.copy(isSaving = false, error = message))
         }
     }
 
@@ -243,7 +235,11 @@ internal class BrowserViewModel(
     }
 
     fun onDeleteCurrentFolderClick() {
-        if (!uiState.value.canDeleteCurrentFolder || uiState.value.isDeletingFolder || uiState.value.folderDraft != null) return
+        val currentUiState = uiState.value
+        val isDeletionBlocked = !currentUiState.canDeleteCurrentFolder ||
+            currentUiState.isDeletingFolder ||
+            currentUiState.folderDraft != null
+        if (isDeletionBlocked) return
 
         viewModelScope.launch {
             uiState.update { it.copy(isDeletingFolder = true, error = null) }
@@ -319,7 +315,6 @@ internal class BrowserViewModel(
             parentDir = parentDir,
             homeTitle = getString(Res.string.home_title)
         )
-
 }
 
 internal fun buildBreadcrumbs(parentDir: String, homeTitle: String): List<BreadcrumbItem> {
@@ -336,8 +331,10 @@ internal fun buildBreadcrumbs(parentDir: String, homeTitle: String): List<Breadc
 }
 
 internal fun sortBrowserEntries(entries: List<FileEntry>) =
-    entries.sortedWith(compareBy<FileEntry> {
-        it.itemType != ItemType.FOLDER
-    }.thenBy {
-        if (it.itemType == ItemType.FOLDER) it.title.lowercase() else ""
-    }.thenBy { it.lastModified })
+    entries.sortedWith(
+        compareBy<FileEntry> {
+            it.itemType != ItemType.FOLDER
+        }.thenBy {
+            if (it.itemType == ItemType.FOLDER) it.title.lowercase() else ""
+        }.thenBy { it.lastModified }
+    )

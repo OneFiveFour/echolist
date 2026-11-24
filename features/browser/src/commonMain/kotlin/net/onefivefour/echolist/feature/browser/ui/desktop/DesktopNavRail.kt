@@ -16,7 +16,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewDesktopLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
-import net.onefivefour.echolist.feature.browser.resources.*
 import net.onefivefour.echolist.feature.browser.resources.Res
 import net.onefivefour.echolist.feature.browser.resources.browser_browse
 import net.onefivefour.echolist.feature.browser.resources.browser_due
@@ -96,6 +95,7 @@ private fun DesktopNavRailPreview() {
             navToTasksSummary = {},
             navToRemindersSummary = {},
             browserUiState = browserPreviewState,
-            onFolderClick = {})
+            onFolderClick = {}
+        )
     }
 }

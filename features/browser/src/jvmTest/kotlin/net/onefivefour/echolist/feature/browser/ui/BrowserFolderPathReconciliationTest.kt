@@ -14,12 +14,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.*
 import net.onefivefour.echolist.data.FakeDirectoryChangeNotifier
 import net.onefivefour.echolist.feature.browser.data.repository.FileRepositoryImpl
 import net.onefivefour.echolist.feature.browser.data.source.network.FakeFileRemoteDataSource
 import net.onefivefour.echolist.feature.browser.data.source.network.FileRemoteDataSource
 import net.onefivefour.echolist.feature.browser.domain.model.FileMetadata
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 
 /** Uses the actual repository and mapper with the backend's different response path formats. */
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -98,35 +103,45 @@ internal class BrowserFolderPathReconciliationTest : FunSpec({
 
 private class BackendFolderPaths(private val parent: String, hasExistingFolder: Boolean) {
     val fake = FakeFileRemoteDataSource()
-    init { if (hasExistingFolder) setListing("Original", 6) }
+    init {
+        if (hasExistingFolder) setListing("Original", 6)
+    }
 
     fun path(name: String) = if (parent.isEmpty()) name else "$parent/$name"
 
     private fun setListing(name: String, children: Int) {
-        fake.listFilesResult = Result.success(ListFilesResponse(entries = listOf(
-            `file`.v1.FileEntry(
-                path = path(name),
-                title = name,
-                item_type = ItemType.ITEM_TYPE_FOLDER,
-                folder_metadata = FolderMetadata(child_count = children)
+        fake.listFilesResult = Result.success(
+            ListFilesResponse(
+                entries = listOf(
+                    `file`.v1.FileEntry(
+                        path = path(name),
+                        title = name,
+                        item_type = ItemType.ITEM_TYPE_FOLDER,
+                        folder_metadata = FolderMetadata(child_count = children)
+                    )
+                )
             )
-        )))
+        )
     }
 
     val source = object : FileRemoteDataSource by fake {
         override suspend fun updateFolder(request: UpdateFolderRequest): UpdateFolderResponse {
             setListing(request.new_name, 6)
-            fake.updateFolderResult = Result.success(UpdateFolderResponse(
-                folder = Folder(path = path(request.new_name) + "/", name = request.new_name)
-            ))
+            fake.updateFolderResult = Result.success(
+                UpdateFolderResponse(
+                    folder = Folder(path = path(request.new_name) + "/", name = request.new_name)
+                )
+            )
             return fake.updateFolder(request)
         }
 
         override suspend fun createFolder(request: CreateFolderRequest): CreateFolderResponse {
             setListing(request.name, 0)
-            fake.createFolderResult = Result.success(CreateFolderResponse(
-                folder = Folder(path = path(request.name) + "/", name = request.name)
-            ))
+            fake.createFolderResult = Result.success(
+                CreateFolderResponse(
+                    folder = Folder(path = path(request.name) + "/", name = request.name)
+                )
+            )
             return fake.createFolder(request)
         }
     }

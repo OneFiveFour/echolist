@@ -7,19 +7,15 @@
 package net.onefivefour.echolist.feature.browser.ui
 
 import androidx.compose.foundation.lazy.grid.LazyGridState
-import androidx.compose.runtime.*
 import androidx.compose.ui.ImageComposeScene
 import androidx.compose.ui.focus.FocusManager
-import androidx.compose.ui.input.key.*
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.platform.WindowInfo
-import androidx.compose.ui.semantics.*
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.unit.*
 import androidx.compose.ui.use
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
@@ -41,11 +37,28 @@ import net.onefivefour.echolist.core.designsystem.ui.theme.ThemeManager
 import net.onefivefour.echolist.core.designsystem.ui.theme.colorscheme.EchoListDefaultTheme
 import net.onefivefour.echolist.data.FakeDirectoryChangeNotifier
 import net.onefivefour.echolist.feature.browser.data.repository.FakeFileRepository
-import net.onefivefour.echolist.feature.browser.domain.model.*
 import org.koin.compose.KoinIsolatedContext
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.koinApplication
 import org.koin.dsl.module
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEvent
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsNode
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.semantics.getOrNull
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.dp
+import net.onefivefour.echolist.feature.browser.domain.model.FileEntry
+import net.onefivefour.echolist.feature.browser.domain.model.FileMetadata
+import net.onefivefour.echolist.feature.browser.domain.model.ItemType
 
 internal class FolderDraftLayoutTest : FunSpec({
     test("empty directories display a focused blank draft and confirmation hides the keyboard") {
@@ -60,10 +73,16 @@ internal class FolderDraftLayoutTest : FunSpec({
                         EchoListTheme(themeManager = ThemeManager(listOf(EchoListDefaultTheme))) {
                             BrowserScreen(
                                 state.value,
-                                onFolderNameChange = { state.value = state.value.copy(folderDraft = state.value.folderDraft!!.copy(name = it)) },
+                                onFolderNameChange = {
+                                    state.value = state.value.copy(
+                                        folderDraft = state.value.folderDraft!!.copy(name = it)
+                                    )
+                                },
                                 onConfirmFolder = {
                                     confirmations++
-                                    state.value = state.value.copy(folderDraft = state.value.folderDraft!!.copy(isSaving = true))
+                                    state.value = state.value.copy(
+                                        folderDraft = state.value.folderDraft!!.copy(isSaving = true)
+                                    )
                                 },
                                 onDismissFolder = { cancellations++ }
                             )
@@ -91,7 +110,9 @@ internal class FolderDraftLayoutTest : FunSpec({
                     (scene.draftNodes().taggedDraft("folder-draft-confirm") == null) shouldBe true
                     (scene.draftNodes().taggedDraft("folder-draft-cancel") == null) shouldBe true
                     scene.render().use { image ->
-                        File("build/folder-draft-saving-$width.png").writeBytes(requireNotNull(image.encodeToData()).bytes)
+                        File(
+                            "build/folder-draft-saving-$width.png"
+                        ).writeBytes(requireNotNull(image.encodeToData()).bytes)
                     }
                 }
             }
@@ -146,7 +167,16 @@ internal class FolderDraftLayoutTest : FunSpec({
                 focusManager = LocalFocusManager.current
                 CompositionLocalProvider(LocalSoftwareKeyboardController provides keyboard) {
                     EchoListTheme(themeManager = ThemeManager(listOf(EchoListDefaultTheme))) {
-                        FileOverview(entries, false, null, {}, {}, {}, gridState = gridState, folderDraft = FolderDraft(1))
+                        FileOverview(
+                            entries,
+                            false,
+                            null,
+                            {},
+                            {},
+                            {},
+                            gridState = gridState,
+                            folderDraft = FolderDraft(1)
+                        )
                     }
                 }
             }.use { scene ->
@@ -170,8 +200,17 @@ internal class FolderDraftLayoutTest : FunSpec({
                 val entry = FileEntry("Existing", "Existing", ItemType.FOLDER, FileMetadata.Folder(0))
                 ImageComposeScene(width, height) {
                     EchoListTheme(themeManager = ThemeManager(listOf(EchoListDefaultTheme))) {
-                        BrowserScreen(BrowserUiState(emptyList(), fileEntries = listOf(entry),
-                            folderDraft = FolderDraft(1, "Ideas", error = "A folder with this name already exists. Please choose another name.")))
+                        BrowserScreen(
+                            BrowserUiState(
+                                emptyList(),
+                                fileEntries = listOf(entry),
+                                folderDraft = FolderDraft(
+                                    1,
+                                    "Ideas",
+                                    error = "A folder with this name already exists. Please choose another name."
+                                )
+                            )
+                        )
                     }
                 }.use { scene ->
                     repeat(3) { scene.render().close() }
@@ -184,7 +223,9 @@ internal class FolderDraftLayoutTest : FunSpec({
                         (folder.boundsInRoot.top >= draft.boundsInRoot.top) shouldBe true
                     }
                     scene.render().use { image ->
-                        File("build/folder-draft-error-$width.png").writeBytes(requireNotNull(image.encodeToData()).bytes)
+                        File(
+                            "build/folder-draft-error-$width.png"
+                        ).writeBytes(requireNotNull(image.encodeToData()).bytes)
                     }
                 }
             }
@@ -203,17 +244,29 @@ internal class FolderDraftLayoutTest : FunSpec({
             try {
                 for (isRenaming in listOf(false, true)) {
                     val repository = FakeFileRepository().apply {
-                        if (isRenaming) listFilesResult = Result.success(listOf(
-                            FileEntry("Projects", "Projects", ItemType.FOLDER, FileMetadata.Folder(3))
-                        ))
+                        if (isRenaming) {
+                            listFilesResult = Result.success(
+                                listOf(
+                                    FileEntry("Projects", "Projects", ItemType.FOLDER, FileMetadata.Folder(3))
+                                )
+                            )
+                        }
                     }
                     val storeOwner = object : ViewModelStoreOwner {
                         override val viewModelStore = ViewModelStore()
                     }
                     val application = koinApplication {
-                        modules(module {
-                            viewModel { params -> BrowserViewModel(params.get(), repository, FakeDirectoryChangeNotifier()) }
-                        })
+                        modules(
+                            module {
+                                viewModel { params ->
+                                    BrowserViewModel(
+                                        params.get(),
+                                        repository,
+                                        FakeDirectoryChangeNotifier()
+                                    )
+                                }
+                            }
+                        )
                     }
                     var discardDraft: () -> Unit = {}
                     var navigationCount = 0
@@ -307,18 +360,28 @@ internal class FolderDraftLayoutTest : FunSpec({
                     val state = mutableStateOf(BrowserUiState(emptyList(), fileEntries = entries))
                     ImageComposeScene(width, 874) {
                         CompositionLocalProvider(LocalSoftwareKeyboardController provides keyboard) {
-                            EchoListTheme(isDarkTheme = isDarkTheme, themeManager = ThemeManager(listOf(EchoListDefaultTheme))) {
+                            EchoListTheme(
+                                isDarkTheme = isDarkTheme,
+                                themeManager = ThemeManager(listOf(EchoListDefaultTheme))
+                            ) {
                                 BrowserScreen(
                                     state.value,
                                     onFolderClick = { navigationCount++ },
                                     onFolderLongClick = { path ->
                                         val original = entries.first { it.path == path }
-                                        state.value = state.value.copy(folderDraft = FolderDraft(
-                                            id = 1, name = original.title, originalEntry = original, originalIndex = 1
-                                        ))
+                                        state.value = state.value.copy(
+                                            folderDraft = FolderDraft(
+                                                id = 1,
+                                                name = original.title,
+                                                originalEntry = original,
+                                                originalIndex = 1
+                                            )
+                                        )
                                     },
                                     onFolderNameChange = { name ->
-                                        state.value = state.value.copy(folderDraft = state.value.folderDraft!!.copy(name = name))
+                                        state.value = state.value.copy(
+                                            folderDraft = state.value.folderDraft!!.copy(name = name)
+                                        )
                                     },
                                     onConfirmFolder = { confirmations++ },
                                     onDismissFolder = { state.value = state.value.copy(folderDraft = null) }
@@ -377,7 +440,10 @@ internal class FolderDraftLayoutTest : FunSpec({
             val keyboard = RecordingKeyboard()
             val state = mutableStateOf(BrowserUiState(emptyList(), folderDraft = FolderDraft(1, "Ideas")))
             ImageComposeScene(1600, 874) {
-                CompositionLocalProvider(LocalWindowInfo provides window, LocalSoftwareKeyboardController provides keyboard) {
+                CompositionLocalProvider(
+                    LocalWindowInfo provides window,
+                    LocalSoftwareKeyboardController provides keyboard
+                ) {
                     EchoListTheme(themeManager = ThemeManager(listOf(EchoListDefaultTheme))) {
                         BrowserScreen(state.value)
                     }
@@ -398,7 +464,9 @@ internal class FolderDraftLayoutTest : FunSpec({
                 // A failed request must not refocus the input or reopen the keyboard.
                 state.value = state.value.copy(folderDraft = state.value.folderDraft!!.copy(isSaving = true))
                 repeat(2) { scene.render().close() }
-                state.value = state.value.copy(folderDraft = state.value.folderDraft!!.copy(isSaving = false, error = "Offline"))
+                state.value = state.value.copy(
+                    folderDraft = state.value.folderDraft!!.copy(isSaving = false, error = "Offline")
+                )
                 repeat(2) { scene.render().close() }
                 keyboard.shows shouldBe 1
             }
@@ -409,8 +477,12 @@ internal class FolderDraftLayoutTest : FunSpec({
 private class RecordingKeyboard : SoftwareKeyboardController {
     var shows = 0
     var hides = 0
-    override fun show() { shows++ }
-    override fun hide() { hides++ }
+    override fun show() {
+        shows++
+    }
+    override fun hide() {
+        hides++
+    }
 }
 
 private class DraftWindowInfo(initialSize: IntSize) : WindowInfo {

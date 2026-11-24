@@ -1,23 +1,17 @@
 package net.onefivefour.echolist.feature.browser.ui
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.input.key.*
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
@@ -29,8 +23,36 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.ImeAction
 import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
-import net.onefivefour.echolist.feature.browser.resources.*
 import org.jetbrains.compose.resources.stringResource
+import net.onefivefour.echolist.feature.browser.resources.Res
+import net.onefivefour.echolist.feature.browser.resources.browser_folder
+import net.onefivefour.echolist.feature.browser.resources.folder_create_cancel
+import net.onefivefour.echolist.feature.browser.resources.folder_create_confirm
+import net.onefivefour.echolist.feature.browser.resources.folder_create_saving
+import net.onefivefour.echolist.feature.browser.resources.folder_name
+import net.onefivefour.echolist.feature.browser.resources.folder_rename_cancel
+import net.onefivefour.echolist.feature.browser.resources.folder_rename_confirm
+import net.onefivefour.echolist.feature.browser.resources.folder_rename_saving
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.type
 
 @Composable
 internal fun FolderDraftItem(
@@ -39,12 +61,13 @@ internal fun FolderDraftItem(
     onConfirm: () -> Unit,
     onCancel: () -> Unit
 ) {
-    
     var textFieldValue by rememberSaveable(draft.id, stateSaver = TextFieldValue.Saver) {
-        mutableStateOf(TextFieldValue(
-            text = draft.name,
-            selection = if (draft.isRenaming) TextRange(0, draft.name.length) else TextRange(draft.name.length)
-        ))
+        mutableStateOf(
+            TextFieldValue(
+                text = draft.name,
+                selection = if (draft.isRenaming) TextRange(0, draft.name.length) else TextRange(draft.name.length)
+            )
+        )
     }
 
     val focusRequester = remember(draft.id) {
@@ -114,24 +137,24 @@ internal fun FolderDraftItem(
         isFolder = true,
         onClick = null,
         modifier = Modifier
-        .testTag("browser-folder-draft")
-        .onPreviewKeyEvent { event ->
-            when (event.key) {
-                Key.Escape -> {
-                    if (event.type == KeyEventType.KeyUp) {
-                        cancel()
+            .testTag("browser-folder-draft")
+            .onPreviewKeyEvent { event ->
+                when (event.key) {
+                    Key.Escape -> {
+                        if (event.type == KeyEventType.KeyUp) {
+                            cancel()
+                        }
+                        true
                     }
-                    true
-                }
-                Key.Enter, Key.NumPadEnter -> {
-                    if (event.type == KeyEventType.KeyUp) {
-                        confirm()
+                    Key.Enter, Key.NumPadEnter -> {
+                        if (event.type == KeyEventType.KeyUp) {
+                            confirm()
+                        }
+                        true
                     }
-                    true
+                    else -> false
                 }
-                else -> false
-            }
-        },
+            },
         titleContent = {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 BasicTextField(

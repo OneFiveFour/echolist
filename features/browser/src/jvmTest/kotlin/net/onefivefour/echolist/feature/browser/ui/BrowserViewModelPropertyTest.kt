@@ -73,7 +73,7 @@ internal class BrowserViewModelPropertyTest : FunSpec({
             runTest(testDispatcher) {
                 val repo = MockFileRepository()
                 val notifier = FakeDirectoryChangeNotifier()
-                val vm = BrowserViewModel(parentDir = vmPath, fileRepository = repo, directoryChangeNotifier = notifier)
+                BrowserViewModel(parentDir = vmPath, fileRepository = repo, directoryChangeNotifier = notifier)
 
                 // Let init's loadData() complete
                 advanceUntilIdle()

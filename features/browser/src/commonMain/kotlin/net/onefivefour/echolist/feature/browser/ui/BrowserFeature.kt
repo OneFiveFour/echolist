@@ -86,6 +86,6 @@ fun BrowserFeature(
 
         onRefresh = browserViewModel::refresh,
 
-        onLogoutClick = onLogout?.let { logout -> { leaveBrowserWith(logout) } },
+        onLogoutClick = onLogout?.let { logout -> { leaveBrowserWith(logout) } }
     )
 }

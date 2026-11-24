@@ -2,9 +2,7 @@ package net.onefivefour.echolist.feature.browser.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -12,9 +10,20 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
-import net.onefivefour.echolist.feature.browser.resources.*
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
+import net.onefivefour.echolist.feature.browser.resources.Res
+import net.onefivefour.echolist.feature.browser.resources.browser_home
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 
 @Composable
 internal fun BrowserNavButton(
@@ -63,7 +72,6 @@ internal fun BrowserNavButton(
             horizontalArrangement = Arrangement.spacedBy(EchoListTheme.dimensions.m),
             verticalAlignment = Alignment.CenterVertically
         ) {
-
             Icon(
                 painter = painterResource(resource = icon),
                 contentDescription = null,
@@ -125,6 +133,7 @@ private fun BrowserNavButtonPreview() {
             icon = Res.drawable.browser_home,
             isSelected = true,
             isDesktop = false,
-            onClick = {})
+            onClick = {}
+        )
     }
 }

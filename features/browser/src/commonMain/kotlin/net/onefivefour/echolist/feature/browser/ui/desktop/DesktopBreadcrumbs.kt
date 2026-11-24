@@ -2,7 +2,6 @@ package net.onefivefour.echolist.feature.browser.ui.desktop
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,10 +18,22 @@ import androidx.compose.ui.text.style.TextOverflow
 import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme.shapes
-import net.onefivefour.echolist.feature.browser.resources.*
 import net.onefivefour.echolist.feature.browser.ui.BreadcrumbItem
 import net.onefivefour.echolist.feature.browser.ui.browserPreviewState
 import org.jetbrains.compose.resources.painterResource
+import net.onefivefour.echolist.feature.browser.resources.Res
+import net.onefivefour.echolist.feature.browser.resources.browser_location_current
+import net.onefivefour.echolist.feature.browser.resources.browser_location_folder
+import net.onefivefour.echolist.feature.browser.resources.browser_location_home
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 
 @Composable
 internal fun DesktopBreadcrumbs(
@@ -45,7 +56,6 @@ internal fun DesktopBreadcrumbs(
             }
 
             Box {
-
                 if (index > 0) {
                     Box(
                         Modifier
@@ -88,7 +98,6 @@ internal fun DesktopBreadcrumbs(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(EchoListTheme.dimensions.s)
                 ) {
-
                     Icon(
                         painter = painterResource(resource = icon),
                         contentDescription = null,

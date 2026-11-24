@@ -5,12 +5,13 @@ naming:
 style:
   UnusedPrivateMember:
     active: true
-    ignoreAnnotated: [ 'DevicePreviews', 'Preview' ]
+    ignoreAnnotated: [ 'DevicePreviews', 'Preview', 'PreviewLightDark', 'PreviewComponentLightDark', 'PreviewPhoneLightDark', 'PreviewDesktopLightDark' ]
   MaxLineLength:
-    excludes: [ "**/test/**","**/androidTest/**" ]
+    excludes: [ "**/test/**","**/androidTest/**","**/commonTest/**","**/jvmTest/**" ]
   MagicNumber:
+    ignoreAnnotated: [ 'Preview', 'PreviewLightDark', 'PreviewComponentLightDark', 'PreviewPhoneLightDark', 'PreviewDesktopLightDark' ]
     ignoreNumbers: [ '-1', '0', '1', '2', '50' ]
-    excludes: [ "**/test/**","**/androidTest/**" ]
+    excludes: [ "**/test/**","**/androidTest/**","**/commonTest/**","**/jvmTest/**" ]
     ignorePropertyDeclaration: true
     ignoreCompanionObjectPropertyDeclaration: true
   ReturnCount:
@@ -29,14 +30,19 @@ complexity:
     ignoreAnnotated: [ 'Composable' ]
   LongMethod:
     ignoreAnnotated: [ 'Composable' ]
+  CyclomaticComplexMethod:
+    ignoreAnnotated: [ 'Composable' ]
+  TooManyFunctions:
+    thresholdInClasses: 15
 
 compose:
   ReusedModifierInstance:
     active: true
   UnnecessaryEventHandlerParameter:
     active: true
+  # AGENTS.md prescribes `navTo...` for navigation callbacks, which this rule would reject.
   ComposableEventParameterNaming:
-    active: true
+    active: false
   ComposableParametersOrdering:
     active: true
   ModifierHeightWithText:

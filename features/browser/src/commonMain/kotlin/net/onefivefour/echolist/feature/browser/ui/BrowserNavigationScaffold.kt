@@ -21,8 +21,8 @@ import net.onefivefour.echolist.feature.browser.ui.phone.PhoneBrowserNavigation
 @Composable
 internal fun BrowserNavigationScaffold(
     isDesktop: Boolean,
-    navigation: @Composable () -> Unit,
     modifier: Modifier = Modifier,
+    navigation: @Composable () -> Unit,
     content: @Composable () -> Unit
 ) {
     val scaffoldOverride = object : NavigationSuiteScaffoldOverride {
@@ -68,7 +68,8 @@ private fun BrowserNavigationScaffoldPreview() {
                 PhoneBrowserNavigation(
                     createItemCallbacks = CreateItemCallbacks(),
                     navToTasksSummary = {},
-                    navToRemindersSummary = {})
+                    navToRemindersSummary = {}
+                )
             },
             content = {
                 FileOverview(
@@ -77,8 +78,9 @@ private fun BrowserNavigationScaffoldPreview() {
                     errorMessage = null,
                     onFolderClick = {},
                     onNoteClick = {},
-                    onTaskClick = {})
-            },
+                    onTaskClick = {}
+                )
+            }
         )
     }
 }

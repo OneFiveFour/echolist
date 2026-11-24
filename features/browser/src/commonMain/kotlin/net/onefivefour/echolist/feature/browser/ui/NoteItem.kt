@@ -1,14 +1,19 @@
 package net.onefivefour.echolist.feature.browser.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
-import net.onefivefour.echolist.feature.browser.resources.*
+import net.onefivefour.echolist.feature.browser.resources.Res
+import net.onefivefour.echolist.feature.browser.resources.browser_note
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 
 @Composable
 internal fun NoteItem(
@@ -30,10 +35,11 @@ internal fun NoteItem(
     ) {
         Spacer(Modifier.height(EchoListTheme.dimensions.s))
 
-        Box(Modifier
-            .width(EchoListTheme.dimensions.xxl)
-            .height(EchoListTheme.dimensions.xxs)
-            .background(color)
+        Box(
+            Modifier
+                .width(EchoListTheme.dimensions.xxl)
+                .height(EchoListTheme.dimensions.xxs)
+                .background(color)
         )
 
         if (!preview.isNullOrEmpty()) {
@@ -57,6 +63,7 @@ private fun NoteItemPreview() {
             id = "note-1",
             title = "Meeting notes",
             preview = "Ideas and decisions for our next release.",
-            onClick = {})
+            onClick = {}
+        )
     }
 }

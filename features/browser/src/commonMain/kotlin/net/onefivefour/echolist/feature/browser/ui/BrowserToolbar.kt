@@ -1,7 +1,5 @@
 package net.onefivefour.echolist.feature.browser.ui
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -9,9 +7,17 @@ import net.onefivefour.echolist.core.designsystem.resources.Res as SharedRes
 import net.onefivefour.echolist.core.designsystem.resources.ic_delete
 import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
-import net.onefivefour.echolist.feature.browser.resources.*
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import net.onefivefour.echolist.feature.browser.resources.Res
+import net.onefivefour.echolist.feature.browser.resources.delete_folder
+import net.onefivefour.echolist.feature.browser.resources.ic_logout
+import net.onefivefour.echolist.feature.browser.resources.logout
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 
 @Composable
 internal fun BrowserToolbar(
@@ -23,10 +29,10 @@ internal fun BrowserToolbar(
     val colors = EchoListTheme.materialColors
 
     Row(verticalAlignment = Alignment.CenterVertically) {
-
-        Box(Modifier
-            .weight(1f)
-            .padding(start = EchoListTheme.dimensions.l + EchoListTheme.dimensions.borderWidth)
+        Box(
+            Modifier
+                .weight(1f)
+                .padding(start = EchoListTheme.dimensions.l + EchoListTheme.dimensions.borderWidth)
         ) {
             heading()
         }

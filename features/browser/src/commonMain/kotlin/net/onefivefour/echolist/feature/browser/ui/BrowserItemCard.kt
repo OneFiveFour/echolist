@@ -4,7 +4,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -17,9 +16,24 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextOverflow
 import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
-import net.onefivefour.echolist.feature.browser.resources.*
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
+import net.onefivefour.echolist.feature.browser.resources.Res
+import net.onefivefour.echolist.feature.browser.resources.browser_folder
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+
+private const val DRAFT_BACKGROUND_ALPHA = 0.7f
 
 @Composable
 internal fun BrowserItemCard(
@@ -34,7 +48,6 @@ internal fun BrowserItemCard(
     onLongClickLabel: String? = null,
     content: @Composable ColumnScope.() -> Unit
 ) {
-
     val dimensions = EchoListTheme.dimensions
 
     // Content may grow with font scale, while each item type keeps a consistent minimum.
@@ -66,7 +79,7 @@ internal fun BrowserItemCard(
 
     val isDraftItem = onClick == null
     val backgroundAlpha = when {
-        isDraftItem -> .7f
+        isDraftItem -> DRAFT_BACKGROUND_ALPHA
         else -> 1f
     }
 
@@ -84,7 +97,6 @@ internal fun BrowserItemCard(
         color = Color.Transparent
     ) {
         Box {
-
             Box(
                 Modifier
                     .fillMaxSize()
@@ -104,7 +116,6 @@ internal fun BrowserItemCard(
                 },
                 horizontalArrangement = Arrangement.spacedBy(EchoListTheme.dimensions.m)
             ) {
-
                 Box(
                     Modifier
                         .size(dimensions.iconMedium)
@@ -149,7 +160,7 @@ private fun BrowserItemCardPreview() {
             icon = Res.drawable.browser_folder,
             accent = EchoListTheme.echoListColorScheme.folderColor,
             isFolder = true,
-            onClick = {},
+            onClick = {}
         ) {
             Text(
                 text = "3 items",
@@ -168,7 +179,7 @@ private fun BrowserItemCardDraftPreview() {
             icon = Res.drawable.browser_folder,
             accent = EchoListTheme.echoListColorScheme.folderColor,
             isFolder = true,
-            onClick = null,
+            onClick = null
         ) {
             Text(
                 text = "3 items",

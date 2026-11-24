@@ -8,7 +8,6 @@ import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.feature.browser.ui.BreadcrumbItem
 import net.onefivefour.echolist.feature.browser.ui.BrowserHeading
 import net.onefivefour.echolist.feature.browser.ui.browserPreviewState
-import org.koin.core.component.getScopeId
 
 @Composable
 internal fun PhoneBrowserHeading(

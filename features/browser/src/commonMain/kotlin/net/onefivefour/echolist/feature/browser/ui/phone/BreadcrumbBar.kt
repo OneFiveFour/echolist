@@ -19,7 +19,6 @@ import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.sp
 import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
-import net.onefivefour.echolist.feature.browser.resources.*
 import net.onefivefour.echolist.feature.browser.resources.Res
 import net.onefivefour.echolist.feature.browser.resources.browser_breadcrumb_separator
 import net.onefivefour.echolist.feature.browser.ui.BreadcrumbItem

@@ -7,8 +7,12 @@ import androidx.compose.ui.Modifier
 import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.feature.browser.domain.model.FileMetadata
-import net.onefivefour.echolist.feature.browser.resources.*
 import org.jetbrains.compose.resources.stringResource
+import net.onefivefour.echolist.feature.browser.resources.Res
+import net.onefivefour.echolist.feature.browser.resources.browser_folder
+import net.onefivefour.echolist.feature.browser.resources.folder_empty
+import net.onefivefour.echolist.feature.browser.resources.folder_item_count
+import net.onefivefour.echolist.feature.browser.resources.rename_folder
 
 @Composable
 internal fun FolderItem(
@@ -37,7 +41,9 @@ internal fun FolderItem(
                     else -> stringResource(Res.string.folder_item_count, it.childCount)
                 },
                 modifier = Modifier.padding(top = EchoListTheme.dimensions.xxs),
-                style = EchoListTheme.typography.labelSmall, color = color)
+                style = EchoListTheme.typography.labelSmall,
+                color = color
+            )
         }
     }
 }

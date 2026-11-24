@@ -30,10 +30,17 @@ import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
 import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
-import net.onefivefour.echolist.feature.browser.resources.*
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import net.onefivefour.echolist.feature.browser.resources.Res
+import net.onefivefour.echolist.feature.browser.resources.browser_folder
+import net.onefivefour.echolist.feature.browser.resources.browser_note
+import net.onefivefour.echolist.feature.browser.resources.browser_plus
+import net.onefivefour.echolist.feature.browser.resources.browser_tasks
+import net.onefivefour.echolist.feature.browser.resources.create_folder
+import net.onefivefour.echolist.feature.browser.resources.create_note
+import net.onefivefour.echolist.feature.browser.resources.create_task_list
 
 private data class CreateMenuEntry(
     val label: String,
