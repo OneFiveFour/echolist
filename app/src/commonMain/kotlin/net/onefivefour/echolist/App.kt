@@ -107,9 +107,10 @@ private fun AuthenticatedApp(
     onDeepLinkConsumed: () -> Unit
 ) {
     val backStack = rememberNavBackStack(echoListSavedStateConfig, BrowserRoute())
-    val account = koinInject<NotificationAccountProvider>()
 
+    val account = koinInject<NotificationAccountProvider>()
     val deepLinkHandler = koinInject<DeepLinkHandler>()
+
     LaunchedEffect(deepLink) {
         if (deepLink != null) {
             deepLinkHandler.resolve(deepLink)?.let { backStack.open(it, account.currentAccountId()) }
