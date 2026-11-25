@@ -6,10 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.Lifecycle
@@ -115,12 +112,9 @@ private fun AuthenticatedApp(
     onNotificationTargetConsumed: () -> Unit
 ) {
     val backStack = rememberNavBackStack(echoListSavedStateConfig, BrowserRoute())
-    var isBrowserNavigationBlocked by remember { mutableStateOf(false) }
-    var discardBrowserDraft by remember { mutableStateOf<() -> Unit>({}) }
     val account = koinInject<NotificationAccountProvider>()
-    LaunchedEffect(notificationTarget, isBrowserNavigationBlocked) {
-        if (notificationTarget != null && !isBrowserNavigationBlocked) {
-            discardBrowserDraft()
+    LaunchedEffect(notificationTarget) {
+        if (notificationTarget != null) {
             backStack.openNotificationTaskList(notificationTarget, account.currentAccountId())
             onNotificationTargetConsumed()
         }
@@ -133,24 +127,13 @@ private fun AuthenticatedApp(
     NavigationBackHandler(
         state = rememberNavigationEventState(NavigationEventInfo.None),
         isBackEnabled = canNavigateBack,
-        onBackCompleted = {
-            if (!isBrowserNavigationBlocked) {
-                discardBrowserDraft()
-                backStack.removeLastOrNull()
-            }
-        }
+        onBackCompleted = { backStack.removeLastOrNull() }
     )
 
     Box(modifier = Modifier.fillMaxSize()) {
         AuthenticatedNavDisplay(
             backStack = backStack,
             settingsChannels = settingsChannels,
-            isBrowserNavigationBlocked = isBrowserNavigationBlocked,
-            onBrowserNavigationStateChange = { isBlocked, discardDraft ->
-                isBrowserNavigationBlocked = isBlocked
-                discardBrowserDraft = discardDraft
-            },
-            onLeaveBrowser = { discardBrowserDraft() },
             onLogout = onLogout
         )
 

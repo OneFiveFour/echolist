@@ -29,20 +29,12 @@ import net.onefivefour.echolist.ui.navigation.navigateToBrowserFolder
 internal fun AuthenticatedNavDisplay(
     backStack: NavBackStack<NavKey>,
     settingsChannels: TaskSettingsChannels,
-    isBrowserNavigationBlocked: Boolean,
-    onBrowserNavigationStateChange: (Boolean, () -> Unit) -> Unit,
-    onLeaveBrowser: () -> Unit,
     onLogout: () -> Unit
 ) {
     NavDisplay(
         modifier = Modifier.fillMaxSize(),
         backStack = backStack,
-        onBack = {
-            if (!isBrowserNavigationBlocked) {
-                onLeaveBrowser()
-                backStack.removeLastOrNull()
-            }
-        },
+        onBack = { backStack.removeLastOrNull() },
         entryDecorators = listOf(
             rememberSaveableStateHolderNavEntryDecorator(),
             rememberViewModelStoreNavEntryDecorator()
@@ -57,11 +49,6 @@ internal fun AuthenticatedNavDisplay(
             entry<BrowserRoute> { browserRoute ->
                 BrowserFeature(
                     selectedFolder = browserRoute.parentDir,
-                    onNavigationStateChange = { isBlocked, discardDraft ->
-                        if (backStack.lastOrNull() == browserRoute) {
-                            onBrowserNavigationStateChange(isBlocked, discardDraft)
-                        }
-                    },
                     navToFolder = { backStack.navigateToBrowserFolder(it) },
                     navToNote = { backStack.add(EditNoteRoute(browserRoute.parentDir, it)) },
                     navToTaskList = {

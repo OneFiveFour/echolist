@@ -232,7 +232,7 @@ internal class FolderDraftLayoutTest : FunSpec({
         }
     }
 
-    test("recreating the browser retains creation and rename drafts while navigation discards them") {
+    test("leaving the browser discards creation and rename drafts while in-browser navigation discards them") {
         SwingUtilities.invokeAndWait {
             val dispatcher = StandardTestDispatcher()
             Dispatchers.setMain(dispatcher)
@@ -268,7 +268,6 @@ internal class FolderDraftLayoutTest : FunSpec({
                             }
                         )
                     }
-                    var discardDraft: () -> Unit = {}
                     var navigationCount = 0
                     fun createScene(): ImageComposeScene {
                         val lifecycleOwner = object : LifecycleOwner {
@@ -289,8 +288,7 @@ internal class FolderDraftLayoutTest : FunSpec({
                                             navToNote = {},
                                             navToTaskList = {},
                                             navToRemindersSummary = {},
-                                            navToTasksSummary = { navigationCount++ },
-                                            onNavigationStateChange = { _, discard -> discardDraft = discard }
+                                            navToTasksSummary = { navigationCount++ }
                                         )
                                     }
                                 }
@@ -321,14 +319,10 @@ internal class FolderDraftLayoutTest : FunSpec({
                         }
                         createScene().use { scene ->
                             repeat(4) { renderScene(scene) }
-                            requireNotNull(scene.draftNodes().taggedDraft("folder-draft-name"))
-                                .config[SemanticsProperties.EditableText].text shouldBe "Kept on rotation"
+                            // Disposing the first scene (browser covered or removed) discarded the draft.
+                            (scene.draftNodes().taggedDraft("folder-draft-name") == null) shouldBe true
                             repository.lastCreateParams shouldBe null
                             repository.callLog.any { it.startsWith("updateFolder") } shouldBe false
-                            // The app invokes this before system back or incoming notification navigation.
-                            discardDraft()
-                            repeat(3) { renderScene(scene) }
-                            (scene.draftNodes().taggedDraft("folder-draft-name") == null) shouldBe true
                             startEditor(scene)
                             requireNotNull(scene.draftNodes().taggedDraft("nav-Due"))
                                 .config[SemanticsActions.OnClick].action!!.invoke()

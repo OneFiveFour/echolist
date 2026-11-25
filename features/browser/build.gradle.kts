@@ -7,6 +7,7 @@ kotlin.sourceSets.getByName("commonMain").dependencies {
     implementation(libs.androidx.lifecycle.runtimeCompose)
     implementation(libs.koin.compose)
     implementation(libs.koin.compose.viewmodel)
+    implementation(libs.navigationevent.compose)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.datetime)
     implementation(project(":core:files"))

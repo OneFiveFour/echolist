@@ -3,9 +3,11 @@ package net.onefivefour.echolist.feature.browser.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigationevent.NavigationEventInfo
+import androidx.navigationevent.compose.NavigationBackHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -18,7 +20,6 @@ fun BrowserFeature(
     navToRemindersSummary: () -> Unit,
     navToTasksSummary: () -> Unit,
     onLogout: (() -> Unit)? = null,
-    onNavigationStateChange: (isBlocked: Boolean, discardDraft: () -> Unit) -> Unit = { _, _ -> },
     onBack: () -> Unit = {}
 ) {
     val browserViewModel = koinViewModel<BrowserViewModel>(key = selectedFolder) {
@@ -39,17 +40,16 @@ fun BrowserFeature(
 
     val isSaving = browserUiState.folderDraft?.isSaving == true
 
-    SideEffect {
-        onNavigationStateChange(
-            isSaving,
-            browserViewModel::dismissFolderDraft
-        )
-    }
+    // Swallow system back while a folder is being saved so the entry is not popped mid-request.
+    NavigationBackHandler(
+        state = rememberNavigationEventState(NavigationEventInfo.None),
+        isBackEnabled = isSaving,
+        onBackCompleted = {}
+    )
 
+    // A covered or removed browser must not keep an open folder draft.
     DisposableEffect(browserViewModel) {
-        onDispose {
-            onNavigationStateChange(false) { }
-        }
+        onDispose { browserViewModel.dismissFolderDraft() }
     }
 
     fun leaveBrowserWith(action: () -> Unit) {
