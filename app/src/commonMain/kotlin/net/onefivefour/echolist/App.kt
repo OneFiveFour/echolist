@@ -217,7 +217,6 @@ private fun AuthenticatedApp(
     Box(modifier = Modifier.fillMaxSize()) {
         AuthenticatedNavDisplay(
             backStack = backStack,
-            canNavigateBack = canNavigateBack,
             settingsChannels = settingsChannels,
             isBrowserNavigationBlocked = isBrowserNavigationBlocked,
             onBrowserNavigationStateChange = { isBlocked, discardDraft ->
@@ -251,7 +250,6 @@ private fun AuthenticatedApp(
 @Composable
 private fun AuthenticatedNavDisplay(
     backStack: NavBackStack<NavKey>,
-    canNavigateBack: Boolean,
     settingsChannels: TaskSettingsChannels,
     isBrowserNavigationBlocked: Boolean,
     onBrowserNavigationStateChange: (Boolean, () -> Unit) -> Unit,
@@ -287,7 +285,6 @@ private fun AuthenticatedNavDisplay(
                             onBrowserNavigationStateChange(isBlocked, discardDraft)
                         }
                     },
-                    canNavigateBack = canNavigateBack,
                     navToFolder = { backStack.navigateToBrowserFolder(it) },
                     navToNote = { backStack.add(EditNoteRoute(browserRoute.parentDir, it)) },
                     navToTaskList = { backStack.add(EditTaskListRoute(browserRoute.parentDir, it)) },

@@ -12,7 +12,6 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun BrowserFeature(
     selectedFolder: String,
-    canNavigateBack: Boolean = false,
     navToFolder: (String) -> Unit,
     navToNote: (String?) -> Unit,
     navToTaskList: (String?) -> Unit,
@@ -62,7 +61,7 @@ fun BrowserFeature(
     BrowserScreen(
         browserUiState = browserUiState,
 
-        canNavigateBack = canNavigateBack,
+        canNavigateBack = selectedFolder.isNotEmpty(),
         onBack = { leaveBrowserWith(onBack) },
 
         createItemCallbacks = CreateItemCallbacks(
