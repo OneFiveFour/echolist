@@ -1,6 +1,7 @@
 package net.onefivefour.echolist.feature.login.ui
 
 import net.onefivefour.echolist.feature.login.resources.Res
+import net.onefivefour.echolist.feature.login.resources.error_backend_url_invalid
 import net.onefivefour.echolist.feature.login.resources.error_backend_url_required
 import net.onefivefour.echolist.feature.login.resources.error_password_required
 import net.onefivefour.echolist.feature.login.resources.error_username_required
@@ -26,7 +27,7 @@ import org.jetbrains.compose.resources.getString
  *
  * *For any* combination of backend URL, username, and password strings (where each may be blank or non-blank),
  * when `LoginViewModel.onLoginClick()` is called, every non-null error field in the resulting `LoginUiState`
- * should exactly match the corresponding localized resource string (`error_backend_url_required`,
+ * should exactly match the corresponding localized resource string (`error_backend_url_required`, `error_backend_url_invalid`,
  * `error_username_required`, `error_password_required`), and no error field should contain a hardcoded
  * English literal that differs from the resource value.
  *
@@ -55,6 +56,7 @@ class LoginViewModelStringResourcePropertyTest : FunSpec({
             runTest(testDispatcher) {
                 // Resolve the expected resource strings
                 val expectedBackendUrlError = getString(Res.string.error_backend_url_required)
+                val expectedInvalidBackendUrlError = getString(Res.string.error_backend_url_invalid)
                 val expectedUsernameError = getString(Res.string.error_username_required)
                 val expectedPasswordError = getString(Res.string.error_password_required)
 
@@ -70,7 +72,10 @@ class LoginViewModelStringResourcePropertyTest : FunSpec({
 
                 // Assert that each non-null error field matches the corresponding resource string
                 if (uiState.backendUrlError != null) {
-                    uiState.backendUrlError shouldBe expectedBackendUrlError
+                    uiState.backendUrlError shouldBe when {
+                        backendUrl.isBlank() -> expectedBackendUrlError
+                        else -> expectedInvalidBackendUrlError
+                    }
                 }
 
                 if (uiState.usernameError != null) {

@@ -1,6 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="error_backend_url_required">Backend URL is required</string>
+    <string name="error_backend_url_invalid">Enter a valid server address, e.g. https://echo.example.com</string>
     <string name="error_username_required">Username is required</string>
     <string name="error_password_required">Password is required</string>
     <string name="error_auth_invalid_credentials">Invalid Credentials</string>

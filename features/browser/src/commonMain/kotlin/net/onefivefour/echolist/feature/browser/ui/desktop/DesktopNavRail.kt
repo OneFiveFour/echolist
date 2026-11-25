@@ -65,8 +65,8 @@ internal fun DesktopNavRail(
                 icon = Res.drawable.browser_due,
                 isSelected = false,
                 isDesktop = true,
-                onClick = navToTasksSummary,
-                hasDueBadge = true
+                // The badge stays hidden until the backend supplies a global due-task count.
+                onClick = navToTasksSummary
             )
             Spacer(Modifier.height(EchoListTheme.dimensions.xs))
             BrowserNavButton(

@@ -172,7 +172,7 @@ internal class BrowserFolderRenameTest : FunSpec({
             vm.refresh()
             advanceUntilIdle()
             vm.uiState.value.folderDraft shouldBe draft
-            vm.uiState.value.error shouldBe "Offline"
+            vm.uiState.value.error shouldBe BrowserError.LOAD_FAILED
         }
     }
 

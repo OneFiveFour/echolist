@@ -98,8 +98,8 @@ width-only Bar/Rail selection, preserving this boundary even in short windows or
 posture. Its component override uses `NavigationSuiteScaffoldLayout` with the existing
 custom floating bottom bar and 264-dp sidebar, including breadcrumbs and the divider.
 The scaffold reserves navigation space; content does not add a duplicate bottom spacer.
-The header shows only the current folder as its large title, with a house icon only at
-Home. Phone shows a small, clickable ancestor path above nested folder titles;
+The header shows only the current folder as its large title, without an icon (also at
+Home). Phone shows a small, clickable ancestor path above nested folder titles;
 desktop shows a clickable ancestor trail in its sidebar. Selecting a visited directory
 pops back to its last matching BrowserRoute; a directory absent from the stack is pushed
 as a new active route. Selecting the current directory is a no-op. Both presentations use the same
@@ -111,9 +111,9 @@ while other routes retain their existing app padding. Folder cards have a shared
 height; note/task-list cards have a taller minimum. Cards grow with their content
 and use the same spacing and icon sizes in both presentations. `BrowserLayout`
 owns adaptive outer spacing and reserves scrollable space for floating actions. Empty loaded folders use the shared
-`EmptyFolderContent` illustration, explanation and Create here action, with adaptive
-spacing and scrolling in short windows. Create here and the floating plus button
-share the same folder/note/task-list menu; loading and error states take precedence. Due opens the separate Tasks Summary screen for the current directory;
+`EmptyFolderContent` illustration and explanation, with adaptive spacing and scrolling
+in short windows. It has no action of its own; items are created through the regular
+plus button and its folder/note/task-list menu. Loading and error states take precedence. Due opens the separate Tasks Summary screen for the current directory;
 Remind opens Reminders Summary. Tasks Summary owns its UI, ViewModel and tests,
 loads on entry without visibility/toggle state, and reuses TaskListRepository in core:tasks.
 
@@ -156,7 +156,9 @@ render urgency summaries. Per-list urgency counts come from the optional
 or zero counts hide the corresponding pill. Each listing request supplies the current
 local calendar date as `reference_date`, which the backend requires to include counts.
 The browser ViewModel carries these
-metadata through its existing file-entry state. The sidebar due badge remains a UI placeholder.
+metadata through its existing file-entry state. The sidebar due badge is hidden until the
+backend supplies a global due-task count. Load and delete failures are typed `BrowserError`
+values mapped to localized messages; raw exception text is not shown.
 
 ## Navigation and results
 

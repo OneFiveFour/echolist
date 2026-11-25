@@ -10,8 +10,14 @@ internal data class BrowserUiState(
     val isDeletingFolder: Boolean = false,
     val canDeleteCurrentFolder: Boolean = false,
     val folderDraft: FolderDraft? = null,
-    val error: String? = null
+    val error: BrowserError? = null
 )
+
+/** Failures of the folder screen; the UI maps them to localized messages. */
+internal enum class BrowserError {
+    LOAD_FAILED,
+    DELETE_FAILED
+}
 
 internal data class BreadcrumbItem(
     val label: String,

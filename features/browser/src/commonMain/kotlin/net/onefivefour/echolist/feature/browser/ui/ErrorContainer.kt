@@ -9,6 +9,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import net.onefivefour.echolist.core.designsystem.ui.preview.PreviewComponentLightDark
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
+import net.onefivefour.echolist.feature.browser.resources.Res
+import net.onefivefour.echolist.feature.browser.resources.browser_delete_failed
+import net.onefivefour.echolist.feature.browser.resources.browser_load_failed
+import org.jetbrains.compose.resources.stringResource
+
+/** Localized text for a [BrowserError]; technical exception messages never reach the UI. */
+@Composable
+internal fun browserErrorMessage(error: BrowserError): String = stringResource(
+    when (error) {
+        BrowserError.LOAD_FAILED -> Res.string.browser_load_failed
+        BrowserError.DELETE_FAILED -> Res.string.browser_delete_failed
+    }
+)
 
 @Composable
 internal fun ErrorContainer(
@@ -24,7 +37,7 @@ internal fun ErrorContainer(
         Text(
             text = message,
             style = EchoListTheme.typography.bodyMedium,
-            color = EchoListTheme.materialColors.secondary
+            color = EchoListTheme.materialColors.error
         )
     }
 }
@@ -33,6 +46,6 @@ internal fun ErrorContainer(
 @Composable
 private fun ErrorContainerPreview() {
     EchoListTheme(modifier = Modifier) {
-        ErrorContainer(message = "The server could not be reached. Please try again.")
+        ErrorContainer(message = browserErrorMessage(BrowserError.LOAD_FAILED))
     }
 }

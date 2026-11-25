@@ -1,12 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="home_title">Home</string>
-    <string name="folder">Folder</string>
-    <string name="reminders_summary">Reminders Summary</string>
     <string name="create_folder">New folder</string>
     <string name="create_note">New note</string>
     <string name="create_task_list">New task list</string>
-    <string name="task_peek">Task peek</string>
     <string name="folder_empty">Empty</string>
     <string name="folder_item_count">%1$d items</string>
     <string name="count_overdue">%1$d Overdue</string>
@@ -15,14 +12,14 @@
     <string name="nav_due">Due</string>
     <string name="nav_remind">Remind</string>
     <string name="nav_reminders">Reminders</string>
-    <string name="navigate_back">Navigate back</string>
     <string name="create_item">Create item</string>
     <string name="rename_folder">Rename folder</string>
     <string name="delete_folder">Delete folder</string>
     <string name="logout">Logout</string>
     <string name="browser_empty_title">Room for something new</string>
     <string name="browser_empty">This folder is empty. Add a folder, note, or task list when you’re ready.</string>
-    <string name="browser_empty_create">Create here</string>
+    <string name="browser_load_failed">Could not load this folder. Please try again.</string>
+    <string name="browser_delete_failed">Could not delete this folder. Please try again.</string>
     <string name="folder_name">Folder name</string>
     <string name="folder_create_confirm">Create folder</string>
     <string name="folder_create_cancel">Cancel folder creation</string>

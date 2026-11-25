@@ -302,7 +302,7 @@ internal class FolderDraftLayoutTest : FunSpec({
                             requireNotNull(scene.draftNodes().taggedDraft("browser-folder"))
                                 .config[SemanticsActions.OnLongClick].action!!.invoke()
                         } else {
-                            requireNotNull(scene.draftNodes().taggedDraft("browser-empty-create"))
+                            requireNotNull(scene.draftNodes().taggedDraft("browser-create"))
                                 .config[SemanticsActions.OnClick].action!!.invoke()
                             renderScene(scene)
                             requireNotNull(scene.draftNodes().taggedDraft("create-New folder"))
@@ -418,7 +418,7 @@ internal class FolderDraftLayoutTest : FunSpec({
                         requireNotNull(scene.draftNodes().taggedDraft("folder-draft-name"))
                             .config[SemanticsProperties.TextSelectionRange] shouldBe TextRange(2)
                         // A refresh without the original entry must keep the active rename input visible.
-                        state.value = state.value.copy(fileEntries = emptyList(), error = "Offline")
+                        state.value = state.value.copy(fileEntries = emptyList(), error = BrowserError.LOAD_FAILED)
                         repeat(3) { scene.render().close() }
                         requireNotNull(scene.draftNodes().taggedDraft("folder-draft-name"))
                             .config[SemanticsProperties.EditableText].text shouldBe "Updated"

@@ -249,11 +249,11 @@ internal class BrowserViewModel(
                     uiState.update { it.copy(isDeletingFolder = false) }
                     navigateBack.emit(Unit)
                 },
-                onFailure = { exception ->
+                onFailure = {
                     uiState.update {
                         it.copy(
                             isDeletingFolder = false,
-                            error = exception.message
+                            error = BrowserError.DELETE_FAILED
                         )
                     }
                 }
@@ -297,13 +297,13 @@ internal class BrowserViewModel(
                         error = null
                     )
                 },
-                onFailure = { exception ->
+                onFailure = {
+                    // Always set: a missing error would make an unloadable folder look empty.
                     current.copy(
                         breadcrumbs = breadcrumbs,
-                        fileEntries = current.fileEntries,
                         isLoading = false,
                         canDeleteCurrentFolder = false,
-                        error = exception.message
+                        error = BrowserError.LOAD_FAILED
                     )
                 }
             )

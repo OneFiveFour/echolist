@@ -136,7 +136,7 @@ internal class BrowserFolderCreationTest : FunSpec({
             notifier.notifyChanged("Projects")
             advanceUntilIdle()
             vm.uiState.value.folderDraft shouldBe draft
-            vm.uiState.value.error shouldBe "Offline"
+            vm.uiState.value.error shouldBe BrowserError.LOAD_FAILED
         }
     }
 

@@ -70,7 +70,7 @@ internal class BrowserViewModelClearErrorTest : FunSpec({
             // Let init's loadData() complete — it should fail
             advanceUntilIdle()
             vm.uiState.value.error.shouldNotBeNull()
-            vm.uiState.value.error shouldBe "code Unauthenticated token expired"
+            vm.uiState.value.error shouldBe BrowserError.LOAD_FAILED
 
             // Simulate successful re-authentication: network calls now succeed
             shouldFail = false
@@ -199,6 +199,55 @@ internal class BrowserViewModelClearErrorTest : FunSpec({
             advanceUntilIdle()
 
             deleteCallCount shouldBe 0
+        }
+    }
+
+    test("a load failure without exception message is still reported instead of an empty folder") {
+        runTest(testDispatcher) {
+            val repo = object : FileRepository {
+                override suspend fun listFiles(parentDir: String): Result<List<FileEntry>> =
+                    Result.failure(Exception())
+                override suspend fun createFolder(params: CreateFolderParams): Result<Folder> =
+                    Result.failure(UnsupportedOperationException())
+                override suspend fun updateFolder(params: UpdateFolderParams): Result<Folder> =
+                    Result.failure(UnsupportedOperationException())
+                override suspend fun deleteFolder(params: DeleteFolderParams): Result<Unit> =
+                    Result.failure(UnsupportedOperationException())
+            }
+            val vm = BrowserViewModel(
+                parentDir = "",
+                fileRepository = repo,
+                directoryChangeNotifier = FakeDirectoryChangeNotifier()
+            )
+            advanceUntilIdle()
+            vm.uiState.value.error shouldBe BrowserError.LOAD_FAILED
+            vm.uiState.value.fileEntries shouldBe emptyList()
+            vm.uiState.value.isLoading shouldBe false
+        }
+    }
+
+    test("a failed deletion reports a typed error and stays on the folder") {
+        runTest(testDispatcher) {
+            val repo = object : FileRepository {
+                override suspend fun listFiles(parentDir: String): Result<List<FileEntry>> =
+                    Result.success(emptyList())
+                override suspend fun createFolder(params: CreateFolderParams): Result<Folder> =
+                    Result.failure(UnsupportedOperationException())
+                override suspend fun updateFolder(params: UpdateFolderParams): Result<Folder> =
+                    Result.failure(UnsupportedOperationException())
+                override suspend fun deleteFolder(params: DeleteFolderParams): Result<Unit> =
+                    Result.failure(Exception("internal: stack trace and server details"))
+            }
+            val vm = BrowserViewModel(
+                parentDir = "parent/child",
+                fileRepository = repo,
+                directoryChangeNotifier = FakeDirectoryChangeNotifier()
+            )
+            advanceUntilIdle()
+            vm.onDeleteCurrentFolderClick()
+            advanceUntilIdle()
+            vm.uiState.value.error shouldBe BrowserError.DELETE_FAILED
+            vm.uiState.value.isDeletingFolder shouldBe false
         }
     }
 })

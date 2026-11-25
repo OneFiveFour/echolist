@@ -191,7 +191,6 @@ class BrowserLayoutTest : FunSpec({
                             val nodes = scene.browserNodes()
                             val heading = requireNotNull(nodes.tagged("browser-heading"))
                             heading.config[SemanticsProperties.Text].single().text shouldBe breadcrumbs.last().label
-                            (nodes.tagged("browser-home-icon") != null) shouldBe isHome
                             (heading.config.getOrNull(SemanticsActions.OnClick) == null) shouldBe true
                             val hint = nodes.tagged("browser-breadcrumbs")
                             (hint != null) shouldBe (!isDesktop && !isHome)
@@ -237,7 +236,7 @@ class BrowserLayoutTest : FunSpec({
         }
     }
 
-    test("empty folders show the designed content and all create actions in both layouts") {
+    test("empty folders show the designed content and keep the create button reachable in both layouts") {
         SwingUtilities.invokeAndWait {
             for (isDarkTheme in listOf(false, true)) {
                 for ((width, height) in listOf(402 to 874, 1440 to 1024, 320 to 640, 840 to 400)) {
@@ -264,25 +263,20 @@ class BrowserLayoutTest : FunSpec({
                                 .writeBytes(requireNotNull(image.encodeToData()).bytes)
                         }
                         val nodes = scene.browserNodes()
-                        requireNotNull(nodes.tagged("browser-empty"))
+                        val empty = requireNotNull(nodes.tagged("browser-empty"))
+                        // The empty content is purely informative; creation uses the regular create button.
+                        empty.hasClickActionInSubtree() shouldBe false
                         requireNotNull(nodes.tagged("browser-empty-title"))
                             .config[SemanticsProperties.Text].single().text shouldBe "Room for something new"
                         val icon = requireNotNull(nodes.tagged("browser-empty-icon"))
                         icon.boundsInRoot.width shouldBe 32f
                         icon.boundsInRoot.height shouldBe 32f
-                        if (height < 500) {
-                            val scroll = nodes.first {
-                                it.config.getOrNull(SemanticsActions.ScrollBy) != null && it.boundsInRoot.left >= 264
-                            }
-                            scroll.config[SemanticsActions.ScrollBy].action!!.invoke(0f, 1000f)
-                            scene.render().close()
-                        }
-                        val create = requireNotNull(scene.browserNodes().tagged("browser-empty-create"))
+                        val create = requireNotNull(nodes.tagged("browser-create"))
                         (create.boundsInRoot.bottom <= height) shouldBe true
                         (create.boundsInRoot.left >= 0) shouldBe true
                         (create.boundsInRoot.right <= width) shouldBe true
                         for (label in listOf("New folder", "New note", "New task list")) {
-                            requireNotNull(scene.browserNodes().tagged("browser-empty-create"))
+                            requireNotNull(scene.browserNodes().tagged("browser-create"))
                                 .config[SemanticsActions.OnClick].action!!.invoke()
                             scene.render().close()
                             requireNotNull(scene.browserNodes().tagged("create-$label"))
@@ -296,11 +290,11 @@ class BrowserLayoutTest : FunSpec({
         }
     }
 
-    test("loading errors and populated folders do not show the empty-folder action") {
+    test("loading errors and populated folders do not show the empty-folder content") {
         SwingUtilities.invokeAndWait {
             for (state in listOf(
                 BrowserUiState(emptyList(), isLoading = true),
-                BrowserUiState(emptyList(), error = "Unavailable"),
+                BrowserUiState(emptyList(), error = BrowserError.LOAD_FAILED),
                 BrowserUiState(emptyList(), fileEntries = sampleEntries())
             )) {
                 ImageComposeScene(402, 874) {

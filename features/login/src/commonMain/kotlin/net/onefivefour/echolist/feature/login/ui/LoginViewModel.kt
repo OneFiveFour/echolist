@@ -3,19 +3,29 @@ package net.onefivefour.echolist.feature.login.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import net.onefivefour.echolist.feature.login.resources.Res
+import net.onefivefour.echolist.feature.login.resources.error_backend_url_invalid
 import net.onefivefour.echolist.feature.login.resources.error_backend_url_required
 import net.onefivefour.echolist.feature.login.resources.error_password_required
 import net.onefivefour.echolist.feature.login.resources.error_username_required
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import net.onefivefour.echolist.core.session.domain.AuthRepository
 import net.onefivefour.echolist.core.session.domain.AuthError
 import net.onefivefour.echolist.core.session.domain.AuthFailure
 import org.jetbrains.compose.resources.getString
+
+/** Scheme, host (name, IPv4 or bracketed IPv6), optional port and optional path. */
+private val backendUrlPattern = Regex(
+    pattern = """^https?://(\[[0-9a-f:.]+]|[^\s/?#:@\[\]]+)(:\d{1,5})?(/\S*)?$""",
+    option = RegexOption.IGNORE_CASE
+)
+
+internal fun isValidBackendUrl(url: String): Boolean = backendUrlPattern.matches(url)
 
 internal class LoginViewModel(
     private val authRepository: AuthRepository
@@ -24,8 +34,9 @@ internal class LoginViewModel(
     val loginUiState: StateFlow<LoginUiState>
         field = MutableStateFlow(LoginUiState())
 
-    val loginSuccess: SharedFlow<Unit>
-        field = MutableSharedFlow<Unit>()
+    // Buffered so a success is still delivered if the UI collector is restarting at that moment.
+    private val loginSuccessEvents = Channel<Unit>(Channel.BUFFERED)
+    val loginSuccess: Flow<Unit> = loginSuccessEvents.receiveAsFlow()
 
     init {
         val storedUrl = authRepository.getBaseUrl()
@@ -71,8 +82,10 @@ internal class LoginViewModel(
         ) }
 
         viewModelScope.launch {
+            val backendUrl = current.backendUrl.trim()
             val backendUrlError = when {
-                current.backendUrl.isBlank() -> getString(Res.string.error_backend_url_required)
+                backendUrl.isEmpty() -> getString(Res.string.error_backend_url_required)
+                !isValidBackendUrl(backendUrl) -> getString(Res.string.error_backend_url_invalid)
                 else -> null
             }
             val usernameError = when {
@@ -96,16 +109,17 @@ internal class LoginViewModel(
                 return@launch
             }
 
+            // The password is sent exactly as entered; leading or trailing spaces may be part of it.
             val result = authRepository.login(
-                baseUrl = current.backendUrl.trim(),
+                baseUrl = backendUrl,
                 username = current.username.trim(),
-                password = current.password.trim()
+                password = current.password
             )
 
             result.fold(
                 onSuccess = {
                     loginUiState.update { it.copy(isLoading = false) }
-                    loginSuccess.emit(Unit)
+                    loginSuccessEvents.send(Unit)
                 },
                 onFailure = { throwable ->
                     val authError = (throwable as? AuthFailure)?.error

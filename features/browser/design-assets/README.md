@@ -8,7 +8,6 @@ rendered unchanged at 4× resolution to PNG resources for all supported platform
 including Android. Compose displays them at their original logical dimensions
 and applies the theme's semantic foreground colors.
 
-The empty-folder illustration (`browser_empty_folder.svg`, 34 × 34) and the
-Create here plus icon (`browser_empty_plus.svg`, 18 × 18) come from empty-state
-nodes `17:1831` (desktop) and `17:2270` (phone). They are also rendered unchanged
-at 4× resolution and displayed at their original logical dimensions.
+The empty-folder illustration (`browser_empty_folder.svg`, 34 × 34) comes from
+empty-state nodes `17:1831` (desktop) and `17:2270` (phone). It is also rendered
+unchanged at 4× resolution and displayed at its original logical dimensions.

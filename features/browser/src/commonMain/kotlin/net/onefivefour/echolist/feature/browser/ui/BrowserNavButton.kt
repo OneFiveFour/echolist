@@ -13,6 +13,7 @@ import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import net.onefivefour.echolist.feature.browser.resources.Res
+import net.onefivefour.echolist.feature.browser.resources.browser_due
 import net.onefivefour.echolist.feature.browser.resources.browser_home
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,7 +34,7 @@ internal fun BrowserNavButton(
     isDesktop: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    hasDueBadge: Boolean = false
+    badgeCount: Int? = null
 ) {
     val colors = EchoListTheme.materialColors
 
@@ -86,8 +87,7 @@ internal fun BrowserNavButton(
                 color = contentColor
             )
 
-            if (hasDueBadge) {
-                // TODO backend: supply the global due-task count.
+            if (badgeCount != null && badgeCount > 0) {
                 Box(
                     Modifier
                         .size(EchoListTheme.dimensions.xl)
@@ -95,7 +95,7 @@ internal fun BrowserNavButton(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "4",
+                        text = badgeCount.toString(),
                         style = EchoListTheme.typography.labelSmall,
                         color = colors.onPrimary
                     )
@@ -134,6 +134,21 @@ private fun BrowserNavButtonPreview() {
             isSelected = true,
             isDesktop = false,
             onClick = {}
+        )
+    }
+}
+
+@PreviewComponentLightDark
+@Composable
+private fun BrowserNavButtonDesktopBadgePreview() {
+    EchoListTheme(modifier = Modifier) {
+        BrowserNavButton(
+            label = "Due",
+            icon = Res.drawable.browser_due,
+            isSelected = false,
+            isDesktop = true,
+            onClick = {},
+            badgeCount = 4
         )
     }
 }

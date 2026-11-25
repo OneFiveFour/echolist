@@ -6,6 +6,7 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.property.Arb
 import io.kotest.property.PropTestConfig
+import io.kotest.property.arbitrary.element
 import io.kotest.property.arbitrary.filter
 import io.kotest.property.arbitrary.string
 import io.kotest.property.checkAll
@@ -23,6 +24,11 @@ import net.onefivefour.echolist.core.session.domain.StorageKeys
 class LoginViewModelPropertyTest : FunSpec({
 
     val testDispatcher = StandardTestDispatcher()
+    val validUrlArb = Arb.element(
+        "https://echo.example.com",
+        "http://localhost:9090",
+        "https://192.168.0.2:8443/api/"
+    )
 
     beforeSpec {
         Dispatchers.setMain(testDispatcher)
@@ -65,7 +71,7 @@ class LoginViewModelPropertyTest : FunSpec({
         val whitespaceArb = Arb.string(0..20).filter { it.isBlank() }
         val nonBlankArb = Arb.string(1..20).filter { it.isNotBlank() }
 
-        checkAll(PropTestConfig(iterations = 20), nonBlankArb, whitespaceArb, nonBlankArb) { url, blankUser, pass ->
+        checkAll(PropTestConfig(iterations = 20), validUrlArb, whitespaceArb, nonBlankArb) { url, blankUser, pass ->
             runTest(testDispatcher) {
                 val vm = LoginViewModel(FakeAuthRepository())
                 vm.onBackendUrlChanged(url)
@@ -84,7 +90,7 @@ class LoginViewModelPropertyTest : FunSpec({
         val whitespaceArb = Arb.string(0..20).filter { it.isBlank() }
         val nonBlankArb = Arb.string(1..20).filter { it.isNotBlank() }
 
-        checkAll(PropTestConfig(iterations = 20), nonBlankArb, nonBlankArb, whitespaceArb) { url, user, blankPass ->
+        checkAll(PropTestConfig(iterations = 20), validUrlArb, nonBlankArb, whitespaceArb) { url, user, blankPass ->
             runTest(testDispatcher) {
                 val vm = LoginViewModel(FakeAuthRepository())
                 vm.onBackendUrlChanged(url)
@@ -125,7 +131,7 @@ class LoginViewModelPropertyTest : FunSpec({
      * Property 3: Valid submission triggers loading state
      *
      * *For any* login form state where all three fields (backend URL, username, password)
-     * are non-blank strings, calling onLoginClick should transition isLoading to true
+     * are valid (a well-formed backend URL and non-blank credentials), calling onLoginClick should transition isLoading to true
      * and all field-level errors to null.
      *
      * **Validates: Requirements 1.6**
@@ -133,7 +139,7 @@ class LoginViewModelPropertyTest : FunSpec({
     test("Property 3: Valid submission triggers loading state") {
         val nonBlankArb = Arb.string(1..50).filter { it.isNotBlank() }
 
-        checkAll(PropTestConfig(iterations = 20), nonBlankArb, nonBlankArb, nonBlankArb) { url, user, pass ->
+        checkAll(PropTestConfig(iterations = 20), validUrlArb, nonBlankArb, nonBlankArb) { url, user, pass ->
             runTest(testDispatcher) {
                 // Use a repo that never completes so we can observe the loading state
                 val repo = object : FakeAuthRepository() {
@@ -171,7 +177,7 @@ class LoginViewModelPropertyTest : FunSpec({
 
         checkAll(
             PropTestConfig(iterations = 20),
-            nonBlankArb,
+            validUrlArb,
             nonBlankArb,
             nonBlankArb,
             Arb.string(1..100)

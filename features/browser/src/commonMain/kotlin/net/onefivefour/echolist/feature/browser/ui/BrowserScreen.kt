@@ -60,7 +60,7 @@ internal fun BrowserScreen(
             FileOverview(
                 fileEntries = browserUiState.fileEntries,
                 isLoading = browserUiState.isLoading,
-                errorMessage = browserUiState.error,
+                errorMessage = browserUiState.error?.let { browserErrorMessage(it) },
                 onFolderClick = onFolderClick,
                 onFolderLongClick = onFolderLongClick,
                 onNoteClick = onNoteClick,
