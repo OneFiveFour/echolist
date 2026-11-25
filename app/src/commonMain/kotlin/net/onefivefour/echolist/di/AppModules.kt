@@ -13,7 +13,7 @@ import net.onefivefour.echolist.feature.tasklist.di.taskListModule
 import net.onefivefour.echolist.feature.tasksettings.di.taskSettingsModule
 import net.onefivefour.echolist.feature.reminderssummary.di.remindersSummaryModule
 import net.onefivefour.echolist.ui.AuthViewModel
-import net.onefivefour.echolist.ui.navigation.TaskSettingsChannels
+import net.onefivefour.echolist.ui.navigation.MainTaskSettingsResults
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -28,7 +28,7 @@ private val compositionModule = module {
             sessionDataCleaners = getAll()
         )
     }
-    viewModel { TaskSettingsChannels() }
+    viewModel { MainTaskSettingsResults() }
 }
 
 val appModules: List<Module> = listOf(

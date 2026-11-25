@@ -31,13 +31,13 @@ data class EditNoteRoute(
 data class EditTaskListRoute(
     val parentDir: String,
     val taskListId: String? = null,
-    val editorId: String = kotlin.uuid.Uuid.random().toString()
+    val taskListScreenId: String = kotlin.uuid.Uuid.random().toString()
 ) : NavKey
 
 @Serializable
 data class MainTaskSettingsRoute(
     val mainTaskId: String,
-    val editorId: String,
+    val taskListScreenId: String,
     val currentDueDate: String = "",
     val currentRecurrence: String = "",
     val currentIsNotificationEnabled: Boolean = true,

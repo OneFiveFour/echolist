@@ -12,7 +12,7 @@ internal fun MutableList<NavKey>.open(destination: DeepLinkDestination, currentA
     }
 }
 
-/** Reuse the existing editor (and its settings channel) when this list is already open. */
+/** Reuse the existing task-list screen (and its settings results) when this list is already open. */
 private fun MutableList<NavKey>.openTaskList(taskListId: String) {
     if (taskListId.isBlank()) return
     val index = indexOfLast { it is EditTaskListRoute && it.taskListId == taskListId }

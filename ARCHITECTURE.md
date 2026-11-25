@@ -165,7 +165,7 @@ values mapped to localized messages; raw exception text is not shown.
 
 `app` defines `TasksSummaryRoute`, `BrowserRoute`, `EditNoteRoute`, `EditTaskListRoute`, `MainTaskSettingsRoute` and `RemindersSummaryRoute`. The browser route preserves the former serialized HomeRoute name for saved-state compatibility.
 
-Every task-list navigation entry has a persistent `editorId`. The app's `TaskSettingsChannels` ViewModel owns one queue per editor, surviving configuration changes. Settings send `TaskSettingsChanges` to the calling editor's sink. This supports unsaved task IDs, queues results while the editor is covered, and isolates two editors of the same task. Popping an editor or logging out closes its queue; a late permission response cannot recreate it. The former application-wide result bus exists only as a local test fixture.
+Every task-list navigation entry has a persistent `taskListScreenId`. The app's `MainTaskSettingsResults` ViewModel owns one queue per open task-list screen, surviving configuration changes. Settings send `TaskSettingsChanges` through `senderTo(taskListScreenId)` to the calling screen. This supports unsaved task IDs, queues results while the editor is covered, and isolates two screens of the same task list. Popping a screen closes its queue and the next authenticated back stack discards leftovers (`discardExcept`); a late permission response cannot recreate it. The former application-wide result bus exists only as a local test fixture.
 
 The Reminders Summary screen is a separate feature reached from the browser's bell button.
 It lists open MainTasks with a due date strictly after today's UTC calendar date, whether

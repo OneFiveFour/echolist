@@ -53,8 +53,8 @@ Shared responsibilities are split into focused core modules. In particular, task
 Routes are `@Serializable` data classes/objects implementing `NavKey`:
 - `BrowserRoute(parentDir)` — folder browser at a given path
 - `EditNoteRoute(parentDir, noteId?)` — note editor
-- `EditTaskListRoute(parentDir, taskListId?, editorId)` — task list editor
-- `MainTaskSettingsRoute(..., editorId)` — settings returning changes to the owning editor
+- `EditTaskListRoute(parentDir, taskListId?, taskListScreenId)` — task list editor
+- `MainTaskSettingsRoute(..., taskListScreenId)` — settings returning changes to the owning task-list screen
 - Authentication is a top-level app state; features do not own app routes.
 
 The back stack is managed via `rememberNavBackStack` with a custom `SavedStateConfiguration`.

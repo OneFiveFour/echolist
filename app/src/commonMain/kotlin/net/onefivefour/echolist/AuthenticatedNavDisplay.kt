@@ -23,14 +23,14 @@ import net.onefivefour.echolist.ui.navigation.MainTaskSettingsRoute
 import net.onefivefour.echolist.ui.navigation.RemindersSummaryRoute
 import net.onefivefour.echolist.ui.navigation.TasksSummaryRoute
 import net.onefivefour.echolist.ui.navigation.navigateToBrowserFolder
-import net.onefivefour.echolist.ui.navigation.rememberTaskSettingsChannels
+import net.onefivefour.echolist.ui.navigation.rememberMainTaskSettingsResults
 
 @Composable
 internal fun AuthenticatedNavDisplay(
     backStack: NavBackStack<NavKey>,
     onLogout: () -> Unit
 ) {
-    val settingsChannels = rememberTaskSettingsChannels(backStack)
+    val mainTaskSettingsResults = rememberMainTaskSettingsResults(backStack)
 
     NavDisplay(
         modifier = Modifier.fillMaxSize(),
@@ -83,7 +83,7 @@ internal fun AuthenticatedNavDisplay(
                 TaskListFeature(
                     parentDir = route.parentDir,
                     taskListId = route.taskListId,
-                    settingsResults = settingsChannels.resultsFor(route.editorId),
+                    settingsResults = mainTaskSettingsResults.receiveFor(route.taskListScreenId),
                     navToMainTaskSettings = { taskListId, initial ->
                         backStack.add(
                             MainTaskSettingsRoute(
@@ -91,7 +91,7 @@ internal fun AuthenticatedNavDisplay(
                                 currentDueDate = initial.dueDate,
                                 currentRecurrence = initial.recurrence,
                                 currentIsNotificationEnabled = initial.isNotificationEnabled,
-                                editorId = route.editorId,
+                                taskListScreenId = route.taskListScreenId,
                                 taskListId = taskListId
                             )
                         )
@@ -108,7 +108,7 @@ internal fun AuthenticatedNavDisplay(
                         route.currentRecurrence,
                         route.currentIsNotificationEnabled
                     ),
-                    onResult = settingsChannels.sinkFor(route.editorId)
+                    onResult = mainTaskSettingsResults.senderTo(route.taskListScreenId)
                 )
             }
         }
