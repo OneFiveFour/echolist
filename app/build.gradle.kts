@@ -14,6 +14,7 @@ kotlin {
             implementation(project(":features:tasklist"))
             implementation(project(":features:tasksettings"))
             implementation(project(":core:database"))
+            implementation(project(":core:deeplinks"))
             implementation(project(":core:designsystem"))
             implementation(project(":core:files"))
             implementation(project(":core:notifications"))

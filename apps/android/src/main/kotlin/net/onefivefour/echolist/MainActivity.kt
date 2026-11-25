@@ -13,9 +13,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -24,10 +21,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import net.onefivefour.echolist.core.deeplinks.data.DeepLinkIntents
+import net.onefivefour.echolist.core.deeplinks.domain.DeepLink
 import net.onefivefour.echolist.core.notifications.data.PermissionResultBridge
-import net.onefivefour.echolist.core.notifications.data.TaskListNotificationIntent
-import net.onefivefour.echolist.core.notifications.domain.TaskListNotificationTarget
-import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
@@ -37,7 +33,7 @@ class MainActivity : ComponentActivity() {
     private var showRationaleDialog by mutableStateOf(false)
     private var showSettingsDialog by mutableStateOf(false)
     private var awaitingSettingsReturn by mutableStateOf(false)
-    private var notificationTarget by mutableStateOf<TaskListNotificationTarget?>(null)
+    private var deepLink by mutableStateOf<DeepLink?>(null)
 
     private val notificationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -61,13 +57,13 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
-        notificationTarget = if (savedInstanceState == null) {
-            TaskListNotificationIntent.target(intent)
+
+        deepLink = if (savedInstanceState == null) {
+            DeepLinkIntents.parse(intent)
         } else {
-            val accountId = savedInstanceState.getString(STATE_NOTIFICATION_ACCOUNT)
-            val taskListId = savedInstanceState.getString(STATE_NOTIFICATION_TASK_LIST)
-            if (accountId != null && taskListId != null) TaskListNotificationTarget(accountId, taskListId) else null
+            savedInstanceState.getString(STATE_DEEP_LINK)?.let(DeepLinkIntents::parse)
         }
 
         setContent {
@@ -93,8 +89,8 @@ class MainActivity : ComponentActivity() {
             }
 
             App(
-                notificationTarget = notificationTarget,
-                onNotificationTargetConsumed = { notificationTarget = null }
+                deepLink = deepLink,
+                onDeepLinkConsumed = { deepLink = null }
             ) {
                 // Rationale dialog — explains why notifications are needed
                 if (showRationaleDialog) {
@@ -131,14 +127,11 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        notificationTarget = TaskListNotificationIntent.target(intent)
+        deepLink = DeepLinkIntents.parse(intent)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        notificationTarget?.let {
-            outState.putString(STATE_NOTIFICATION_ACCOUNT, it.accountId)
-            outState.putString(STATE_NOTIFICATION_TASK_LIST, it.taskListId)
-        }
+        deepLink?.let { outState.putString(STATE_DEEP_LINK, DeepLinkIntents.toUriString(it)) }
         super.onSaveInstanceState(outState)
     }
 
@@ -147,14 +140,12 @@ class MainActivity : ComponentActivity() {
         // After returning from app notification settings, check if permission was granted
         if (awaitingSettingsReturn) {
             awaitingSettingsReturn = false
-            val granted = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val isLessThanSdk33 = Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
+            val granted = isLessThanSdk33 ||
                 ContextCompat.checkSelfPermission(
                     this,
                     Manifest.permission.POST_NOTIFICATIONS
                 ) == PackageManager.PERMISSION_GRANTED
-            } else {
-                true
-            }
             permissionBridge.deliverResult(granted)
         }
     }
@@ -165,6 +156,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun handlePermissionRequest() {
+
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             permissionBridge.deliverResult(true)
             return
@@ -186,10 +178,9 @@ class MainActivity : ComponentActivity() {
             Manifest.permission.POST_NOTIFICATIONS
         )
 
-        if (shouldShowRationale) {
-            showRationaleDialog = true
-        } else {
-            launchPermissionRequest()
+        when {
+            shouldShowRationale -> showRationaleDialog = true
+            else -> launchPermissionRequest()
         }
     }
 
@@ -209,89 +200,8 @@ class MainActivity : ComponentActivity() {
     }
 
     private companion object {
-        const val STATE_NOTIFICATION_ACCOUNT = "notification_account"
-        const val STATE_NOTIFICATION_TASK_LIST = "notification_task_list"
+        const val STATE_DEEP_LINK = "deep_link"
     }
-}
-
-@Composable
-private fun NotificationRationaleDialog(
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        containerColor = EchoListTheme.materialColors.surface,
-        title = {
-            Text(
-                text = "Notification Permission",
-                style = EchoListTheme.typography.titleSmall
-            )
-        },
-        text = {
-            Text(
-                text = "EchoList needs notification permission to remind you " +
-                    "about upcoming tasks. Without it, task reminders will be silently disabled.",
-                style = EchoListTheme.typography.bodyMedium
-            )
-        },
-        confirmButton = {
-            TextButton(onClick = onConfirm) {
-                Text(
-                    text = "Allow",
-                    color = EchoListTheme.materialColors.primary
-                )
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(
-                    text = "Not now",
-                    color = EchoListTheme.materialColors.onSurface
-                )
-            }
-        }
-    )
-}
-
-@Composable
-private fun NotificationSettingsDialog(
-    onOpenSettings: () -> Unit,
-    onDismiss: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        containerColor = EchoListTheme.materialColors.surface,
-        title = {
-            Text(
-                text = "Notifications Blocked",
-                style = EchoListTheme.typography.titleSmall
-            )
-        },
-        text = {
-            Text(
-                text = "Notification permission was permanently denied. To " +
-                    "enable task reminders, please allow notifications in the app settings.",
-                style = EchoListTheme.typography.bodyMedium
-            )
-        },
-        confirmButton = {
-            TextButton(onClick = onOpenSettings) {
-                Text(
-                    text = "Open Settings",
-                    color = EchoListTheme.materialColors.primary
-                )
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(
-                    text = "Cancel",
-                    color = EchoListTheme.materialColors.onSurface
-                )
-            }
-        }
-    )
 }
 
 @Preview

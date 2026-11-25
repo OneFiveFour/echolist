@@ -14,7 +14,9 @@ import androidx.core.app.NotificationManagerCompat
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
+import net.onefivefour.echolist.core.deeplinks.data.DeepLinkIntents
 import net.onefivefour.echolist.core.notifications.domain.Reminder
+import net.onefivefour.echolist.core.notifications.domain.ReminderDeepLink
 import net.onefivefour.echolist.core.notifications.domain.ReminderPlatform
 import net.onefivefour.echolist.data.notification.TaskDoneReceiver
 import net.onefivefour.echolist.data.notification.TaskReminderReceiver
@@ -83,7 +85,7 @@ internal class AndroidReminderPlatform(private val context: Context) : ReminderP
             done,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-        val openPending = TaskListNotificationIntent.create(context, reminder)?.let { intent ->
+        val openPending = DeepLinkIntents.create(context, ReminderDeepLink.create(reminder))?.let { intent ->
             PendingIntent.getActivity(
                 context,
                 0,

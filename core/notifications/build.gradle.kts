@@ -5,6 +5,7 @@ plugins {
 }
 kotlin.sourceSets.getByName("commonMain").dependencies {
     api(libs.koin.core)
+    api(project(":core:deeplinks"))
     implementation(libs.kotlinx.coroutines.core)
     api(libs.kotlinx.datetime)
     implementation(libs.kotlinx.serialization.json)

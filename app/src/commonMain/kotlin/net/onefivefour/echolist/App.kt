@@ -20,12 +20,13 @@ import kotlinx.coroutines.launch
 import net.onefivefour.echolist.app.resources.Res
 import net.onefivefour.echolist.app.resources.ic_arrow_back
 import net.onefivefour.echolist.app.resources.navigate_back
+import net.onefivefour.echolist.core.deeplinks.domain.DeepLink
+import net.onefivefour.echolist.core.deeplinks.domain.DeepLinkHandler
 import net.onefivefour.echolist.core.designsystem.ui.components.RoundIconButton
 import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.core.notifications.domain.NotificationAccountProvider
 import net.onefivefour.echolist.core.notifications.domain.NotificationCoordinator
 import net.onefivefour.echolist.core.notifications.domain.ReminderBackgroundScheduler
-import net.onefivefour.echolist.core.notifications.domain.TaskListNotificationTarget
 import net.onefivefour.echolist.feature.login.ui.LoginFeature
 import net.onefivefour.echolist.ui.AuthState
 import net.onefivefour.echolist.ui.AuthViewModel
@@ -35,15 +36,15 @@ import net.onefivefour.echolist.ui.navigation.EditTaskListRoute
 import net.onefivefour.echolist.ui.navigation.TaskSettingsChannels
 import net.onefivefour.echolist.ui.navigation.TasksSummaryRoute
 import net.onefivefour.echolist.ui.navigation.echoListSavedStateConfig
-import net.onefivefour.echolist.ui.navigation.openNotificationTaskList
+import net.onefivefour.echolist.ui.navigation.open
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun App(
-    notificationTarget: TaskListNotificationTarget? = null,
-    onNotificationTargetConsumed: () -> Unit = {},
+    deepLink: DeepLink? = null,
+    onDeepLinkConsumed: () -> Unit = {},
     overlayContent: @Composable () -> Unit = {}
 ) {
     EchoListTheme {
@@ -84,8 +85,8 @@ fun App(
             AuthState.Unauthenticated -> UnauthenticatedApp(authViewModel)
             AuthState.Authenticated -> AuthenticatedApp(
                 onLogout = authViewModel::logout,
-                notificationTarget = notificationTarget,
-                onNotificationTargetConsumed = onNotificationTargetConsumed
+                deepLink = deepLink,
+                onDeepLinkConsumed = onDeepLinkConsumed
             )
         }
 
@@ -108,21 +109,26 @@ private fun UnauthenticatedApp(authViewModel: AuthViewModel) {
 @Composable
 private fun AuthenticatedApp(
     onLogout: () -> Unit,
-    notificationTarget: TaskListNotificationTarget?,
-    onNotificationTargetConsumed: () -> Unit
+    deepLink: DeepLink?,
+    onDeepLinkConsumed: () -> Unit
 ) {
     val backStack = rememberNavBackStack(echoListSavedStateConfig, BrowserRoute())
     val account = koinInject<NotificationAccountProvider>()
-    LaunchedEffect(notificationTarget) {
-        if (notificationTarget != null) {
-            backStack.openNotificationTaskList(notificationTarget, account.currentAccountId())
-            onNotificationTargetConsumed()
+
+    val deepLinkHandler = koinInject<DeepLinkHandler>()
+    LaunchedEffect(deepLink) {
+        if (deepLink != null) {
+            deepLinkHandler.resolve(deepLink)?.let { backStack.open(it, account.currentAccountId()) }
+            onDeepLinkConsumed()
         }
     }
     val canNavigateBack = backStack.size > 1
     val settingsChannels = koinViewModel<TaskSettingsChannels>()
     val editorIds = backStack.filterIsInstance<EditTaskListRoute>().map { it.editorId }.toSet()
-    LaunchedEffect(editorIds) { settingsChannels.retainEditors(editorIds) }
+
+    LaunchedEffect(editorIds) {
+        settingsChannels.retainEditors(editorIds)
+    }
 
     NavigationBackHandler(
         state = rememberNavigationEventState(NavigationEventInfo.None),
@@ -130,28 +136,9 @@ private fun AuthenticatedApp(
         onBackCompleted = { backStack.removeLastOrNull() }
     )
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        AuthenticatedNavDisplay(
-            backStack = backStack,
-            settingsChannels = settingsChannels,
-            onLogout = onLogout
-        )
-
-        val isBrowserRoute = backStack.lastOrNull() is BrowserRoute
-        if (canNavigateBack && !isBrowserRoute && backStack.lastOrNull() !is TasksSummaryRoute) {
-            RoundIconButton(
-                iconRes = Res.drawable.ic_arrow_back,
-                onClick = { backStack.removeLastOrNull() },
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(
-                        end = EchoListTheme.dimensions.l,
-                        bottom = EchoListTheme.dimensions.m
-                    ),
-                containerColor = EchoListTheme.materialColors.primary,
-                contentColor = EchoListTheme.materialColors.onPrimary,
-                contentDescription = stringResource(Res.string.navigate_back)
-            )
-        }
-    }
+    AuthenticatedNavDisplay(
+        backStack = backStack,
+        settingsChannels = settingsChannels,
+        onLogout = onLogout
+    )
 }

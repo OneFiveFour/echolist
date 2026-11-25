@@ -44,4 +44,4 @@ include(
     ":features:tasksettings"
 )
 include(":core:designsystem", ":core:files", ":core:database", ":core:networking", ":core:protocol")
-include(":core:session", ":core:tasks", ":core:recurrence", ":core:notifications")
+include(":core:session", ":core:tasks", ":core:recurrence", ":core:notifications", ":core:deeplinks")

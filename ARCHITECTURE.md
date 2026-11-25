@@ -23,6 +23,7 @@ core/
   files/            Paths, directory-change notifications, desktop storage paths
   tasks/            Shared task models, repository, reminder/completion rules
   recurrence/       Recurrence rule data and RRULE conversion
+  deeplinks/        Platform-neutral DeepLink model, target registry and Android intent transport
   notifications/    Platform scheduling, permission handling and task-action port
   session/          Authentication, token storage, refresh and session events
   networking/       Ktor/ConnectRPC, logging, errors and backend URL contract
@@ -200,11 +201,14 @@ Android uses one inexact AlarmManager alarm per account/task, identified by a UR
 
 Android notification actions enqueue unique persistent work constrained to network availability. Account and occurrence checks prevent late actions or retries from completing a different user or the next recurring occurrence. User notification/channel permissions remain authoritative. OS notification posting and database writes cannot form a single transaction: deterministic notification tags and `setOnlyAlertOnce` limit duplicate visible alerts in the small crash window after posting and before saving history.
 
-Tapping an Android reminder opens its task list through an explicit activity PendingIntent.
-The notification module owns the account/list payload; the Android launcher handles cold
-starts and new intents, retaining unconsumed navigation across recreation and login.
-The app checks the current account before navigating and reuses an existing task-list editor
-when possible. This does not invoke completion; the separate Done action still enqueues
+Tapping an Android reminder opens its task list through an explicit activity PendingIntent
+carrying a generic `DeepLink` (`core:deeplinks`). The notification module builds the link
+(`ReminderDeepLink`); the Android launcher only transports it (`DeepLinkIntents`), handling cold
+starts and new intents and retaining the unconsumed link across recreation and login.
+Modules register a `DeepLinkTarget` via Koin (`tasklist` registers `TaskListDeepLinkTarget`),
+which validates a link and returns a `DeepLinkDestination` (here `OpenTaskListDestination` from
+`core:tasks`). `DeepLinkHandler` asks all targets; the app then checks the current account,
+maps the destination to routes and reuses an existing task-list editor when possible. This does not invoke completion; the separate Done action still enqueues
 the existing completion worker. These internal links do not register a public URI handler.
 
 Android debug builds additionally wire a long press on the task settings' "Erinnern" label

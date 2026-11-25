@@ -1,5 +1,6 @@
 package net.onefivefour.echolist.di
 
+import net.onefivefour.echolist.core.deeplinks.di.deepLinkModule
 import net.onefivefour.echolist.core.designsystem.di.designSystemModule
 import net.onefivefour.echolist.core.files.di.filesModule
 import net.onefivefour.echolist.core.session.di.sessionModule
@@ -32,6 +33,7 @@ private val compositionModule = module {
 
 val appModules: List<Module> = listOf(
     compositionModule,
+    deepLinkModule,
     sessionModule,
     filesModule,
     tasksModule,

@@ -9,6 +9,7 @@ plugins {
 kotlin { compilerOptions { jvmTarget.set(JvmTarget.JVM_11) } }
 dependencies {
     implementation(project(":app"))
+    implementation(project(":core:deeplinks"))
     implementation(project(":core:notifications"))
     debugImplementation(project(":core:tasks"))
     implementation(project(":core:designsystem"))
