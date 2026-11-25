@@ -87,7 +87,9 @@ class BackStackPropertyTest : FunSpec({
 
     test("jumping across multiple levels allows opening a different branch and jumping Home") {
         val stack = mutableListOf<NavKey>(
-            BrowserRoute(), BrowserRoute("Projects"), BrowserRoute("Projects/Planning"),
+            BrowserRoute(),
+            BrowserRoute("Projects"),
+            BrowserRoute("Projects/Planning"),
             BrowserRoute("Projects/Planning/Release")
         )
         stack.navigateToBrowserFolder("Projects")
