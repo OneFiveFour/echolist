@@ -31,7 +31,7 @@ internal fun BrowserScreen(
     onFolderClick: (path: String) -> Unit = {},
     onFolderLongClick: (path: String) -> Unit = {},
     onNoteClick: (noteId: String) -> Unit = {},
-    onTaskClick: (taskListId: String) -> Unit = {},
+    onTaskListClick: (taskListId: String) -> Unit = {},
     onLogoutClick: (() -> Unit)? = null
 ) {
     val isDesktop = EchoListTheme.adaptiveInfo.windowSizeClass
@@ -64,7 +64,7 @@ internal fun BrowserScreen(
                 onFolderClick = onFolderClick,
                 onFolderLongClick = onFolderLongClick,
                 onNoteClick = onNoteClick,
-                onTaskClick = onTaskClick,
+                onTaskClick = onTaskListClick,
                 isDesktop = isDesktop,
                 gridState = gridState,
                 contentPadding = contentPadding,

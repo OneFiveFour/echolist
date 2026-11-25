@@ -77,8 +77,8 @@ fun BrowserFeature(
         onDeleteCurrentFolderClick = browserViewModel::onDeleteCurrentFolderClick,
         onFolderLongClick = browserViewModel::startFolderRename,
         onFolderClick = { path -> leaveBrowserWith { navToFolder(path) } },
-        onNoteClick = { id -> leaveBrowserWith { navToNote(id) } },
-        onTaskClick = { id -> leaveBrowserWith { navToTaskList(id) } },
+        onNoteClick = { noteId -> leaveBrowserWith { navToNote(noteId) } },
+        onTaskListClick = { taskListId -> leaveBrowserWith { navToTaskList(taskListId) } },
 
         navToRemindersSummary = { leaveBrowserWith(navToRemindersSummary) },
         navToTasksSummary = { leaveBrowserWith(navToTasksSummary) },

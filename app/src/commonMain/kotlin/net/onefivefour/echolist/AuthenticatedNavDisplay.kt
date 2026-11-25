@@ -50,13 +50,13 @@ internal fun AuthenticatedNavDisplay(
             entry<BrowserRoute> { browserRoute ->
                 BrowserFeature(
                     selectedFolder = browserRoute.parentDir,
-                    navToFolder = { backStack.navigateToBrowserFolder(it) },
-                    navToNote = { backStack.add(EditNoteRoute(browserRoute.parentDir, it)) },
-                    navToTaskList = {
+                    navToFolder = { path -> backStack.navigateToBrowserFolder(path) },
+                    navToNote = { noteId -> backStack.add(EditNoteRoute(browserRoute.parentDir, noteId)) },
+                    navToTaskList = { taskListId ->
                         backStack.add(
                             EditTaskListRoute(
                                 browserRoute.parentDir,
-                                it
+                                taskListId
                             )
                         )
                     },
