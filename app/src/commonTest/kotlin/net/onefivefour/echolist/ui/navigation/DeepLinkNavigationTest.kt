@@ -26,7 +26,7 @@ class DeepLinkNavigationTest : FunSpec({
 
     test("an existing editor is reused with its identity and settings channel") {
         val editor = EditTaskListRoute("folder", "task-list")
-        val stack = mutableListOf<NavKey>(BrowserRoute(), editor, MainTaskSettingsRoute("task"))
+        val stack = mutableListOf<NavKey>(BrowserRoute(), editor, MainTaskSettingsRoute("task", editorId = editor.editorId))
         stack.open(target, "account")
         stack shouldBe listOf(BrowserRoute(), editor)
         stack.open(target, "account")

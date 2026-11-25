@@ -21,16 +21,17 @@ import net.onefivefour.echolist.ui.navigation.EditNoteRoute
 import net.onefivefour.echolist.ui.navigation.EditTaskListRoute
 import net.onefivefour.echolist.ui.navigation.MainTaskSettingsRoute
 import net.onefivefour.echolist.ui.navigation.RemindersSummaryRoute
-import net.onefivefour.echolist.ui.navigation.TaskSettingsChannels
 import net.onefivefour.echolist.ui.navigation.TasksSummaryRoute
 import net.onefivefour.echolist.ui.navigation.navigateToBrowserFolder
+import net.onefivefour.echolist.ui.navigation.rememberTaskSettingsChannels
 
 @Composable
 internal fun AuthenticatedNavDisplay(
     backStack: NavBackStack<NavKey>,
-    settingsChannels: TaskSettingsChannels,
     onLogout: () -> Unit
 ) {
+    val settingsChannels = rememberTaskSettingsChannels(backStack)
+
     NavDisplay(
         modifier = Modifier.fillMaxSize(),
         backStack = backStack,
@@ -107,12 +108,7 @@ internal fun AuthenticatedNavDisplay(
                         route.currentRecurrence,
                         route.currentIsNotificationEnabled
                     ),
-                    onResult = settingsChannels.sinkFor(
-                        route.editorId.ifBlank {
-                            backStack.filterIsInstance<EditTaskListRoute>()
-                                .lastOrNull()?.editorId.orEmpty()
-                        }
-                    )
+                    onResult = settingsChannels.sinkFor(route.editorId)
                 )
             }
         }

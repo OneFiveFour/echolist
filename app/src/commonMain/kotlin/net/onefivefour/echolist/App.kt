@@ -32,8 +32,6 @@ import net.onefivefour.echolist.ui.AuthState
 import net.onefivefour.echolist.ui.AuthViewModel
 import net.onefivefour.echolist.ui.LogoutState
 import net.onefivefour.echolist.ui.navigation.BrowserRoute
-import net.onefivefour.echolist.ui.navigation.EditTaskListRoute
-import net.onefivefour.echolist.ui.navigation.TaskSettingsChannels
 import net.onefivefour.echolist.ui.navigation.TasksSummaryRoute
 import net.onefivefour.echolist.ui.navigation.echoListSavedStateConfig
 import net.onefivefour.echolist.ui.navigation.open
@@ -49,7 +47,6 @@ fun App(
 ) {
     EchoListTheme {
         val authViewModel = koinViewModel<AuthViewModel>()
-        val settingsChannels = koinViewModel<TaskSettingsChannels>()
 
         val notifications = koinInject<NotificationCoordinator>()
         val reminderWork = koinInject<ReminderBackgroundScheduler>()
@@ -70,9 +67,6 @@ fun App(
         }
 
         LaunchedEffect(authState) {
-            if (authState == AuthState.Unauthenticated) {
-                settingsChannels.clearEditors()
-            }
             notifications.refreshSession()
             notifications.restore()
             if (authState == AuthState.Authenticated) {
@@ -123,13 +117,6 @@ private fun AuthenticatedApp(
         }
     }
     val canNavigateBack = backStack.size > 1
-    val settingsChannels = koinViewModel<TaskSettingsChannels>()
-    val editorIds = backStack.filterIsInstance<EditTaskListRoute>().map { it.editorId }.toSet()
-
-    LaunchedEffect(editorIds) {
-        settingsChannels.retainEditors(editorIds)
-    }
-
     NavigationBackHandler(
         state = rememberNavigationEventState(NavigationEventInfo.None),
         isBackEnabled = canNavigateBack,
@@ -138,7 +125,6 @@ private fun AuthenticatedApp(
 
     AuthenticatedNavDisplay(
         backStack = backStack,
-        settingsChannels = settingsChannels,
         onLogout = onLogout
     )
 }

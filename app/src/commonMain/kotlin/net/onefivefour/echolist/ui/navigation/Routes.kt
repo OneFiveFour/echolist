@@ -37,10 +37,10 @@ data class EditTaskListRoute(
 @Serializable
 data class MainTaskSettingsRoute(
     val mainTaskId: String,
+    val editorId: String,
     val currentDueDate: String = "",
     val currentRecurrence: String = "",
     val currentIsNotificationEnabled: Boolean = true,
-    val editorId: String = "",
     val taskListId: String? = null
 ) : NavKey
 

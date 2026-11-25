@@ -100,6 +100,7 @@ class RouteSerializationPropertyTest : FunSpec({
     test("MainTaskSettingsRoute serialization preserves draft settings") {
         val route: NavKey = MainTaskSettingsRoute(
             mainTaskId = "draft-task-1",
+            editorId = "editor",
             currentDueDate = "2026-08-15",
             currentRecurrence = "FREQ=WEEKLY;INTERVAL=2"
         )
@@ -125,6 +126,7 @@ class RouteSerializationPropertyTest : FunSpec({
         ) { mainTaskId, dueDate, recurrence, isNotificationEnabled ->
             val route = MainTaskSettingsRoute(
                 mainTaskId = mainTaskId,
+                editorId = "editor",
                 currentDueDate = dueDate,
                 currentRecurrence = recurrence,
                 currentIsNotificationEnabled = isNotificationEnabled
