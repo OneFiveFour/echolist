@@ -12,8 +12,7 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun TaskSettingsFeature(
     initial: TaskSettingsChanges,
-    onResult: TaskSettingsResultSink,
-    onDebugReminder: (() -> Unit)? = null
+    onResult: TaskSettingsResultSink
 ) {
     val viewModel = koinViewModel<MainTaskSettingsViewModel>(
         key = "mainTaskSettings-${initial.mainTaskId}"
@@ -38,7 +37,6 @@ fun TaskSettingsFeature(
         onDateSelected = viewModel::onDateSelected,
         onRecurrenceIntervalSelected = viewModel::onRecurrenceIntervalSelected,
         onRecurrenceDetailChanged = viewModel::onRecurrenceDetailChanged,
-        onNotificationToggleChanged = viewModel::onNotificationToggleChanged,
-        onDebugReminder = onDebugReminder
+        onNotificationToggleChanged = viewModel::onNotificationToggleChanged
     )
 }

@@ -71,7 +71,6 @@ import org.koin.compose.viewmodel.koinViewModel
 fun App(
     notificationTarget: TaskListNotificationTarget? = null,
     onNotificationTargetConsumed: () -> Unit = {},
-    onDebugReminder: ((String, String) -> Unit)? = null,
     overlayContent: @Composable () -> Unit = {}
 ) {
     EchoListTheme {
@@ -115,7 +114,6 @@ fun App(
                 onLogout = authViewModel::logout,
                 notificationTarget = notificationTarget,
                 onNotificationTargetConsumed = onNotificationTargetConsumed,
-                onDebugReminder = onDebugReminder
             )
         }
 
@@ -184,8 +182,7 @@ private fun UnauthenticatedApp(authViewModel: AuthViewModel) {
 private fun AuthenticatedApp(
     onLogout: () -> Unit,
     notificationTarget: TaskListNotificationTarget?,
-    onNotificationTargetConsumed: () -> Unit,
-    onDebugReminder: ((String, String) -> Unit)?
+    onNotificationTargetConsumed: () -> Unit
 ) {
     val backStack = rememberNavBackStack(echoListSavedStateConfig, BrowserRoute())
     var isBrowserNavigationBlocked by remember { mutableStateOf(false) }
@@ -224,8 +221,7 @@ private fun AuthenticatedApp(
                 discardBrowserDraft = discardDraft
             },
             onLeaveBrowser = { discardBrowserDraft() },
-            onLogout = onLogout,
-            onDebugReminder = onDebugReminder
+            onLogout = onLogout
         )
 
         val isBrowserRoute = backStack.lastOrNull() is BrowserRoute
@@ -254,8 +250,7 @@ private fun AuthenticatedNavDisplay(
     isBrowserNavigationBlocked: Boolean,
     onBrowserNavigationStateChange: (Boolean, () -> Unit) -> Unit,
     onLeaveBrowser: () -> Unit,
-    onLogout: () -> Unit,
-    onDebugReminder: ((String, String) -> Unit)?
+    onLogout: () -> Unit
 ) {
     NavDisplay(
         modifier = Modifier.fillMaxSize(),
@@ -335,13 +330,6 @@ private fun AuthenticatedNavDisplay(
                         route.currentRecurrence,
                         route.currentIsNotificationEnabled
                     ),
-                    onDebugReminder = onDebugReminder?.let { trigger ->
-                        val editor = backStack.filterIsInstance<EditTaskListRoute>()
-                            .lastOrNull { it.editorId == route.editorId }
-                        (route.taskListId ?: editor?.taskListId)?.let { listId ->
-                            { trigger(listId, route.mainTaskId) }
-                        }
-                    },
                     onResult = settingsChannels.sinkFor(
                         route.editorId.ifBlank {
                             backStack.filterIsInstance<EditTaskListRoute>().lastOrNull()?.editorId.orEmpty()

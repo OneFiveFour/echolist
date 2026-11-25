@@ -70,7 +70,6 @@ class MainActivity : ComponentActivity() {
             if (accountId != null && taskListId != null) TaskListNotificationTarget(accountId, taskListId) else null
         }
 
-        val debugReminder = debugReminderAction()
         setContent {
             val systemBarStyle = if (isSystemInDarkTheme()) {
                 SystemBarStyle.dark(scrim = Color.TRANSPARENT)
@@ -95,8 +94,7 @@ class MainActivity : ComponentActivity() {
 
             App(
                 notificationTarget = notificationTarget,
-                onNotificationTargetConsumed = { notificationTarget = null },
-                onDebugReminder = debugReminder
+                onNotificationTargetConsumed = { notificationTarget = null }
             ) {
                 // Rationale dialog — explains why notifications are needed
                 if (showRationaleDialog) {
