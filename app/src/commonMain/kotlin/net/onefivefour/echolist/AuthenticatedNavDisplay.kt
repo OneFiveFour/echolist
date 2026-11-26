@@ -26,10 +26,7 @@ import net.onefivefour.echolist.ui.navigation.navigateToBrowserFolder
 import net.onefivefour.echolist.ui.navigation.rememberMainTaskSettingsResults
 
 @Composable
-internal fun AuthenticatedNavDisplay(
-    backStack: NavBackStack<NavKey>,
-    onLogout: () -> Unit
-) {
+internal fun AuthenticatedNavDisplay(backStack: NavBackStack<NavKey>) {
     val mainTaskSettingsResults = rememberMainTaskSettingsResults(backStack)
 
     NavDisplay(
@@ -62,7 +59,6 @@ internal fun AuthenticatedNavDisplay(
                     },
                     navToRemindersSummary = { backStack.add(RemindersSummaryRoute) },
                     navToTasksSummary = { backStack.add(TasksSummaryRoute(browserRoute.parentDir)) },
-                    onLogout = onLogout,
                     onBack = { backStack.removeLastOrNull() }
                 )
             }

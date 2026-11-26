@@ -2,6 +2,10 @@ package net.onefivefour.echolist.core.session.di
 
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import net.onefivefour.echolist.core.networking.data.client.ConnectRpcClient
 import net.onefivefour.echolist.core.networking.data.config.NetworkConfigProvider
 import net.onefivefour.echolist.core.networking.data.logging.LogLevel
@@ -12,6 +16,7 @@ import net.onefivefour.echolist.core.session.data.repository.AuthRepositoryImpl
 import net.onefivefour.echolist.core.session.domain.AuthEventBus
 import net.onefivefour.echolist.core.session.domain.AuthRepository
 import net.onefivefour.echolist.core.session.domain.SecureStorage
+import net.onefivefour.echolist.core.session.domain.SessionManager
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.onClose
 import org.koin.core.module.dsl.withOptions
@@ -31,6 +36,14 @@ val sessionModule = module {
     single(publicAuthHttp) { configuredHttpClient(get()) } withOptions { onClose { it?.close() } }
     single<ConnectRpcClient>(publicAuthClient) { createConnectRpcClient(get(publicAuthHttp), get()) }
     single<AuthRepository> { AuthRepositoryImpl(get(), get(publicAuthClient), get()) }
+    single {
+        SessionManager(
+            authRepository = get(),
+            authEventBus = get(),
+            scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
+            sessionDataCleaners = getAll()
+        )
+    }
     single {
         val repository = get<AuthRepository>()
         val events = get<AuthEventBus>()

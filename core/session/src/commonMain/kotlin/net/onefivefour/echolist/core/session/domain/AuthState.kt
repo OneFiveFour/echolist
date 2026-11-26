@@ -1,4 +1,4 @@
-package net.onefivefour.echolist.ui
+package net.onefivefour.echolist.core.session.domain
 
 /**
  * Observable authentication state used by navigation gating.

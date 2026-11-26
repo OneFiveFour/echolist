@@ -27,17 +27,16 @@ import net.onefivefour.echolist.core.designsystem.ui.theme.EchoListTheme
 import net.onefivefour.echolist.core.notifications.domain.NotificationAccountProvider
 import net.onefivefour.echolist.core.notifications.domain.NotificationCoordinator
 import net.onefivefour.echolist.core.notifications.domain.ReminderBackgroundScheduler
+import net.onefivefour.echolist.core.session.domain.AuthState
+import net.onefivefour.echolist.core.session.domain.LogoutState
+import net.onefivefour.echolist.core.session.domain.SessionManager
 import net.onefivefour.echolist.feature.login.ui.LoginFeature
-import net.onefivefour.echolist.ui.AuthState
-import net.onefivefour.echolist.ui.AuthViewModel
-import net.onefivefour.echolist.ui.LogoutState
 import net.onefivefour.echolist.ui.navigation.BrowserRoute
 import net.onefivefour.echolist.ui.navigation.TasksSummaryRoute
 import net.onefivefour.echolist.ui.navigation.echoListSavedStateConfig
 import net.onefivefour.echolist.ui.navigation.open
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
-import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun App(
@@ -46,15 +45,15 @@ fun App(
     overlayContent: @Composable () -> Unit = {}
 ) {
     EchoListTheme {
-        val authViewModel = koinViewModel<AuthViewModel>()
+        val sessionManager = koinInject<SessionManager>()
 
         val notifications = koinInject<NotificationCoordinator>()
         val reminderWork = koinInject<ReminderBackgroundScheduler>()
 
         val reminderScope = rememberCoroutineScope()
 
-        val authState by authViewModel.authState.collectAsStateWithLifecycle()
-        val logoutState by authViewModel.logoutState.collectAsStateWithLifecycle()
+        val authState by sessionManager.authState.collectAsStateWithLifecycle()
+        val logoutState by sessionManager.logoutState.collectAsStateWithLifecycle()
 
         LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
             reminderScope.launch {
@@ -76,9 +75,8 @@ fun App(
 
         when (authState) {
             AuthState.Loading -> Unit
-            AuthState.Unauthenticated -> UnauthenticatedApp(authViewModel)
+            AuthState.Unauthenticated -> UnauthenticatedApp(onAuthenticated = sessionManager::onAuthenticated)
             AuthState.Authenticated -> AuthenticatedApp(
-                onLogout = authViewModel::logout,
                 deepLink = deepLink,
                 onDeepLinkConsumed = onDeepLinkConsumed
             )
@@ -86,8 +84,8 @@ fun App(
 
         if (authState == AuthState.Authenticated && logoutState == LogoutState.Failed) {
             LogoutFailedDialog(
-                onRetry = authViewModel::logout,
-                onDismiss = authViewModel::dismissLogoutError
+                onRetry = sessionManager::logout,
+                onDismiss = sessionManager::dismissLogoutError
             )
         }
 
@@ -96,13 +94,12 @@ fun App(
 }
 
 @Composable
-private fun UnauthenticatedApp(authViewModel: AuthViewModel) {
-    LoginFeature(onAuthenticated = authViewModel::onAuthenticated)
+private fun UnauthenticatedApp(onAuthenticated: () -> Unit) {
+    LoginFeature(onAuthenticated = onAuthenticated)
 }
 
 @Composable
 private fun AuthenticatedApp(
-    onLogout: () -> Unit,
     deepLink: DeepLink?,
     onDeepLinkConsumed: () -> Unit
 ) {
@@ -117,6 +114,7 @@ private fun AuthenticatedApp(
             onDeepLinkConsumed()
         }
     }
+
     val canNavigateBack = backStack.size > 1
     NavigationBackHandler(
         state = rememberNavigationEventState(NavigationEventInfo.None),
@@ -124,8 +122,5 @@ private fun AuthenticatedApp(
         onBackCompleted = { backStack.removeLastOrNull() }
     )
 
-    AuthenticatedNavDisplay(
-        backStack = backStack,
-        onLogout = onLogout
-    )
+    AuthenticatedNavDisplay(backStack = backStack)
 }

@@ -8,6 +8,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
+import net.onefivefour.echolist.core.session.domain.SessionManager
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -19,12 +21,13 @@ fun BrowserFeature(
     navToTaskList: (String?) -> Unit,
     navToRemindersSummary: () -> Unit,
     navToTasksSummary: () -> Unit,
-    onLogout: (() -> Unit)? = null,
     onBack: () -> Unit = {}
 ) {
     val browserViewModel = koinViewModel<BrowserViewModel>(key = selectedFolder) {
         parametersOf(selectedFolder)
     }
+
+    val sessionManager = koinInject<SessionManager>()
 
     val browserUiState by browserViewModel.uiState.collectAsStateWithLifecycle()
 
@@ -85,6 +88,6 @@ fun BrowserFeature(
 
         onRefresh = browserViewModel::refresh,
 
-        onLogoutClick = onLogout?.let { logout -> { leaveBrowserWith(logout) } }
+        onLogoutClick = { leaveBrowserWith(sessionManager::logout) }
     )
 }

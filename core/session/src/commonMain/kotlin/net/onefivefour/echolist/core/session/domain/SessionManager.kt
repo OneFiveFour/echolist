@@ -1,38 +1,34 @@
-package net.onefivefour.echolist.ui
+package net.onefivefour.echolist.core.session.domain
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import net.onefivefour.echolist.core.session.domain.AuthEvent
-import net.onefivefour.echolist.core.session.domain.AuthEventBus
-import net.onefivefour.echolist.core.session.domain.AuthRepository
-import net.onefivefour.echolist.core.session.domain.SessionDataCleaner
 
-class AuthViewModel(
+/**
+ * Single source of truth for the authentication state of the app. Any screen can start a logout;
+ * once the backend confirmed it, [authState] becomes [AuthState.Unauthenticated] and the app shows
+ * the login, which drops the whole authenticated back stack.
+ */
+class SessionManager(
     private val authRepository: AuthRepository,
     private val authEventBus: AuthEventBus,
+    private val scope: CoroutineScope,
     private val sessionDataCleaners: List<SessionDataCleaner> = emptyList()
-) : ViewModel() {
+) {
 
     val authState: StateFlow<AuthState>
-        field = MutableStateFlow<AuthState>(AuthState.Loading)
+        field = MutableStateFlow<AuthState>(
+            if (authRepository.isAuthenticated()) AuthState.Authenticated else AuthState.Unauthenticated
+        )
 
     val logoutState: StateFlow<LogoutState>
         field = MutableStateFlow<LogoutState>(LogoutState.Idle)
 
     init {
-        // Check storage for existing access token
-        authState.value = if (authRepository.isAuthenticated()) {
-            AuthState.Authenticated
-        } else {
-            AuthState.Unauthenticated
-        }
-
         // Collect auth events from the interceptor
-        viewModelScope.launch {
+        scope.launch {
             authEventBus.events.collect { event ->
                 when (event) {
                     AuthEvent.ReAuthRequired -> {
@@ -49,7 +45,7 @@ class AuthViewModel(
         }
 
         // Another browser tab or window ended the session.
-        viewModelScope.launch {
+        scope.launch {
             authRepository.observeExternalLogout().collect {
                 if (authState.value == AuthState.Authenticated) {
                     authEventBus.emit(AuthEvent.LoggedOut)
@@ -66,7 +62,7 @@ class AuthViewModel(
         if (logoutState.value == LogoutState.InProgress) return
         logoutState.value = LogoutState.InProgress
 
-        viewModelScope.launch {
+        scope.launch {
             authRepository.logout().fold(
                 // Tokens are already cleared; this stops requests in flight and resets local data.
                 onSuccess = { authEventBus.emit(AuthEvent.LoggedOut) },

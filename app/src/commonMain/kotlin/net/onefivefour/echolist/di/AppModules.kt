@@ -12,7 +12,6 @@ import net.onefivefour.echolist.feature.note.di.noteModule
 import net.onefivefour.echolist.feature.tasklist.di.taskListModule
 import net.onefivefour.echolist.feature.tasksettings.di.taskSettingsModule
 import net.onefivefour.echolist.feature.reminderssummary.di.remindersSummaryModule
-import net.onefivefour.echolist.ui.AuthViewModel
 import net.onefivefour.echolist.ui.navigation.MainTaskSettingsResults
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
@@ -21,13 +20,6 @@ import net.onefivefour.echolist.core.notifications.domain.NotificationAccountPro
 
 private val compositionModule = module {
     single<NotificationAccountProvider> { NotificationAccount(get()) }
-    viewModel {
-        AuthViewModel(
-            authRepository = get(),
-            authEventBus = get(),
-            sessionDataCleaners = getAll()
-        )
-    }
     viewModel { MainTaskSettingsResults() }
 }
 

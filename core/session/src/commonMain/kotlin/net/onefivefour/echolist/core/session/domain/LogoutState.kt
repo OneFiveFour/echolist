@@ -1,4 +1,4 @@
-package net.onefivefour.echolist.ui
+package net.onefivefour.echolist.core.session.domain
 
 /**
  * Progress of a user-initiated logout. [Failed] means the backend did not confirm the revocation,

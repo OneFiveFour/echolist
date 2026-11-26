@@ -37,6 +37,11 @@ import net.onefivefour.echolist.core.designsystem.ui.theme.ThemeManager
 import net.onefivefour.echolist.core.designsystem.ui.theme.colorscheme.EchoListDefaultTheme
 import net.onefivefour.echolist.data.FakeDirectoryChangeNotifier
 import net.onefivefour.echolist.feature.browser.data.repository.FakeFileRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import net.onefivefour.echolist.core.session.domain.AuthEventBus
+import net.onefivefour.echolist.core.session.domain.AuthRepository
+import net.onefivefour.echolist.core.session.domain.SessionManager
 import org.koin.compose.KoinIsolatedContext
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.koinApplication
@@ -258,6 +263,13 @@ internal class FolderDraftLayoutTest : FunSpec({
                     val application = koinApplication {
                         modules(
                             module {
+                                single {
+                                    SessionManager(
+                                        authRepository = FakeAuthRepository(),
+                                        authEventBus = AuthEventBus(),
+                                        scope = CoroutineScope(SupervisorJob())
+                                    )
+                                }
                                 viewModel { params ->
                                     BrowserViewModel(
                                         params.get(),
@@ -492,4 +504,14 @@ private fun ImageComposeScene.draftNodes(): List<SemanticsNode> {
 
 private fun List<SemanticsNode>.taggedDraft(tag: String): SemanticsNode? = firstOrNull {
     it.config.getOrNull(SemanticsProperties.TestTag) == tag
+}
+
+private class FakeAuthRepository : AuthRepository {
+    override suspend fun login(baseUrl: String, username: String, password: String) = Result.success(Unit)
+    override suspend fun refreshToken() = Result.success("token")
+    override suspend fun logout() = Result.success(Unit)
+    override fun isAuthenticated() = true
+    override fun clearAuth() = Unit
+    override fun getAccessToken(): String? = null
+    override fun getBaseUrl(): String? = null
 }

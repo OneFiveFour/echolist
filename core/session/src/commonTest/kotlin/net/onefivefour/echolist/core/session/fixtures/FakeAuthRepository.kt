@@ -1,4 +1,4 @@
-package net.onefivefour.echolist.ui.fixtures
+package net.onefivefour.echolist.core.session.fixtures
 
 import net.onefivefour.echolist.core.session.domain.StorageKeys
 

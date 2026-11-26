@@ -1,4 +1,4 @@
-package net.onefivefour.echolist.ui
+package net.onefivefour.echolist.core.session.domain
 
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
@@ -7,16 +7,13 @@ import io.kotest.property.PropTestConfig
 import io.kotest.property.arbitrary.boolean
 import io.kotest.property.arbitrary.string
 import io.kotest.property.checkAll
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
-import net.onefivefour.echolist.core.session.domain.AuthEvent
-import net.onefivefour.echolist.core.session.domain.AuthEventBus
 import net.onefivefour.echolist.core.session.data.storage.FakeSecureStorage
-import net.onefivefour.echolist.core.session.domain.StorageKeys
+import net.onefivefour.echolist.core.session.fixtures.FakeAuthRepository
 
 /**
  * Property 11: AuthState reflects storage
@@ -28,17 +25,10 @@ import net.onefivefour.echolist.core.session.domain.StorageKeys
  * **Validates: Requirements 6.1, 6.2**
  */
 @OptIn(ExperimentalCoroutinesApi::class)
-class AuthViewModelPropertyTest : FunSpec({
+class SessionManagerPropertyTest : FunSpec({
 
     val testDispatcher = StandardTestDispatcher()
 
-    beforeSpec {
-        Dispatchers.setMain(testDispatcher)
-    }
-
-    afterSpec {
-        Dispatchers.resetMain()
-    }
 
     test("Property 11: AuthState is Authenticated when access token is present") {
         checkAll(PropTestConfig(iterations = 20), Arb.string(1..100)) { token ->
@@ -46,10 +36,12 @@ class AuthViewModelPropertyTest : FunSpec({
                 val storage = FakeSecureStorage()
                 storage.put(StorageKeys.ACCESS_TOKEN, token)
                 val authEventBus = AuthEventBus()
+                val scope = CoroutineScope(testDispatcher)
 
-                val vm = AuthViewModel(net.onefivefour.echolist.ui.fixtures.FakeAuthRepository(storage), authEventBus)
+                val sessionManager = SessionManager(FakeAuthRepository(storage), authEventBus, scope)
 
-                vm.authState.value shouldBe AuthState.Authenticated
+                sessionManager.authState.value shouldBe AuthState.Authenticated
+                scope.cancel()
             }
         }
     }
@@ -60,10 +52,12 @@ class AuthViewModelPropertyTest : FunSpec({
                 val storage = FakeSecureStorage()
                 // No access token stored
                 val authEventBus = AuthEventBus()
+                val scope = CoroutineScope(testDispatcher)
 
-                val vm = AuthViewModel(net.onefivefour.echolist.ui.fixtures.FakeAuthRepository(storage), authEventBus)
+                val sessionManager = SessionManager(FakeAuthRepository(storage), authEventBus, scope)
 
-                vm.authState.value shouldBe AuthState.Unauthenticated
+                sessionManager.authState.value shouldBe AuthState.Unauthenticated
+                scope.cancel()
             }
         }
     }
@@ -74,16 +68,18 @@ class AuthViewModelPropertyTest : FunSpec({
                 val storage = FakeSecureStorage()
                 storage.put(StorageKeys.ACCESS_TOKEN, token)
                 val authEventBus = AuthEventBus()
+                val scope = CoroutineScope(testDispatcher)
 
-                val vm = AuthViewModel(net.onefivefour.echolist.ui.fixtures.FakeAuthRepository(storage), authEventBus)
-                // Let the viewModelScope coroutine start collecting
+                val sessionManager = SessionManager(FakeAuthRepository(storage), authEventBus, scope)
+                // Let the scope coroutine start collecting
                 testScheduler.advanceUntilIdle()
-                vm.authState.value shouldBe AuthState.Authenticated
+                sessionManager.authState.value shouldBe AuthState.Authenticated
 
                 authEventBus.emit(AuthEvent.ReAuthRequired)
                 testScheduler.advanceUntilIdle()
 
-                vm.authState.value shouldBe AuthState.Unauthenticated
+                sessionManager.authState.value shouldBe AuthState.Unauthenticated
+                scope.cancel()
             }
         }
     }
