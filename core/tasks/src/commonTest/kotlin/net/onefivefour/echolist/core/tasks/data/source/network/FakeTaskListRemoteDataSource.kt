@@ -8,8 +8,8 @@ import tasks.v1.GetMainTaskRequest
 import tasks.v1.GetMainTaskResponse
 import tasks.v1.GetTaskListRequest
 import tasks.v1.GetTaskListResponse
-import tasks.v1.ListMainTasksSummaryRequest
-import tasks.v1.ListMainTasksSummaryResponse
+import tasks.v1.ListMainTaskPeekReqeust
+import tasks.v1.ListMainTaskPeekResponse
 import tasks.v1.ListTaskListsRequest
 import tasks.v1.ListTaskListsResponse
 import tasks.v1.ListUpcomingMainTasksRequest

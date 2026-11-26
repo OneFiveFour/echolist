@@ -6,8 +6,8 @@ import io.kotest.matchers.shouldBe
 import kotlinx.datetime.LocalDate
 import net.onefivefour.echolist.core.networking.data.error.NetworkException
 import net.onefivefour.echolist.core.tasks.domain.model.MainTasksSummary
-import tasks.v1.ListMainTasksSummaryResponse
-import tasks.v1.MainTasksSummary as ProtoMainTasksSummary
+import tasks.v1.ListMainTaskPeekResponse
+import tasks.v1.MainTaskPeek as ProtoMainTasksSummary
 
 class MainTasksSummaryMapperTest : FunSpec({
     test("maps peek entries preserving server order and grouping") {

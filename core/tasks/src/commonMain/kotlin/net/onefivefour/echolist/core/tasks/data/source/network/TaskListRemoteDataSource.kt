@@ -8,8 +8,8 @@ import tasks.v1.GetMainTaskRequest
 import tasks.v1.GetMainTaskResponse
 import tasks.v1.GetTaskListRequest
 import tasks.v1.GetTaskListResponse
-import tasks.v1.ListMainTasksSummaryRequest
-import tasks.v1.ListMainTasksSummaryResponse
+import tasks.v1.ListMainTaskPeekRequest
+import tasks.v1.ListMainTaskPeekResponse
 import tasks.v1.ListTaskListsRequest
 import tasks.v1.ListTaskListsResponse
 import tasks.v1.ListUpcomingMainTasksRequest
@@ -22,7 +22,7 @@ internal interface TaskListRemoteDataSource {
     suspend fun getTaskList(request: GetTaskListRequest): GetTaskListResponse
     suspend fun getMainTask(request: GetMainTaskRequest): GetMainTaskResponse
     suspend fun listTaskLists(request: ListTaskListsRequest): ListTaskListsResponse
-    suspend fun listMainTasksSummary(request: ListMainTasksSummaryRequest): ListMainTasksSummaryResponse
+    suspend fun listMainTasksSummary(request: ListMainTaskPeekRequest): ListMainTaskPeekResponse
     suspend fun listUpcomingMainTasks(request: ListUpcomingMainTasksRequest): ListUpcomingMainTasksResponse
     suspend fun updateTaskList(request: UpdateTaskListRequest): UpdateTaskListResponse
     suspend fun deleteTaskList(request: DeleteTaskListRequest): DeleteTaskListResponse

@@ -14,7 +14,7 @@ import tasks.v1.CreateTaskListRequest
 import tasks.v1.CreateTaskListResponse
 import tasks.v1.GetMainTaskResponse
 import tasks.v1.GetTaskListResponse
-import tasks.v1.ListMainTasksSummaryResponse
+import tasks.v1.ListMainTaskPeekResponse
 import tasks.v1.ListTaskListsResponse
 import tasks.v1.ListUpcomingMainTasksResponse
 import tasks.v1.UpdateTaskListRequest
@@ -93,7 +93,7 @@ internal object TaskListMapper {
     fun toDomain(proto: ListUpcomingMainTasksResponse): List<UpcomingMainTask> =
         proto.tasks.map { toDomain(it) }
 
-    fun toDomain(proto: tasks.v1.MainTasksSummary): MainTasksSummary {
+    fun toDomain(proto: tasks.v1.MainTaskPeek): MainTasksSummary {
         val dueDate = if (proto.due_date.isEmpty()) {
             null
         } else {
@@ -119,7 +119,7 @@ internal object TaskListMapper {
         )
     }
 
-    fun toDomain(proto: ListMainTasksSummaryResponse): List<MainTasksSummary> =
+    fun toDomain(proto: ListMainTaskPeekResponse): List<MainTasksSummary> =
         proto.tasks.map { toDomain(it) }
 
     fun toEntry(proto: tasks.v1.TaskList): TaskListEntry = TaskListEntry(

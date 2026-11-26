@@ -107,8 +107,8 @@ class TaskListRepositoryPropertyTest : FunSpec({
         override suspend fun listTaskLists(request: ListTaskListsRequest): ListTaskListsResponse =
             throw exception
         override suspend fun listMainTasksSummary(
-            request: tasks.v1.ListMainTasksSummaryRequest
-        ): tasks.v1.ListMainTasksSummaryResponse = throw exception
+            request: tasks.v1.ListMainTaskPeekReqeust
+        ): tasks.v1.ListMainTaskPeekResponse = throw exception
         override suspend fun listUpcomingMainTasks(
             request: tasks.v1.ListUpcomingMainTasksRequest
         ): tasks.v1.ListUpcomingMainTasksResponse = throw exception

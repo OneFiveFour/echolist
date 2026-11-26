@@ -5,9 +5,9 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import net.onefivefour.echolist.core.networking.data.client.ConnectRpcClient
 import net.onefivefour.echolist.core.networking.data.error.NetworkException
-import tasks.v1.ListMainTasksSummaryRequest
-import tasks.v1.ListMainTasksSummaryResponse
-import tasks.v1.MainTasksSummary
+import tasks.v1.ListMainTaskPeekReqeust
+import tasks.v1.ListMainTaskPeekResponse
+import tasks.v1.MainTaskPeek
 
 class MainTasksSummaryRemoteDataSourceTest : FunSpec({
     test("uses the peek RPC path and real Wire request and response adapters") {

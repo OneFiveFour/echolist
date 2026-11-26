@@ -4,10 +4,10 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.LocalDate
-import net.onefivefour.echolist.core.notifications.domain.NotificationCoordinator
-import net.onefivefour.echolist.core.notifications.domain.UpcomingReminder
 import net.onefivefour.echolist.core.files.domain.DirectoryChangeNotifier
 import net.onefivefour.echolist.core.files.domain.normalizePath
+import net.onefivefour.echolist.core.notifications.domain.NotificationCoordinator
+import net.onefivefour.echolist.core.notifications.domain.UpcomingReminder
 import net.onefivefour.echolist.core.tasks.data.mapper.TaskListMapper
 import net.onefivefour.echolist.core.tasks.data.source.network.TaskListRemoteDataSource
 import net.onefivefour.echolist.core.tasks.domain.model.CreateTaskListParams
@@ -21,7 +21,7 @@ import net.onefivefour.echolist.core.tasks.domain.repository.TaskListRepository
 import tasks.v1.DeleteTaskListRequest
 import tasks.v1.GetMainTaskRequest
 import tasks.v1.GetTaskListRequest
-import tasks.v1.ListMainTasksSummaryRequest
+import tasks.v1.ListMainTaskPeekRequest
 import tasks.v1.ListTaskListsRequest
 import tasks.v1.ListUpcomingMainTasksRequest
 
@@ -98,7 +98,7 @@ internal class TaskListRepositoryImpl(
     override suspend fun listMainTasksSummary(parentDir: String): Result<List<MainTasksSummary>> =
         withContext(dispatcher) {
             try {
-                val request = ListMainTasksSummaryRequest(parent_dir = parentDir)
+                val request = ListMainTaskPeekRequest(parent_dir = parentDir)
                 val response = networkDataSource.listMainTasksSummary(request)
                 Result.success(TaskListMapper.toDomain(response))
             } catch (e: CancellationException) {
