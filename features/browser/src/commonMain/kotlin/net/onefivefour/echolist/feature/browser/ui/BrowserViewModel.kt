@@ -234,7 +234,7 @@ internal class BrowserViewModel(
         }
     }
 
-    fun onDeleteCurrentFolderClick() {
+    fun onDeleteCurrentFolder() {
         val currentUiState = uiState.value
         val isDeletionBlocked = !currentUiState.canDeleteCurrentFolder ||
             currentUiState.isDeletingFolder ||

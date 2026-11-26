@@ -81,7 +81,7 @@ internal class BrowserFolderCreationTest : FunSpec({
             vm.startFolderDraft()
             vm.dismissFolderDraft()
             vm.onFolderNameChange("Changed")
-            vm.onDeleteCurrentFolderClick()
+            vm.onDeleteCurrentFolder()
             runCurrent()
             vm.uiState.value.folderDraft!!.isSaving shouldBe true
             vm.uiState.value.folderDraft!!.name shouldBe "Ideas"

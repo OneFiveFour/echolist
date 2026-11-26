@@ -31,6 +31,8 @@ fun BrowserFeature(
 
     val browserUiState by browserViewModel.uiState.collectAsStateWithLifecycle()
 
+    val isSaving = browserUiState.folderDraft?.isSaving == true
+
     LaunchedEffect(Unit) {
         browserViewModel.clearErrorAndReload()
     }
@@ -40,8 +42,6 @@ fun BrowserFeature(
             onBack()
         }
     }
-
-    val isSaving = browserUiState.folderDraft?.isSaving == true
 
     // Swallow system back while a folder is being saved so the entry is not popped mid-request.
     NavigationBackHandler(
@@ -73,11 +73,11 @@ fun BrowserFeature(
             onCreateTaskList = { leaveBrowserWith { navToTaskList(null) } }
         ),
 
-        onConfirmFolder = browserViewModel::confirmFolderDraft,
-        onDismissFolder = browserViewModel::dismissFolderDraft,
+        onConfirmFolderDraft = browserViewModel::confirmFolderDraft,
+        onDismissFolderDraft = browserViewModel::dismissFolderDraft,
 
         onFolderNameChange = browserViewModel::onFolderNameChange,
-        onDeleteCurrentFolderClick = browserViewModel::onDeleteCurrentFolderClick,
+        onDeleteCurrentFolder = browserViewModel::onDeleteCurrentFolder,
         onFolderLongClick = browserViewModel::startFolderRename,
         onFolderClick = { path -> leaveBrowserWith { navToFolder(path) } },
         onNoteClick = { noteId -> leaveBrowserWith { navToNote(noteId) } },
@@ -88,6 +88,6 @@ fun BrowserFeature(
 
         onRefresh = browserViewModel::refresh,
 
-        onLogoutClick = { leaveBrowserWith(sessionManager::logout) }
+        onLogout = { leaveBrowserWith(sessionManager::logout) }
     )
 }

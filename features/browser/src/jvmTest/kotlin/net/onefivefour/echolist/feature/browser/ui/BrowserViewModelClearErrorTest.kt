@@ -145,7 +145,7 @@ internal class BrowserViewModelClearErrorTest : FunSpec({
             vm.uiState.value.canDeleteCurrentFolder shouldBe true
             val navigation = async { vm.navigateBack.first() }
 
-            vm.onDeleteCurrentFolderClick()
+            vm.onDeleteCurrentFolder()
             advanceUntilIdle()
 
             deletedPath shouldBe "parent/child"
@@ -184,7 +184,7 @@ internal class BrowserViewModelClearErrorTest : FunSpec({
             advanceUntilIdle()
 
             nonEmptyVm.uiState.value.canDeleteCurrentFolder shouldBe false
-            nonEmptyVm.onDeleteCurrentFolderClick()
+            nonEmptyVm.onDeleteCurrentFolder()
             advanceUntilIdle()
 
             val rootVm = BrowserViewModel(
@@ -195,7 +195,7 @@ internal class BrowserViewModelClearErrorTest : FunSpec({
             advanceUntilIdle()
 
             rootVm.uiState.value.canDeleteCurrentFolder shouldBe false
-            rootVm.onDeleteCurrentFolderClick()
+            rootVm.onDeleteCurrentFolder()
             advanceUntilIdle()
 
             deleteCallCount shouldBe 0
@@ -244,7 +244,7 @@ internal class BrowserViewModelClearErrorTest : FunSpec({
                 directoryChangeNotifier = FakeDirectoryChangeNotifier()
             )
             advanceUntilIdle()
-            vm.onDeleteCurrentFolderClick()
+            vm.onDeleteCurrentFolder()
             advanceUntilIdle()
             vm.uiState.value.error shouldBe BrowserError.DELETE_FAILED
             vm.uiState.value.isDeletingFolder shouldBe false

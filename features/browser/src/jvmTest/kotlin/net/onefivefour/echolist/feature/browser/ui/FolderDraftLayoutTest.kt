@@ -83,13 +83,13 @@ internal class FolderDraftLayoutTest : FunSpec({
                                         folderDraft = state.value.folderDraft!!.copy(name = it)
                                     )
                                 },
-                                onConfirmFolder = {
+                                onConfirmFolderDraft = {
                                     confirmations++
                                     state.value = state.value.copy(
                                         folderDraft = state.value.folderDraft!!.copy(isSaving = true)
                                     )
                                 },
-                                onDismissFolder = { cancellations++ }
+                                onDismissFolderDraft = { cancellations++ }
                             )
                         }
                     }
@@ -135,8 +135,8 @@ internal class FolderDraftLayoutTest : FunSpec({
                     EchoListTheme(themeManager = ThemeManager(listOf(EchoListDefaultTheme))) {
                         BrowserScreen(
                             BrowserUiState(emptyList(), folderDraft = FolderDraft(1, "Ideas")),
-                            onConfirmFolder = { confirmations++ },
-                            onDismissFolder = { cancellations++ }
+                            onConfirmFolderDraft = { confirmations++ },
+                            onDismissFolderDraft = { cancellations++ }
                         )
                     }
                 }.use { scene ->
@@ -389,8 +389,8 @@ internal class FolderDraftLayoutTest : FunSpec({
                                             folderDraft = state.value.folderDraft!!.copy(name = name)
                                         )
                                     },
-                                    onConfirmFolder = { confirmations++ },
-                                    onDismissFolder = { state.value = state.value.copy(folderDraft = null) }
+                                    onConfirmFolderDraft = { confirmations++ },
+                                    onDismissFolderDraft = { state.value = state.value.copy(folderDraft = null) }
                                 )
                             }
                         }

@@ -24,18 +24,19 @@ internal fun BrowserScreen(
     navToRemindersSummary: () -> Unit = {},
     onBack: () -> Unit = {},
     onRefresh: () -> Unit = {},
-    onConfirmFolder: () -> Unit = {},
-    onDismissFolder: () -> Unit = {},
+    onConfirmFolderDraft: () -> Unit = {},
+    onDismissFolderDraft: () -> Unit = {},
     onFolderNameChange: (String) -> Unit = {},
-    onDeleteCurrentFolderClick: () -> Unit = {},
+    onDeleteCurrentFolder: () -> Unit = {},
     onFolderClick: (path: String) -> Unit = {},
     onFolderLongClick: (path: String) -> Unit = {},
     onNoteClick: (noteId: String) -> Unit = {},
     onTaskListClick: (taskListId: String) -> Unit = {},
-    onLogoutClick: (() -> Unit)? = null
+    onLogout: (() -> Unit)? = null
 ) {
     val isDesktop = EchoListTheme.adaptiveInfo.windowSizeClass
         .isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)
+
     val gridState = rememberLazyGridState()
 
     val toolbar: @Composable () -> Unit = {
@@ -47,8 +48,8 @@ internal fun BrowserScreen(
                     else -> PhoneBrowserHeading(browserUiState.breadcrumbs, onFolderClick)
                 }
             },
-            onDeleteCurrentFolderClick = onDeleteCurrentFolderClick,
-            onLogoutClick = onLogoutClick
+            onDeleteCurrentFolderClick = onDeleteCurrentFolder,
+            onLogoutClick = onLogout
         )
     }
 
@@ -70,17 +71,16 @@ internal fun BrowserScreen(
                 contentPadding = contentPadding,
                 folderDraft = browserUiState.folderDraft,
                 onFolderNameChange = onFolderNameChange,
-                onConfirmFolder = onConfirmFolder,
-                onCancelFolder = onDismissFolder
+                onConfirmFolder = onConfirmFolderDraft,
+                onCancelFolder = onDismissFolderDraft
             )
         }
     }
 
-    val isInFolderDraft = browserUiState.folderDraft != null
     BrowserNavigationScaffold(
         isDesktop = isDesktop,
         modifier = when {
-            isInFolderDraft -> Modifier.imePadding()
+            browserUiState.folderDraft != null -> Modifier.imePadding()
             else -> Modifier
         },
         navigation = {
@@ -118,7 +118,7 @@ private fun BrowserScreenPhonePreview() {
         BrowserScreen(
             browserUiState = browserPreviewState,
             canNavigateBack = true,
-            onLogoutClick = { }
+            onLogout = { }
         )
     }
 }
@@ -134,7 +134,7 @@ private fun BrowserScreenPhoneHomePreview() {
                 )
             ),
             canNavigateBack = true,
-            onLogoutClick = { }
+            onLogout = { }
         )
     }
 }
@@ -146,7 +146,7 @@ private fun BrowserScreenDesktopPreview() {
         BrowserScreen(
             browserUiState = browserPreviewState,
             canNavigateBack = true,
-            onLogoutClick = { }
+            onLogout = { }
         )
     }
 }
